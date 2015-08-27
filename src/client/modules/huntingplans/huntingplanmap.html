@@ -1,0 +1,467 @@
+<template name="huntingplanmap">
+<style>
+  .editable {
+    border:2px solid #fff;
+  }
+  .editable.editing {
+    border:2px solid #f00;
+  }
+</style>
+  <div id="mapbody">
+    {{#unless hunting_plan_office}}
+    <div id="stats">
+      <button class="btn btn-xs btn-default">
+        Gesamtanzahl Stände : <b>{{stats.standcount}}</b>
+      </button>
+      {{#if stats.unusedstands}}
+        <div class="btn-group">
+          <button class="btn btn-xs btn-default">
+            Ungenutze Stände : <b>{{stats.unusedstands.length}}</b>
+          </button>
+          <button class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+          </button>
+            <ul class="dropdown-menu">
+              {{#each stats.unusedstands}}
+                <li><a href="#" class="standlink" data="{{this.id}}"><span class="standlabel">{{this.name}}</span>&nbsp;{{this.type}}</a></li>
+              {{/each}}
+            </ul>
+        </div>
+      {{/if}}
+      {{#if stats.usedstands}}
+        <div class="btn-group">
+          <button class="btn btn-xs btn-default">
+            Besetzte Stände : <b>{{stats.usedstands.length}}</b>
+          </button>
+          <button class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+          </button>
+            <ul class="dropdown-menu">
+              {{#each stats.usedstands}}
+                <li><a href="#" class="standlink" data="{{this.id}}"><span class="standlabel">{{this.name}}</span>&nbsp;{{this.username}}</a></li>
+              {{/each}}
+            </ul>
+        </div>
+      {{/if}}
+      {{#if stats.freestands}}
+        <div class="btn-group">
+          <button class="btn btn-xs btn-default">
+            Freie Stände : <b>{{stats.freestands.length}}</b>
+          </button>
+          <button class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="caret"></span>
+          </button>
+            <ul class="dropdown-menu">
+              {{#each stats.freestands}}
+                <li><a href="#" class="standlink" data="{{this.id}}"><span class="standlabel">{{this.name}}</span>&nbsp;Gruppe : {{this.route}}</a></li>
+              {{/each}}
+            </ul>
+        </div>
+      {{/if}}
+      {{#if stats.huntercount}}
+        <button class="btn btn-xs btn-default">
+          Gesamtanzahl Schützen : <b>{{stats.huntercount}}</b>
+        </button>
+        <button class="btn btn-xs btn-default">
+          Schützen ohne Stand: <b>{{stats.unplacedhunters}}</b>
+        </button>
+      {{/if}}
+    </div>
+    {{else}}
+    <div id="paperback">
+      <div id="papercenter">
+        {{#if check_office_state 'participants'}}
+          {{#each print_participants}}
+            <div class="page-portrait">
+              <div class="page-content">
+                <div class="page-border">
+                  <h4>Teilnehmerliste Jagd {{plan.name}}</h4>
+                  <p>{{formatDateDay plan.date}}</p>
+                  {{#each this}}
+                    <table class="participant-list">
+                      <thead>
+                        <tr><td colspan="{{colspan}}">{{name}}</td></tr>
+                      </thead>
+                      <tbody>
+                        {{#each user }}
+                          <tr>
+                            <td>{{profile.title}} {{profile.surname}}, {{profile.firstname}}</td>
+                            {{#each drives }}
+                              <td class="group-cell">{{index}}. Treiben:<span><b>{{value}}</b></span></td>
+                            {{/each}}
+                          </tr>
+                        {{/each}}
+                      </tbody>
+                    </table>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        {{/if}}
+        {{#if check_office_state 'routespages'}}
+          {{#each print_routes}}
+          <div class="page-landscape">
+            <div class="page-content">
+              <div class="page-border">
+                <div style="position:absolute;left:0%;right:68%;top:0%;bottom:0%;">
+                  <div style="font-size: 48pt;text-align:justify;">SG {{group.group}}</div>
+                  <table class="table standlist" style="width:96%;font-size: 9pt;">
+                    <thead style="font-weight:bold;background-color:#ccc !important;">
+                      <tr><td align="center" colspan="2">Jagd {{ plan.name}} | {{ formatDate plan.date}} <br/>   {{#if this.drive}}{{this.drive}}. Treiben | {{/if}}Schützengruppe {{group.group}} </td></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Ansteller:</td><td>{{userById group.leader}}</td></tr>
+                      <tr><td>Technik:</td><td>{{group.vehicle}}</td></tr>
+                    </tbody>
+                  </table>
+                  <table class="table standlist" style="width:96%;font-size: 9pt;">
+                    <thead style="font-weight:bold;background-color:#ccc !important;">
+                      <tr><td align="right">#</td><td align="center"><i class="fa fa-paw"></i></td><td>Schütze</td><td>Belehrung</td></tr>
+                    </thead>
+                    <tbody>
+                      {{#each this.stands}}
+                        <tr>
+                          <td align="right">{{this.name}}</td>
+                          {{#if this.user}}
+                            <td align="center">
+                              {{#if this.user.profile.dogs.length}}
+                                x
+                              {{/if}}
+                            </td>
+                            {{#if this.user.leader }}
+                              <td><b>{{userById this.user._id}}</b></td>
+                            {{else}}
+                              <td>{{userById this.user._id}}</td>
+                            {{/if}}
+                          {{else}}
+                            <td></td>
+                            <td></td>
+                          {{/if}}
+                          <td width="50%"></td>
+                        </tr>
+                      {{/each}}
+                    </tbody>
+                  </table>
+                </div>
+                <div style="position:absolute;left:32%;right:0%;top:0%;bottom:0%;">
+                    {{ > printroutemap }}
+                    <div style="position: absolute;bottom: -6pt;outline: 6pt #fff solid;right: 0pt;background-color: #fff !important;">
+                      <span style="font-size:8pt; color:#333;">www.javes.org</span>&nbsp;&nbsp;<span class="printlogo" style="top:7.5pt"></span>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="page-landscape">
+            <div class="page-content">
+              <div class="page-border">
+                <table class="table standlist">
+                  <thead style="font-weight:bold;">
+                    <tr><td colspan="10" style="font-size:12pt;">Wildkladde - Jagd {{ plan.name}} | {{ formatDate plan.date}}  {{#if this.drive}}{{this.drive}}. Treiben | {{/if}}Schützengruppe {{group.group}} | Ansteller: {{userById group.leader}}</td></tr>
+                    <tr><td style="width:20pt;">#</td><td style="width:28pt;">Stand</td><td style="width:200pt;">Erleger</td><td style="width:140pt;">Wildmarke</td><td>Wildart<sub>1</sub></td><td style="width:24pt;">M/W</td><td style="width:24pt;">AK</td><td style="width:20pt;">A</td><td style="width:20pt;">B</td><td>Unterschrift Erleger</td></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>01</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>02</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>03</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>04</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>05</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>06</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>07</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>08</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>09</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>10</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>11</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>12</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>13</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>14</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>15</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>16</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>17</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>18</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>19</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr><td>20</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                  </tbody>
+                </table>
+                <p>
+                  1) Die Abkrüzungen für die Wildarten lauten: Rotwild <b>RW</b>, Rehwild <b>REH</b>, Schwarzwild <b>SW</b>, Dahmwild <b>DW</b> usw ...
+                </p>
+              </div>
+            </div>
+          </div>
+          {{/each}}
+        {{/if}}
+        {{#if check_office_state 'hunterpages'}}
+          {{#each print_stands }}
+            <div class="page-landscape">
+              <div class="page-content">
+                <div class="page-border">
+                  <div class="left-subpage" style="position:absolute;left:0%;right:53%;top:0%;bottom:0%;">
+                    <h4>Standkarte</h4>
+                    {{> printstandmap }}
+                    <h4>Anschussmeldungen</h4>
+                    <p style="font-size:8pt;">
+                      Zeichen Sie den Anschuss in die Karte ein und markieren Sie das beschossene Stück mit einem 'X'. Falls noch weitere Anschüsse vorhanden sind, markieren Sie diese bitte mit einem 'O'.<br/>
+                      <b>Nach 2 ungeklärten Schüssen ist die Jagd einzustellen!</b>
+                    </p>
+                  </div>
+                  <div class="right-subpage" style="position:absolute;left:53%;right:0%;top:0%;bottom:0%;">
+                    <table width="100%" height="100%">
+                      <tr><td align="center" valign="center">
+                        <span class="printlogo" style="width: 120pt;height: 40pt;opacity:0.4;"></span>
+                        <br/>
+                        <br/>
+                        <h4>Ansitzdrückjagd {{plan.name}}</h4>
+                        <p>{{formatDateDay plan.date}}</p>
+                        <p>Stand</p>
+                        <h1>{{this.name}}</h1>
+                        <hr/>
+                        <p>Schütze</p>
+                        {{#if this.hunter}}
+                          <h4>{{userById this.hunter._id}}</h4>
+                        {{else}}
+                          <h4 style="font-weight: 100;margin-top: 28pt;margin-bottom: 0pt;">........................................................</h4>
+                        {{/if}}
+                        <hr/>
+                        <p>Ansteller</p>
+                        <h4>{{userById this.route.leader}}</h4>
+                        <p>Gruppe</p>
+                        <h1>{{this.route.group}}</h1>
+                      </td></tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="page-landscape">
+              <div class="page-content">
+                <div class="page-border">
+                  <div class="left-subpage" style="position:absolute;left:0%;right:53%;top:0%;bottom:0%;">
+                    {{> innerpage}}
+                  </div>
+                  <div class="right-subpage" style="position:absolute;left:53%;right:0%;top:0%;bottom:0%;">
+                    {{> innerpage}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        {{/if}}
+      </div>
+    </div>
+    {{/unless}}
+    <div id="mapcontainer" class="{{#if hunting_plan_office}}hidden{{/if}}">
+      <div id="map" class="map"></div>
+    </div>
+    {{#if editor }}
+      <div id="editmode">
+        {{> Template.dynamic template=editortemplate }}
+      </div>
+    {{else}}
+      <div id="selection">
+        {{#if hunting_plan_office }}
+          <div class="form-group">
+            <button id="leave-hunting-office" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-reply fa-fw"></i>&nbsp;Jagdbüro verlassen</button>
+          </div>
+          <div class="form-group">
+            <button id="participants" class="btn btn-sm btn-default {{#if check_office_state 'participants'}}selected{{/if}}" style="width:100%; text-align:left;"><i class="fa fa-file-text fa-fw"></i>&nbsp;Teinehmerliste</button>
+          </div>
+          <div class="form-group">
+            <button id="routespages" class="btn btn-sm btn-default {{#if check_office_state 'routespages'}}selected{{/if}}" style="width:100%; text-align:left;"><i class="fa fa-file-text fa-fw"></i>&nbsp;Anstellrouten</button>
+          </div>
+          <div class="form-group">
+            <button id="hunterpages" class="btn btn-sm btn-default {{#if check_office_state 'hunterpages'}}selected{{/if}}" style="width:100%; text-align:left;"><i class="fa fa-file-text fa-fw"></i>&nbsp;Schützenblätter</button>
+          </div>
+        {{else}}
+          {{#if route}}
+            <h4>Anstellgruppe {{route.group}}</h4>
+            <p>
+              Ansteller dieser Gruppe ist <b>{{userById route.leader}}</b>.
+              {{#if route.vehicle}}
+                Als Fahrzeug ist {{route.vehicle}} eingeplant.
+              {{/if}}
+            </p>
+            {{#if route.stands.length}}
+              <style>
+                table td.attribute {
+                  text-align: left;
+                }
+                table td.value {
+                  text-align: right;
+                  padding-left:20px;
+                  padding-right:4px;
+                }
+                table td.unit {
+                  text-align: left;
+                }
+              </style>
+              <div style="border-radius:5px;border:1px solid #ccc; padding: 10px;margin-bottom:10px;">
+                <table width="100%">
+                  <tr><td class="attribute">Anzahl der Stände</td><td class="value">{{route.stands.length}}</td><td class="unit"></td></tr>
+                  <tr><td class="attribute">Länge der Anstellroute</td><td class="value">{{route.length}}</td><td class="unit">km</td></tr>
+                  <tr><td class="attribute">Geschätzte Zeit zum Anstellen</td><td class="value">{{route.setuptime}}</td><td class="unit">min</td></tr>
+                </table>
+              </div>
+              <div class="standlist">
+                  {{#each route.stands}}
+                    {{> standitem}}
+                  {{/each}}
+              </div>
+            {{/if}}
+            <p></p>
+            {{#if can_edit_plan}}
+            <div class="form-group">
+              <button id="edit-route" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-pencil fa-fw"></i>&nbsp;Route bearbeiten</button>
+            </div>
+            <div class="form-group">
+              <button id="select-leader" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-user fa-fw"></i>&nbsp;Ansteller auswählen</button>
+            </div>
+            <div class="form-group">
+              <button id="select-stands" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-check-square-o fa-fw"></i>&nbsp;Stände auswählen / Reihenfolge ändern</button>
+            </div>
+            <div class="form-group">
+              <button id="arrange-hunter" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-user fa-fw"></i>&nbsp;Schützen verteilen</button>
+            </div>
+            <div class="form-group">
+              <button id="delete-route" class="btn btn-sm btn-danger" style="width:100%; text-align:left;"><i class="fa fa-trash fa-fw"></i>&nbsp;Route löschen</button>
+            </div>
+            {{/if}}
+          {{else}}
+            <h4>Planung</h4>
+            <p>
+              Die Jagd ist am <b>{{formatDateDay plan.date}}</b> geplant. Jagdleiter ist <b>{{userById data.leader}}</b>{{#if plan.backup}}, als Stellvertreter wurde <b>{{userById plan.backup}}</b> eingesetzt.{{else}}.{{/if}}
+              {{#if equal plan.drives.length 1 }}
+                Es wird nur <b>1 Treiben</b> statt finden.
+              {{else}}
+                Es werden <b>{{plan.drives.length}} Treiben</b> statt finden.
+              {{/if}}
+            </p>
+            <div class="form-group">
+              <button id="enter-hunting-office" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-print fa-fw"></i>&nbsp;Jagdbüro</button>
+            </div>
+            {{#if can_edit_plan}}
+              <div class="form-group">
+                <button id="edit-plan" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-pencil fa-fw"></i>&nbsp;Jagdfläche anpassen</button>
+              </div>
+              <div class="form-group">
+                <button id="share-plan" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-share fa-fw"></i>&nbsp;Mitarbeiter festlegen</button>
+              </div>
+            {{/if}}
+            {{#if can_add_drives}}
+              <div class="form-group">
+                <button id="add-drive" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-plus fa-fw"></i>&nbsp;Weiteres Treiben hinzufügen</button>
+              </div>
+            {{/if}}
+            {{#if can_delete_drive}}
+              <div class="form-group">
+                <button id="delete-drive" class="btn btn-sm btn-danger" style="width:100%; text-align:left;"><i class="fa fa-trash fa-fw"></i>&nbsp;Treiben löschen</button>
+              </div>
+            {{/if}}
+            <div class="form-group">
+              <button id="delete-plan" class="btn btn-sm btn-danger" style="width:100%; text-align:left;"><i class="fa fa-trash fa-fw"></i>&nbsp;Planung löschen</button>
+            </div>
+            {{#if can_edit_plan}}
+              <h4>Anstellrouten</h4>
+              <div class="form-group">
+                <button id="new-route" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-plus fa-fw"></i>&nbsp;Neue Anstellroute erstellen</button>
+              </div>
+              <div class="form-group">
+                <button id="arrange-hunter" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-user fa-fw"></i>&nbsp;Schützen verteilen</button>
+              </div>
+            {{/if}}
+            <p>
+              Für weitere Optionen wählen Sie bitte eine Route aus.
+            </p>
+            {{#if can_edit_plan}}
+              <h4>Treibergruppen</h4>
+              <div class="form-group">
+                <button id="new-driver-area" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-plus fa-fw"></i>&nbsp;Neue Treiber Gruppe</button>
+              </div>
+            {{/if}}
+          {{/if}}
+        {{/if}}
+      </div>
+    {{/if}}
+  </div>
+  {{#if dragitem }}
+    {{> userdragitem }}
+  {{/if}}
+</template>
+
+<template name="userdragitem">
+  <style>
+    #basetip h3 {
+      color:#333;
+      margin-top: 2px;
+      font-size:12pt;
+      font-weight:bold;
+    }
+    #basetip h4 {
+      color:#000;
+      margin-top: 2px;
+      font-size:9pt;
+      font-weight:bold;
+    }
+    #basetip p {
+      color:#333;
+      font-size:9pt;
+    }
+
+    table.inviteoverview {
+      background-color:#eee;
+      padding:4px;
+      border-radius:4px;"
+    }
+
+    table.inviteoverview td {
+      padding:4px;
+    }
+  </style>
+  <div id="basetip" style="position:fixed;left:{{data.x}}px; top: {{data.y}}px;
+    -webkit-box-shadow: 10px 10px 24px -1px rgba(0,0,0,0.7);
+    -moz-box-shadow: 10px 10px 24px -1px rgba(0,0,0,0.7);
+    box-shadow: 10px 10px 24px -1px rgba(0,0,0,0.7);
+    display:inline-block;background-color:#fff;border-radius:6px;border:2px solid #000;padding:10px;">
+    <h3>{{data.stand}}</h3>
+    <h3>
+      {{#if user.profile.isdoctor }}
+        <i class="fa fa-user-md fa-fw"></i>
+      {{else}}
+        {{#if user.profile.isveterinary }}
+          <i class="fa fa-user-md fa-fw"></i>
+        {{else}}
+          <i class="fa fa-user fa-fw"></i>
+        {{/if}}
+      {{/if}}
+      &nbsp; {{user.profile.title}} {{user.profile.firstname}} {{user.profile.surname}}
+    </h3>
+    {{#if invitestate}}
+    <h4>Status</h4>
+      {{#if invitestate.uninvited }}
+        <p>Nicht eingeladen</p>
+      {{/if}}
+      {{#if invitestate.selected }}
+        <p>Ausgewählt durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}} am {{formatDate invitestate.date}}</p>
+      {{/if}}
+      {{#if invitestate.invited }}
+        <p>Einladung per E-Mail verschickt am {{formatDate invitestate.date}} durch  {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}}</p>
+      {{/if}}
+      {{#if invitestate.invited }}
+        <p>Einladung per E-Mail verschickt am {{formatDate invitestate.date}} durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}}</p>
+      {{/if}}
+      {{#if invitestate.confirmed }}
+        <p>Einladung angenommen am {{formatDate invitestate.date}} durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}}</p>
+      {{/if}}
+      {{#if invitestate.refused }}
+        <p>Einladung abgelehnt am {{formatDate invitestate.date}} durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}}</p>
+      {{/if}}
+    {{/if}}
+    {{#if user.profile.dogs }}
+      <h4>Hunde</h4>
+        {{#each user.profile.dogs}}
+          {{ > dogitem}}
+        {{/each}}
+    {{/if}}
+  </div>
+</template>

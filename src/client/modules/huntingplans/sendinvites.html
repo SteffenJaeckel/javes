@@ -1,0 +1,38 @@
+<template name="sendinvites">
+	<style>
+	</style>
+	<div class="modal-header">
+		<button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Einladungen verschicken</h4>
+	</div>
+	<div class="modal-body">
+		<div class="alert alert-warning" style="padding: 7pt;font-size: 8pt;"><b>Hinweis:</b>
+			Sie können im Text die Platzhalter [vorname] und [nachname] verwenden. Diese Platzhalter werden vor dem Versenden durch die entsprechenden Werte ersetzt. Zwischen den Teilen "Text" und "Signatur" werden Links in die Email eingefügt, mit dessen Hilfe der Empfänger Zu- oder Absagen kann.
+		</div>
+		<div class="form-group">
+      <label for="date" class="control-label"><i class="fa fa-calendar fa-fw"></i>&nbsp; Geben Sie hier ein <i>Datum</i> an bis wann spätestens eine zu- oder absagen erfolgen muss.</label>
+  		<div class="input-group datetimepicker">
+        <input id="date" class="form-control input-sm datetime" placeholder="Datum z.B. 29.2.2012" type="text" value="{{formatDateDay data.date}}"/>
+        <div class="input-group-btn">
+          <button class="btn btn-default btn-sm"><i class="fa fa-calendar fa-fw"></i></button>
+        </div>
+      </div>
+    </div>
+		<div class="form-group">
+			<label for="sendinvites-subject" class="control-label">Betreff</label>
+			<input id="sendinvites-subject" class="form-control" placeholder="Betreff" type="text" style="width:100%" value="{{subject}}"/>
+		</div>
+		<div class="form-group">
+			<label for="sendinvites-text" class="control-label">Einladungstext</label>
+			<textarea id="sendinvites-text" class="form-control" placeholder="Einladungstext" style="width:100%; min-width:100%; max-width:100%;height: 175px;">{{text}}</textarea>
+		</div>
+		<div class="form-group">
+			<label for="sendinvites-signature" class="control-label">Signatur</label>
+			<textarea id="sendinvites-signature" class="form-control" placeholder="Signatur" style="width:100%; min-width:100%; max-width:100%;" >{{signature}}</textarea>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default modal-close" data-dismiss="modal">Abbrechen</button>
+		<button id="send" type="button" class="btn btn-primary">Senden</button>
+	</div>
+</template>

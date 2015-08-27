@@ -1,0 +1,75 @@
+<template name="userlist">
+  <div class="group">
+    <div class="group-label feedback" data-user="{{this.id}}"><i class="fa fa-group"></i>&nbsp;{{this.name}}</div>
+    {{#each this.user}}
+      {{> userlistitem}}
+    {{/each}}
+  </div>
+</template>
+
+<template name="userlistitem">
+  <div class="group-item user {{this.type}} feedback" data-user="{{this.id}}">
+    {{#if this.state }}
+      <span class="state">
+        {{#if checkstate this.state 'invite' }}
+          <i class="fa fa-envelope-o fa-fw"></i>
+        {{/if}}
+        {{#if checkstate this.state 'invited' }}
+          <i class="fa fa-envelope fa-fw"></i>
+        {{/if}}
+        {{#if checkstate this.state 'request' }}
+          <i class="fa fa-question fa-fw"></i>
+        {{/if}}
+        {{#if checkstate this.state 'requested' }}
+          <i class="fa fa-question-circle fa-fw"></i>
+        {{/if}}
+        {{#if checkstate this.state 'confirmed' }}
+          <i class="fa fa-check fa-fw"></i>
+        {{/if}}
+      </span>
+
+      {{#if this.stand }}
+        <span class="stand">{{this.stand}}</span>
+      {{else}}
+        <span class="stand">-.-</span>
+      {{/if}}
+    {{/if}}
+
+    {{#if this.isdoctor}}
+      <i class="fa fa-user-md fa-fw"></i>&nbsp;
+    {{else}}
+      <i class="fa fa-user fa-fw"></i>&nbsp;
+    {{/if}}
+    {{> dogtype}}&nbsp;
+    {{> hunterlabel }}
+  </div>
+</template>
+
+<template name="hunterlabel">
+  <span>
+    {{#if title}}
+      <span>{{title}}&nbsp;</span>
+    {{/if}}
+    <span>{{surname}},&nbsp;{{firstname}}</span>
+  </span>
+</template>
+
+<template name="dogtype">
+  <span style="display:inline-block;width:40px;text-align:center;">
+  {{#if this.dogs }}
+      {{#if hastrackingdog this.dogs 2 }}
+        (((<i class="fa fa-paw"></i>)))
+      {{else}}
+        {{#if hastrackingdog this.dogs 1 }}
+          ((<i class="fa fa-paw"></i>))
+        {{else}}
+          {{#if hastrackingdog this.dogs 0 }}
+            (<i class="fa fa-paw"></i>)
+          {{else}}
+            <i class="fa fa-paw"></i>
+          {{/if}}
+        {{/if}}
+      {{/if}}
+  {{/if}}
+  </span>
+</template>

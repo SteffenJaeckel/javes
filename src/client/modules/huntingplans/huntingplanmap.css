@@ -1,0 +1,77 @@
+.standlabel { position: relative; display: inline-block; width: 24px; text-align: right; margin-right: 5px;}
+.grey { color:#aaa; }
+.standitem { border-bottom:1px solid #ccc; padding:4px; }
+.standitem:last-child { border-bottom:0px; }
+.standlist {position: relative;border: 1px solid #ccc;border-radius: 4px;background-color: #fff;margin-bottom: 15px;}
+
+#mapbody { position:absolute; top:0px; left:0px; right:0px; bottom:0px;   }
+#mapcontainer { position:absolute; top:26px; left:0px; right:300px; bottom:0px; padding:2px; }
+#mapcontainer.hidden {display:none;}
+#paperback { position:absolute; top:0px; left:0px; right:300px; bottom:0px; padding:36px;  background-color:#888; overflow:auto;}
+
+#map { position:relative;top:0px;left:0px;width:100%;height:100%; cursor: url(img/default_cursor.png),auto; }
+#map.delete-cursor { cursor: url(img/delete_cursor.png),auto; }
+#map.add-cursor { cursor: url(img/add_cursor.png),auto; }
+#map.draw-cursor { cursor: url(img/paint_cursor.png),auto; }
+#map.insert-cursor { cursor: url(img/insert_cursor.png),auto; }
+
+.page-portrait { position:relative;width:210mm;padding-top:297mm; background-color:#fff !important;page-break-after:always;page-break-inside:avoid; margin-bottom:50px; }
+.page-landscape {position:relative;width:297mm;padding-top:210mm; background-color:#fff !important;page-break-after:always;page-break-inside:avoid; margin-bottom:50px;}
+.page-content { position:absolute; top:0px; bottom:0px; left:0px; right:0px; padding: 6%; }
+.page-border { position:relative;width:100%;height:100%; }
+
+#papercenter {position:relative; }
+
+#stats { position:absolute; top:0px; left:0px; right:300px; height:26px; padding:3px; background-color: #eee; }
+#editmode {position:absolute;top:0px;right:0px;width:300px;bottom:0px;padding:14px;background-color:#eee; overflow: auto;}
+#selection {position:absolute;top:0px;right:0px;width:300px;bottom:0px;padding:14px;background-color:#eee; overflow: auto;}
+
+.participant-list { width: 100%; border: 1pt solid #888; margin-bottom: 5mm; page-break-inside: avoid; }
+.participant-list td { padding: 3pt; font-size: 10pt; }
+.participant-list tr { border-bottom: 1pt solid #888; }
+.participant-list thead { background-color: #ccc !important; font-weight: bold; font-size: 12pt; }
+.participant-list td.group-cell { width: 34mm; text-align: right; border-left: 1pt solid #888; }
+.participant-list td.group-cell span {position: relative;display: inline-block;width: 14mm;text-align: right;}
+
+.table.standlist td {  border-left: 1px solid #ccc; padding: 3pt; height: 18pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.table.standlist thead td {background-color:#ccc !important; }
+
+.printlogo {position: relative; background-image: url(./img/logo_javes_schwarz.png) !important; width: 60pt; height: 20pt; background-size: 100% 100% !important; display: inline-block; top: 6pt; }
+
+input.tablecellinput {
+  outline:0px;
+  width:100%;
+  height:100%;
+  border: 1px dashed #ccc;
+}
+
+#paperback div.ol-scale-line-inner {color: #000 !important;border-color: #000 !important;background-color: #fff !important;}
+#paperback div.ol-scale-line { background-color: #fff !important; border: 1px solid #828282 !important; border-radius: 0px !important;outline: 5pt #E8E8E8 solid !important;}
+
+@media print {
+
+  @page {
+    margin: 4% !important;
+  }
+
+  #mapbody { position:relative; width:100%; top: 0px; }
+  #mapcontainer { position:relative; width: 100%; top: 0px; }
+  #paperback { position:relative; width: 100%; top: 0px; padding:0px; background-color:#fff; overflow: visible; }
+  #map { position:relative; width: 259mm; height: 175mm; top: 0cm; left:0cm; }
+
+  .page-portrait { position:relative;width:100%;padding-top:141%; background-color:#fff !important; page-break-after:always;page-break-inside:avoid;margin-bottom:0px; }
+  .page-landscape {position:relative;width:100%;padding-top:67%; background-color:#fff !important;page-break-after:always;page-break-inside:avoid;margin-bottom:0px; }
+  .page-content { position:absolute; top:0px; bottom:0px; left:0px; right:0px; padding: 0%; }
+  .page-border { position:relative;width:100%;height:100%; }
+
+  input.tablecellinput {
+    outline:0px;
+    width:100%;
+    height:100%;
+    border: 0px;
+  }
+
+  #stats { display:none; }
+  #editmode { display:none; }
+  #selection { display:none; }
+}

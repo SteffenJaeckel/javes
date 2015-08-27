@@ -1,0 +1,30 @@
+<template name="editstand">
+	<div class="modal-header">
+		<button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Neue Jagdliche Einrichtung anlegen</h4>
+	</div>
+	<div class="modal-body">
+		<div class="form-group">
+			<label for="stand-name" class="control-label">Geben Sie hier den Namen der jagdlichen Einrichtung ein</label>
+			<input id="stand-name" class="form-control" placeholder="Name" type="text" style="width:100%" value="{{standname}}"/>
+		</div>
+		<div class="form-group">
+			<label for="stand-desc" class="control-label">Geben Sie hier optional eine Beschreibung an.</label>
+			<textarea id="stand-desc" class="form-control" placeholder="Beschreibung" style="width:100%; min-width:100%; max-width:100%;">{{standdesc}}</textarea>
+		</div>
+		<div class="form-group">
+			<label for="stand-desc" class="control-label">Wählen Sie hier ein Icon aus das auf der Karte angezeigt werden soll.</label>
+			<div class="standtype-container">
+				<div class="standtypes standtype-1 {{standtype 1}}" data="1"></div>
+				<div class="standtypes standtype-2 {{standtype 2}}" data="2"></div>
+				<div class="standtypes standtype-3 {{standtype 3}}" data="3"></div>
+				<div class="standtypes standtype-4 {{standtype 4}}" data="4"></div>
+				<div style="clear:both;"></div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default modal-close" data-dismiss="modal">Abbrechen</button>
+		<button id="save" type="button" class="btn btn-primary {{enabled}}">Speichern</button>
+	</div>
+</template>

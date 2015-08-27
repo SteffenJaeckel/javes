@@ -1,0 +1,34 @@
+<template name="dashboard">
+  <style>
+    .item {
+      position: relative;
+      width: 100%;
+      border: 2px solid #ccc;
+      padding: 20px;
+      border-radius: 12px;
+    }
+    .well {
+      border: 2px solid #ccc;
+    }
+
+    .well.selected {
+      background-color: #fff;
+    }
+  </style>
+  <div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;">
+    <div style="position: relative; padding: 24px; overflow: auto; height: 100%; top: 0px; left: 0px;">
+      <div class="scroll-y">
+        {{#each areas}}
+          <div id="{{id}}" class="well" data="{{id}}">
+            <p style="font-size:20pt;">{{name}}</p>
+            <span><i class="fa fa-envelope fa-fw"></i>&nbsp;Neue Nachrichten: 0</span>&nbsp;|&nbsp;
+            <span><i class="fa fa-user fa-fw"></i>&nbsp;Mitbenutzer 2</span>&nbsp;|&nbsp;
+            <span style="color:#aaa;"><i class="fa fa-crosshairs fa-fw"></i>&nbsp;Neue Abschüsse 0</span>
+            <span><i class="fa fa-binoculars fa-fw"></i>&nbsp;Neue Beobachtungen 2</span>
+            <span style="color:#aaa;"><i class="fa fa-pagelines fa-rotate-90 fa-fw"></i>&nbsp;Neue Nachsuchen 0</span>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</template>

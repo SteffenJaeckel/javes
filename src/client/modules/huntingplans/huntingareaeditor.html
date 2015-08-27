@@ -1,0 +1,42 @@
+<template name="huntingareaeditor">
+
+  <div style="position:relative;top:0px;left:0px;width:100%;height:100%;">
+    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:42px;overflow-y:auto;">
+      {{#if error}}
+          <div class="alert alert-danger">
+            <b>Achtung !</b> {{error.text}}
+          </div>
+      {{/if}}
+      <div style="padding:4px;">
+        <div>
+          <h4>Neue Flächen zeichen</h4>
+          <p>
+            Mit diesem Werkzeug können Sie neue Flächen hinzufügen.
+          </p>
+          <button id="drawtool" style="width:100%;text-align:left;" class="btn btn-sm btn-default"><i class="fa fa-plus fa-fw"></i>&nbsp;Neue Fläche zeichnen</button>
+          <h4>Flächen bearbeiten</h4>
+          <p>
+            Mit diesem Werkzeug können Sie neue Flächen hinzufügen. Um die Aktion abzubrechen drüchen Sie die Taste [Esc]. Um den Zeichenvorgang zu beenden Klicken Sie it der linken Maustaste auf ihren zu erst gezeichneten Punkt oder
+          </p>
+          <button id="edittool" style="width:100%;text-align:left;" class="btn btn-sm btn-default"><i class="fa fa-pencil fa-fw"></i>&nbsp;Flächen bearbeiten</button>
+          <h4>Flächen löschen</h4>
+          <p>
+            Mit diesem Werkzeug können Sie Flächen löschen. Klicken Sie dazu mit der linken Maustaste in die Fläche die Sie löschen möchten.
+          </p>
+          <button id="deletetool" style="width:100%;text-align:left;" class="btn btn-sm btn-default"><i class="fa fa-trash fa-fw"></i>&nbsp;Flächen löschen</button>
+        </div>
+        <hr/>
+      </div>
+    </div>
+    <div style="position:absolute; bottom:0px; left: 0px; right:0px;">
+      <div class="btn-group btn-group-justified">
+        <div class="btn-group">
+          <button id="abort" class="btn btn-sx btn-default"  style="text-align:left;"><i class="fa fa-remove fa-fw"></i>&nbsp;Abbrechen</button>
+        </div>
+        <div class="btn-group">
+            <button id="save" class="btn btn-sx btn-primary {{savestate}}" style="text-align:left;"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp;Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

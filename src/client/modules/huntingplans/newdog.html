@@ -1,0 +1,50 @@
+<template name="newdog">
+  <style>
+    label {
+      margin-top:8px;
+    }
+  </style>
+  <div class="modal-header">
+    <button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Neuen Hund hinzufügen</h4>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="stand-desc" class="control-label"><i class="fa fa-check-square-o fa-fw"></i>&nbsp; Um was für einen Typ von Hund handelt es sich</label>
+      <div class="btn-group btn-group-justified" role="group">
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-default dogtype {{selectedTypeClass 0}}" data="0">Stöberhund</button>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-default dogtype {{selectedTypeClass 1}}" data="1">Schweißhund</button>
+        </div>
+      </div>
+      <label for="title" class="control-label"><i class="fa fa-graduation-cap fa-fw"></i>&nbsp; Geben Sie hier optional die Abgelegten Prüfungen an.</label>
+      <input id="title" class="form-control input-sm" data="examinations" placeholder="Prüfungen" type="text" value="{{data.examinations}}"/>
+
+			<label for="name" class="control-label"><i class="fa fa-paw fa-fw"></i>&nbsp; Geben Sie hier den Namen des Hundes an.</label>
+			<input id="name" class="form-control input-sm text" data="name" placeholder="Name des Hundes" type="text" value="{{data.name}}"/>
+
+      <label for="race" class="control-label"><i class="fa fa-tags fa-fw"></i>&nbsp; Geben Sie hier die Hunderasse an</label>
+      <input id="race" class="form-control input-sm text" data="race" placeholder="Rasse" type="text" value="{{data.race}}"/>
+      {{#if selectedTypeClass 0}}
+      <label for="radius" class="control-label"><i class="fa fa-bullseye fa-fw"></i>&nbsp; Geben Sie hier eine den Radius in Metern an, in dem Ihr Hund üblicherweise jagd.</label>
+      <div class="btn-group btn-group-justified" role="group">
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-default dogrange {{selectedDogRange 0}}" data="0">(<i class="fa fa-paw"></i>) Kurz</button>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-default dogrange {{selectedDogRange 1}}" data="1">((<i class="fa fa-paw"></i>)) Mittel</button>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-default dogrange {{selectedDogRange 2}}" data="2"><b>(((</b> <i class="fa fa-paw"></i> <b>)))</b>&nbsp;Weit</button>
+        </div>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button id="save" class="btn btn-primary">Hinzufügen</button>
+    <button id="abort" class="btn btn-default">Abbrechen</button>
+  </div>
+</template>

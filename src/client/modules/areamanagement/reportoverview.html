@@ -1,0 +1,53 @@
+<template name="reportoverview">
+	<style>
+		.modal-dialog {
+			width:800px; !important
+		}
+	</style>
+	<div class="modal-header">
+		<button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Übersicht Revier {{area.name}} Jagdjahr {{period}}</h4>
+	</div>
+	<div class="modal-body">
+		<h4>Statistik</h4>
+		<div id="kill_stats" style="position:relatvie; width:100%; float:left;">
+		</div>
+		<h4>Abschussberichte</h4>
+		<div><button id="save-execel" class="btn btn-primary" ><span class="glyphicon glyphicon-cloud-download"></span>&nbsp;&nbsp;Diese Liste als Excel-Datei Speichern</button></div>
+		<h6>Sortierung</h6>
+		<div>
+			{{#each sortitems}}
+				{{> sortitem}}
+			{{/each}}
+		</div>
+		<table id="dataset" class="table table-hover">
+			<thead>
+				<tr>
+					<td class="no-export"></td>
+					<td class="unselectable orderby" data="gametype">Wildart</td>
+					<td class="unselectable orderby" data="date">Datum</td>
+					<td class="unselectable orderby" data="hunttype">Jagdart</td>
+					<td class="unselectable orderby" data="gender">M/W</td>
+					<td class="unselectable orderby" data="ageclass">Altersklasse</td>
+					<td class="unselectable orderby" data="reporter.surname">Erleger</td>
+				</tr>
+			</thead>
+			<tbody>
+			{{#each reports}}
+			<tr class="{{this.conditioninfo.class}}">
+				<td class="no-export">
+					<div class="thumbnail" style="position:relative;width:20px;height:20px;background-color:{{formatColor this.gametype}}; margin:0px;"></div>
+				</td>
+				<td>{{formatGameType this.gametype}}</td>
+				<td>{{formatDate this.date}}</td>
+				<td>{{formatHuntType this.hunttype }}</td>
+				<td>{{formatGender this.gender}}</td>
+				<td>AK {{this.ageclass}}</td>
+				<td>{{reporter.name}} {{reporter.surname}}</td>
+
+			</tr>
+			{{/each}}
+			</tbody>
+		</table>
+	</div>
+</template>

@@ -1,0 +1,114 @@
+<template name="profile">
+<style>
+  .screen {
+    position:relative;
+    width:100%;
+    height:100%;
+    overflow:auto;
+  }
+  .container {
+    width:50%;
+    float:left;
+    padding:20px;
+  }
+  @media print {
+      /* Your styles here */
+      h3 {
+        color: #000;
+        font-size: 12pt;
+      }
+      .screen {
+        position:relative;
+        width:100%;
+      }
+  }
+</style>
+  <div class="screen">
+    <div class="container">
+      <h3>Meine öffentlichen Daten</h3>
+      <div class="form-group">
+        <label for="profile-name" class="control-label">Vorname</label>
+        <input id="profile-name" class="form-control" placeholder="" type="text" style="width:100%"  value="{{name}}"/>
+      </div>
+      <div class="form-group">
+        <label for="profile-surname" class="control-label">Nachname</label>
+        <input id="profile-surname" class="form-control" placeholder="" type="text" style="width:100%" value="{{surname}}"/>
+      </div>
+      <div class="form-group">
+        <label for="profile-avatar" class="control-label">Avatar</label>
+        <div class="well" style="padding-right:0px;padding-bottom:6px;">
+          <div id="profile-avatar" style="position:relative;width:100%;">
+            <div class="selectable userimage {{selectedAvatar 0}}" data="0" style="margin-bottom:12px;background-image:url(/img/avatars/1.png);"></div>
+            <div class="selectable userimage {{selectedAvatar 1}}" data="1" style="margin-bottom:12px;background-image:url(/img/avatars/2.png);"></div>
+            <div class="selectable userimage {{selectedAvatar 2}}" data="2" style="margin-bottom:12px;background-image:url(/img/avatars/3.png);"></div>
+            <div class="selectable userimage {{selectedAvatar 3}}" data="3" style="margin-bottom:12px;background-image:url(/img/avatars/4.png);"></div>
+            <div class="selectable userimage {{selectedAvatar 4}}" data="4" style="margin-bottom:12px;background-image:url(/img/avatars/5.png);"></div>
+            <div class="selectable userimage {{selectedAvatar 5}}" data="5" style="margin-bottom:12px;background-image:url(/img/avatars/6.png);"></div>
+            <div class="selectable userimage {{selectedAvatar 6}}" data="6" style="margin-bottom:12px;background-image:url(/img/avatars/7.png);"></div>
+            <div class="selectable userimage {{selectedAvatar 7}}" data="7" style="margin-bottom:12px;background-image:url(/img/avatars/8.png);"></div>
+            <div style="clear:both;"></div>
+          </div>
+        </div>
+      </div>
+      <hr/>
+      <h3>Meine Hunde</h3>
+      <table class="table table-hover">
+        <thead>
+          <tr><td>Name</td><td>Typ</td><td>Rasse</td><td>Prüfungen</td><td>Reichweite</td></tr>
+        </thead>
+        <tbody>
+          <tr><td>Waldi</td><td>Schweishund</td><td>Teckel</td><td>Brauchbarkeit, Jugenprüfung</td><td>-</td></tr>
+          <tr><td>Susanne</td><td>Stöberhund</td><td>DD</td><td>Brauchbarkeit</td><td>Weit</td></tr>
+        </tbody>
+      </table>
+      <button id="add-dog" class="btn btn-primary" style="width:100%">Neuen Hund hinzufügen</button>
+    </div>
+    <div class="container">
+      <h3>Meine privaten Daten</h3>
+      <div class="form-group">
+        <label for="profile-reportdisplaytime" class="control-label">Berichte Anzeigen</label>
+        <select id="profile-reportdisplaytime" class="form-control" style="width:100%">
+          <option value="7"  {{selectedTime 7}}>1 Woche</option>
+          <option value="14" {{selectedTime 14}}>2 Wochen</option>
+          <option value="21" {{selectedTime 21}}>3 Wochen</option>
+          <option value="30" {{selectedTime 30}}>1 Monat</option>
+          <option value="60" {{selectedTime 60}}>2 Monate</option>
+          <option value="90" {{selectedTime 90}}>3 Monate</option>
+          <option value="182" {{selectedTime 182}}>6 Monate</option>
+          <option value="365" {{selectedTime 365}}>1 Jahr</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="profile-reportdisplaytime" class="control-label">E-Mail Benachrichtigungen</label>
+        <select id="profile-reportdisplaytime" class="form-control" style="width:100%">
+          <option value="0"  {{selectedTime 0}}>Jede Nachricht weiterleiten</option>
+          <option value="1" {{selectedTime 1}}>Nur wichtige Nachrichten weiterleiten</option>
+          <option value="2" {{selectedTime 2}}>Keine Weiterleitung</option>
+        </select>
+      </div>
+      <hr/>
+      <h3>Sicherheit & Anmeldung</h3>
+      <div class="form-group">
+        <label for="change-email" class="control-label">Ändern Sie hier Ihre E-Mail Adresse</label>
+        <input id="profile-name" class="form-control" placeholder="" type="text" style="width:100%"  value="{{email}}"/>
+      </div>
+      <div class="form-group">
+        <label for="reset-password" class="control-label">Wenn Sie ein neues Passwort vergeben wollen</label>
+        <button id="reset-password" class="btn btn-primary" style="width:100%">Passwort zurücksetzen</button>
+      </div>
+      <hr/>
+      <h3>Mobile API</h3>
+      <label for="profile-reportdisplaytime" class="control-label">API Keys</label>
+      <div>
+        {{#each apikeys}}
+          <p>{{this}}</p>
+          {{else}}
+          <p>Erstellen Sie einen Api Key um mit Ihrem Mobilen Gerät zugreifen zu können</p>
+        {{/each}}
+      </div>
+      <div>
+        <button id="new-api-key" class="btn btn-primary" style="width:100%">Neuen API key erstellen</button>
+      </div>
+    </div>
+  </div>
+</template>

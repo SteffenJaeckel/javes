@@ -1,0 +1,42 @@
+.group {
+  /*border: 2px solid #fff;*/
+  background-color:#eee;
+}
+
+.group-label {
+  white-space: nowrap;
+  text-overflow:ellipsis;
+  overflow: hidden;
+  font-weight:bold;
+  padding:4px;
+  border-bottom: 1px solid #ccc;
+  height:27px;
+}
+.group-label.hover {
+  color: #fff;
+  background-color:#666;
+  /*background-color:#006EFF;*/
+}
+
+.group-item {
+  white-space: nowrap;
+  text-overflow:ellipsis;
+  overflow: hidden;
+  border-bottom: 1px solid #ccc;
+  padding:4px;
+  /*padding-left: 8px;*/
+  background-color:#fff;
+  height:28px;
+}
+
+span.state {
+  display: inline-block;
+  text-align: center;
+  width: 18px;
+}
+
+span.stand {
+  display: inline-block;
+  text-align: center;
+  width: 36px;
+}

@@ -1,0 +1,93 @@
+<template name="editreport">
+	<div class="modal-header">
+		<button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">
+			{{#if is 1}}Beobachtungsbericht bearbeiten{{/if}}
+			{{#if is 2}}Anschussbericht bearbeiten{{/if}}
+			{{#if is 3}}Abschussbericht bearbeiten{{/if}}
+		</h4>
+	</div>
+	<div class="modal-body">
+		{{#if error}}
+			<div class="alert alert-danger" style="position:relative;"> <b>Fehler</b>
+			{{#if error.invalid_year}}Das angegebene Jahr ist ungültig.{{/if}}
+			{{#if error.invalid_month}}Der angegebene Monat ist ungültig.{{/if}}
+			{{#if error.invalid_day}}Der angegebene Tag ist ungültig.{{/if}}
+			{{#if error.invalid_hour}}Die angegebene Stunde ist ungültig. (24 Stundenmodus 0-23){{/if}}
+			{{#if error.invalid_minute}}Die angegebene Minute ist ungültig.{{/if}}
+			{{#if error.invalid_second}}Die angegebene Sekunde ist ungültig.{{/if}}
+			{{#if error.invalid_value}}Bitte verwenden Sie Zahlen.{{/if}}
+			{{#if error.invalid_date_format}}Das angegebene Datumsformat ist ungültig. Achten Sie auf Punkte als Trennzeichen z.B. 2.4.2012{{/if}}
+			{{#if error.invalid_time_format}}Das angegebene Zeitformat ist ungültig. Achten Sie auf die Doppelpunkte als Trennzeichen z.B. 10:45{{/if}}
+			{{#if error.future_dates_are_not_allowed}}Das Datum darf nicht in der Zukunft liegen.{{/if}}
+			</div>
+		{{/if}}
+		<div class="form-group">
+			<label for="stand-desc" class="control-label">Geben Sie hier Datum und Uhrzeit an.</label>
+			<div class="input-group">
+				<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+				<input id="change-date" class="form-control datetime" placeholder="Datum z.B. 29.2.2012" type="text" style="width:50%" value="{{date}}"/>
+				<input id="change-time" class="form-control datetime" placeholder="Uhrzeit z.B. 22:30" type="text" style="width:50%" value="{{time}}"/>
+				<span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+			</div>
+		</div>
+		{{#if is 3}}
+			<div class="form-group">
+				<style>
+					a.hunttype.selectable {
+						background-color: #eee;
+					}
+				</style>
+				<label for="hunttype" class="control-label">Geben Sie hier die Jagdart an, mit der das Stück erlegt würde.</label>
+				<div id="hunttype" class="btn-group btn-group-justified">
+					<a role="button" data="1" class="hunttype btn btn-default selectable {{#if isMode 1}}selected{{/if}}" >Ansitz</a>
+					<a role="button" data="2" class="hunttype btn btn-default selectable {{#if isMode 2}}selected{{/if}}" >Pirsch</a>
+					<a role="button" data="3" class="hunttype btn btn-default selectable {{#if isMode 3}}selected{{/if}}" >Drückjagd</a>
+				</div>
+			</div>
+			{{#if isMode 3}}
+			<div class="form-group">
+				<label for="hunttype" class="control-label">Geben Sie hier, wenn abweichend den Erleger an.</label>
+				<div class="input-group" style="width:100%">
+				<input id="name" class="form-control" placeholder="Vorname" type="text" style="width:50%" value="{{hunterName}}"/>
+				<input id="surname" class="form-control" placeholder="Nachname" type="text" style="width:50%" value="{{hunterSurName}}"/>
+				</div>
+			</div>
+			{{/if}}
+		{{/if}}
+		<div class="form-group">
+			<label for="stand-name" class="control-label">Wählen Sie hier die Wildart aus.</label>
+			<div style="text-align:left;">
+				<div class="select-gt {{selectedGameType 1}}" data="1"><span class="gt gt-{{type}}01"></span><span class="select-gt-t">Rotwild</span></div>
+				<div class="select-gt {{selectedGameType 2}}" data="2"><span class="gt gt-{{type}}02"></span><span class="select-gt-t">Sikawild</span></div>
+				<div class="select-gt {{selectedGameType 3}}" data="3"><span class="gt gt-{{type}}03"></span><span class="select-gt-t">Damwild</span></div>
+				<div class="select-gt {{selectedGameType 4}}" data="4"><span class="gt gt-{{type}}04"></span><span class="select-gt-t">Muffelwild</span></div>
+				<div class="select-gt {{selectedGameType 5}}" data="5"><span class="gt gt-{{type}}05"></span><span class="select-gt-t">Rehwild</span></div>
+				<div class="select-gt {{selectedGameType 6}}" data="6"><span class="gt gt-{{type}}06"></span><span class="select-gt-t">Gamswild</span></div>
+				<div class="select-gt {{selectedGameType 7}}" data="7"><span class="gt gt-{{type}}07"></span><span class="select-gt-t">Schwarzwild</span></div>
+				<div class="select-gt {{selectedGameType 8}}" data="8"><span class="gt gt-{{type}}08"></span><span class="select-gt-t">Raubwild</span></div>
+				<div class="select-gt {{selectedGameType 9}}" data="9"><span class="gt gt-{{type}}09"></span><span class="select-gt-t">Sonstige</span></div>
+			</div>
+		</div>
+		{{#if is 3}}
+			<div class="form-group">
+				<label for="stand-name" class="control-label">Tragen Sie hier Geschlecht, Altersklasse und die Wildmarkennummer ein.</label>
+				<div class="input-group">
+					<span class="input-group-btn">
+						<button id="change-gender" class="btn btn-default" style="width:50px;">{{gender}}</button>
+					</span>
+					<input id="change-ageclass" class="form-control" placeholder="Altersklasse" type="text" style="width:20%;text-align:right;" value="{{ageclass}}"/>
+					<input id="change-badgeid" class="form-control" placeholder="Wildmarke" type="text" style="width:80%" value="{{badgeid}}"/>
+				</div>
+			</div>
+		{{/if}}
+		<div class="form-group">
+			<label for="change-desc" class="control-label">Geben Sie hier optional Bemerkungen an.</label>
+			<textarea id="change-desc" class="form-control" placeholder="Bemerkungen" style="width:100%; min-width:100%; max-width:100%;">{{standdesc}}</textarea>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default modal-close" data-dismiss="modal">Abbrechen</button>
+		<button id="save" type="button" class="btn btn-primary {{enabled}}">Speichern</button>
+	</div>
+</template>

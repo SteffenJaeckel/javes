@@ -1,0 +1,55 @@
+<template name="areaoverview">
+	<style>
+		.modal-dialog {
+			width:800px; !important
+		}
+		.goto-stand {
+			cursor:pointer;
+		}
+	</style>
+	<div class="modal-header">
+		<button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Übersicht Revier {{area.name}}</h4>
+	</div>
+	<div class="modal-body">
+		<h4>Jagdliche Einrichtungen</h4>
+		<h6>Sortierung</h6>
+		<div>
+			{{#each sortitems}}
+				{{> sortitem}}
+			{{/each}}
+		</div>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<td class="unselectable orderby" data="type">Type</td>
+					<td class="unselectable orderby" data="name">Name</td>
+					<td class="unselectable orderby" data="condition.value">Zustand</td>
+					<td class="unselectable orderby" data="condition.updated">Letzte Überprüfung</td>
+					<td class="unselectable orderby" data="condition.user">Prüfer</td>
+				</tr>
+			</thead>
+			<tbody>
+			{{#each stands}}
+			<tr class="goto-stand" data="{{this._id}}">
+				<td width="80px;text-align:center;" align="center">
+					<div class="standicon standtype-{{this.type}}" style="margin:2px;float:none;"></div>
+				</td>
+				<td width="80px;text-align:center;" align="center">
+					{{this.name}}
+				</td>
+				<td>
+					{{formatConditionText this.condition.value}}
+				</td>
+				<td>
+					{{formatDate this.condition.updated}}
+				</td>
+				<td>
+					{{this.condition.user}}
+				</td>
+			</tr>
+			{{/each}}
+			</tbody>
+		</table>
+	</div>
+</template>

@@ -1,0 +1,86 @@
+<template name="newplan" >
+  <style>
+    label {
+      margin-top:8px;
+    }
+    .dogtype:hover  {
+      color:#fff;
+      background-color:#428bca;
+      /*border:1px solid #ccc;*/
+    }
+    .dogtype.hover {
+      color:#fff;
+      background-color:#428bca;
+      /*border:1px solid #ccc;*/
+    }
+  </style>
+  <div class="modal-header">
+    <button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Neuen Jagdplan hinzufügen</h4>
+  </div>
+  <div class="modal-body">
+    {{#if error}}
+        <div class="alert alert-danger">
+          <b>Achtung !</b> {{error.text}}
+        </div>
+    {{/if}}
+    <div class="form-group">
+      <label for="date" class="control-label"><i class="fa fa-calendar fa-fw"></i>&nbsp; Geben Sie hier <i>Datum</i> für die geplante Jagd an.</label>
+  		<div class="input-group datetimepicker">
+        <input id="date" class="form-control input-sm datetime" placeholder="Datum z.B. 29.2.2012" type="text" value="{{formatDateDay data.date}}"/>
+        <div class="input-group-btn">
+          <button class="btn btn-default btn-sm"><i class="fa fa-calendar fa-fw"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+			<label for="template" class="control-label"><i class="fa fa-folder fa-fw"></i>&nbsp; Soll der Plan Daten aus einem früheren Plan übernehmen.</label>
+			<select class="form-control">
+        {{#each templates}}
+          <option value="{{id}}" selected="{{selected}}"> {{name}} </option>
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-group">
+			<label for="name" class="control-label"><i class="fa fa-folder fa-fw"></i>&nbsp; Geben Sie hier den <i>Namen</i> für den neuen Plan an.</label>
+			<input id="name" class="form-control input-sm text" data="name" placeholder="z.B. Heidegarten - Nordteil" type="text" value="{{data.name}}"/>
+    </div>
+
+    <div class="form-group">
+			<label for="amount" class="control-label"><i class="fa fa-folder fa-fw"></i>&nbsp; Geben Sie hier die Kontingente für Schützen und Hunde an.</label>
+      <table width="100%" id="amount">
+        <tr>
+          <td>
+            <div class="form-group">
+             <label class="sr-only" for="estimated-hunters">Anzahl an Schützen</label>
+             <div class="input-group">
+               <div class="input-group-addon"><i class="fa fa-user fa-fw"></i>&nbsp;Schützen</div>
+               <input type="text" class="form-control number-input" id="estimated-hunters" placeholder="0">
+             </div>
+            </div>
+          </td>
+          <td>&nbsp;&nbsp;</td>
+          <td>
+            <div class="form-group">
+              <label class="sr-only" for="estimated-dogs">Anzahl an Stöberhunden</label>
+              <div class="input-group">
+                <div class="input-group-addon"><i class="fa fa-paw fa-fw"></i>&nbsp;Stöberhunde</div>
+                <input type="text" class="form-control number-input" id="estimated-dogs" placeholder="0">
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="form-group">
+      <label for="desc" class="control-label"><i class="fa fa-tags fa-fw"></i>&nbsp; Geben Sie hier optional eine <i>Beschreibung</i> für die Jagd an.</label>
+      <textarea id="desc" class="form-control input-sm text" data="desc" placeholder="Beschreibung">{{data.desc}}</textarea>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button id="save" data-loading-text="<i class='fa fa-spinner fa-pulse'></i> Speichere ..." class="btn btn-primary">Speichern</button>
+    <button id="abort" class="btn btn-default">Abbrechen</button>
+  </div>
+</template>

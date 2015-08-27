@@ -1,0 +1,49 @@
+<template name="reportview">
+	<div class="modal-header">
+		<button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">
+			{{#if is 1}}Bericht - Beobachtung{{/if}}
+			{{#if is 2}}Bericht - Anschuss{{/if}}
+			{{#if is 3}}Bericht - Abschuss{{/if}}
+		</h4>
+	</div>
+	<div class="modal-body">
+		{{#if canEdit}}
+			<ul class="nav nav-pills">
+				{{#if xy}}
+				<li><a id="move-report" href="#"><span class="glyphicon glyphicon-move"></span>&nbsp;Verschieben</a></li>
+				{{/if}}
+				<li><a id="edit-report" href="#"><span class="glyphicon glyphicon-edit"></span>&nbsp;Bearbeiten</a></li>
+				<li><a id="delete-report" href="#" style="color:rgb(200,0,0);"><span class="glyphicon glyphicon-trash"></span>&nbsp;Löschen</a></li>
+			</ul>
+		{{/if}}
+		<h4>
+		{{#if is 1}}Beobachter{{else}}Schütze{{/if}}
+		</h4>
+		<div class="well well-sm">
+			<div class="userimage" style="position:relative;width:64px;height:64px;background-color:#fff;float:left;margin-right:12px;background-image:url('/img/avatars/1.png')"></div>
+			<h5>{{fullname}}</h5>
+			<p>{{formatDate date}}, {{formatTime date}} Uhr</p>
+			<div style="clear:both;"></div>
+		</div>
+		{{#if data}}
+		<h4>Daten</h4>
+		<div class="well">
+			{{#each data}}
+			<div class="item" style="position:relative;width:50%;height:32px;float:left;">
+				<div style="position:absolute;left:6px;top:0px;height:100%;font-weight:bold;">{{this.name}}</div>
+				<div style="position:absolute;right:6px;top:0px;height:100%;">{{this.value}}</div>
+			</div>
+			{{/each}}
+			<div style="clear:both;"></div>
+		</div>
+		{{/if}}
+		{{#if remarks}}
+		<h4>Bemerkungen</h4>
+		<div class="well">
+			<p>{{remarks}}</p>
+		</div>
+		{{/if}}
+		{{>comments}}
+	</div>
+</template>

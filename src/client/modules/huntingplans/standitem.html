@@ -1,0 +1,21 @@
+<template name="standitem">
+  <div class="standitem standlink" data="{{this._id}}">
+    {{#if this.user }}
+      {{#if this.user.leader}}
+        <b style="color:#00A8FF">
+          <span class="standlabel">{{this.name}}</span>
+          {{>dogtype this.user.profile}}&nbsp;
+          {{>hunterlabel this.user.profile}}
+        </b>
+      {{else}}
+        <span class="standlabel">{{this.name}}</span>
+        {{>dogtype this.user.profile}}&nbsp;
+        {{>hunterlabel this.user.profile}}
+      {{/if}}
+    {{ else }}
+      <span class="standlabel">{{this.name}}</span>
+      {{>dogtype}}&nbsp;
+      <span class="grey">Unbesetzt (Los?)</span>
+    {{/if}}
+  </div>
+</template>

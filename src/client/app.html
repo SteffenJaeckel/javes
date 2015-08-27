@@ -1,0 +1,59 @@
+<template name="app">
+	<style>
+		#app {position:absolute; left:0px; right:0px; top:0px; bottom:0px;	}
+		#main { position:absolute; 		left:0px; right:0px; top:54px; bottom:0px; overflow:hidden; }
+		#toolbar {position:fixed; left: 0px; right:0px; top:0px; height:54px; padding:10px; background-color:#00494C; }
+		div.logo { display:inline-block; position:relative; width:128px; height:42px; background-size:100% 100%; background-image:url('./img/logo_javes_weiss.png'); margin-right:10px; float:left; }
+		@media print {
+			#app { position: relative; width: width:100%;}
+			#main { position: relative; top: 0px;	width: 100%;}
+			#toolbar {display:none;}
+		}
+	</style>
+	<div id="app">
+    <div id="main">
+      {{> Template.dynamic template=getmodul }}
+    </div>
+		<div id="toolbar">
+			{{#unless editor}}
+			<div class="btn-group toolgroup">
+        {{#each path }}
+          <div class="btn-group">
+            <button class="btn btn-default dropdown-toggle" type="button" id="modul-subitem-selector" data-toggle="dropdown">
+  						<i class="fa {{this.selected.icon}} fa-fw"></i>&nbsp; {{this.selected.name}}
+  					</button>
+  					<ul class="dropdown-menu" aria-labelledby="modul-subitem-selector">
+              {{#each this.items}}
+								{{#unless this.invisible }}
+									{{#if this.divider }}
+	                  <li role="presentation" class="divider"></li>
+	                {{else}}
+	  						  	<li><a class="app-item"  data-level="{{../level}}" data-id="{{this.id}}" role="menuitem" tabindex="-1" href="#"><i class="fa {{this.icon}} fa-fw"></i>&nbsp; {{this.name}}</a></li>
+	              	{{/if}}
+								{{/unless}}
+							{{/each}}
+  					</ul>
+          </div>
+        {{/each}}
+      </div >
+			{{else}}
+				<span style="font-size: 26px;  font-weight: bold;  color: #fff;  opacity: 0.5;">Bearbeitungsmodus</span>
+			{{/unless}}
+			<div style="top:7px;right:74px; position:absolute;">
+				<div class="logo"></div>
+			</div>
+		</div>
+	</div>
+  {{#if getmodal }}
+    <div style="position:fixed;width:100%;height:100%;">
+      <div id="modal-background" style="position:absolute;width:100%;height:100%;background-color:#000;opacity:0.5;"></div>
+      <div style="height: 100%;position: relative;overflow: scroll;padding-bottom: 100px;padding-top: 50px;">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            {{> Template.dynamic template=getmodal  }}
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</template>

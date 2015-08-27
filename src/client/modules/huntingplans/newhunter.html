@@ -1,0 +1,190 @@
+<template name="newhunter">
+  <style>
+    label {
+      margin-top:8px;
+    }
+    .checkboxlink {
+      margin-top:6px;
+      color:#333;
+      text-decoration:none !important;
+      cursor:pointer;
+    }
+    .checkboxlink:hover {
+      color:#888;
+    }
+    thead td {
+      font-weight:bold;
+    }
+  </style>
+  <div class="modal-header">
+    <button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Neuen Jäger hinzufügen</h4>
+  </div>
+    {{>hunterbody}}
+  <div class="modal-footer">
+    <button id="save" data-loading-text="<i class='fa fa-spinner fa-pulse'></i> Speichere ..." class="btn btn-primary">Speichern</button>
+    <button id="abort" class="btn btn-default">Abbrechen</button>
+  </div>
+</template>
+
+<template name="edithunter">
+  <style>
+    label {
+      margin-top:8px;
+    }
+    .checkboxlink {
+      margin-top:6px;
+      color:#333;
+      text-decoration:none !important;
+      cursor:pointer;
+    }
+    .checkboxlink:hover {
+      color:#888;
+    }
+    thead td {
+      font-weight:bold;
+    }
+  </style>
+  <div class="modal-header">
+    <button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Jäger bearbeiten</h4>
+  </div>
+    {{>hunterbody}}
+  <div class="modal-footer">
+    <button id="save" data-loading-text="<i class='fa fa-spinner fa-pulse'></i> Speichere ..." class="btn btn-primary"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp; Speichern</button>
+    {{#if isnotmanaged}}
+      {{#if confirmdelete}}
+        <button id="confirm" data-loading-text="<i class='fa fa-spinner fa-pulse'></i> Lösche ..." class="btn btn-danger"><i class="fa fa-check-square-o fa-fw"></i>&nbsp; Wirklich Löschen ?</button>
+      {{else}}
+        <button id="delete" class="btn btn-primary"><i class="fa fa-trash fa-fw"></i>&nbsp; Löschen</button>
+      {{/if}}
+    {{/if}}
+    <button id="abort" class="btn btn-default"><i class="fa fa-remove fa-fw"></i>&nbsp; Abbrechen</button>
+  </div>
+</template>
+
+<template name="hunterbody">
+  <div class="modal-body">
+    <div class="form-group">
+      {{#unless data.managed }}
+        <div class="alert alert-warning">
+          <h4> <i class="fa fa-warning fa-fw"></i>&nbsp; Achtung</h4>
+          <p>Der Jäger verwaltet sein Profil selbst, wenn Sie Änderungen vornehmen möchten wechseln Sie zur Administartion oder fordern Sie den Nutzer auf seine Daten selbst zu aktualisieren.</p>
+          <p>Sie können in diesem Fall nur die Gruppenzugehörigkeit und den Typ der Jagdausübungsberechtigung ändern.</p>
+        </div>
+      {{/unless}}
+      <label for="stand-desc" class="control-label"><i class="fa fa-check-square-o fa-fw"></i>&nbsp; Wählen Sie hier den Typ der Jagdausübungsberechtigung.</label>
+      <div class="btn-group btn-group-justified" role="group">
+        {{#each huntertypes }}
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm huntertype {{class}} {{selected}}" data="{{type}}">{{name}}</button>
+        </div>
+        {{/each}}
+      </div>
+      <label for="group" class="control-label"><i class="fa fa-group fa-fw"></i>&nbsp; Geben Sie hier eine Gruppenzugehörigkeit an.</label>
+      <div>
+        {{#each data.group}}
+          <div class="btn-group" style="margin-bottom:8px;">
+            <button class="btn btn-xs btn-primary">{{this}}</button>
+            <button class="btn btn-xs btn-primary remove-group" data="{{this}}"><i class="fa fa-remove"></i></button>
+          </div>
+        {{/each}}
+        <div class="input-group input-group-sm">
+          <input class="form-control" type="text" id="add-groupname" placeholder="Name der neuen Gruppe"/>
+          <span class="input-group-btn">
+            <div class="btn-group">
+              <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Gruppe auswählen</span>
+              </button>
+              <ul class="dropdown-menu">
+                {{#each aviablegroups}}
+                <li><a href="#" class="add-group" data="{{this}}">{{this}}</a></li>
+                {{/each}}
+              </ul>
+            </div>
+          </span>
+        </div>
+      </div>
+      {{#if data.managed}}
+        <label for="stand-desc" class="control-label"><i class="fa fa-graduation-cap fa-fw"></i>&nbsp; Geben Sie hier die Anrede und ggf. einen Titel ein.</label>
+        <div class="input-group">
+          <div class="input-group-btn">
+            <button type="button" style="width: 80px;" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">{{formatSalutation data.gender}}&nbsp;  <span class="caret"></span></button>
+            <ul class="dropdown-menu" role="menu">
+              <li><a class="gender" href="#" data="0">{{formatSalutation 0}}</a></li>
+              <li><a class="gender" href="#" data="1">{{formatSalutation 1}}</a></li>
+            </ul>
+          </div>
+          <input id="title" class="form-control input-sm" data="title" placeholder="Titel" type="text" value="{{data.title}}"/>
+        </div>
+        <label for="firstname" class="control-label"><i class="fa fa-user fa-fw"></i>&nbsp; Geben Sie hier den Vor- und Nachnamen des Jägers an.</label>
+        <div class="input-group" style="width:100%">
+          <input id="firstname" class="form-control input-sm text" data="firstname" placeholder="Vorname" type="text" style="width:40%" value="{{data.firstname}}"/>
+          <input id="surname" class="form-control input-sm text" data="surname" placeholder="Nachname" type="text" style="width:60%" value="{{data.surname}}"/>
+        </div>
+        <label for="email" class="control-label"><i class="fa fa-envelope fa-fw"></i>&nbsp; Geben Sie hier die E-Mail Adresse des Jägers ein.</label>
+        <input id="email" class="form-control input-sm text" data="email" placeholder="E-Mail" type="email" value="{{data.email}}"/>
+
+        <label for="phone1" class="control-label"><i class="fa fa-mobile fa-fw"></i>&nbsp; Geben Sie hier die Telefonnumer des Jägers ein.</label>
+        <div class="input-group" style="width:100%">
+          <input id="phone1" class="form-control input-sm text" data="phone1"  placeholder="Telefonnummer" type="tel" style="width:50%"  value="{{data.phone1}}"/>
+          <input id="phone2" class="form-control input-sm text" data="phone2"  placeholder="Telefonnummer alternative" type="tel" style="width:50%"  value="{{data.phone2}}"/>
+        </div>
+
+        <label class="control-label"><i class="fa fa-medkit fa-fw"></i>&nbsp; Geben Sie hier eventuelle medizinische Aubildung an.</label>
+        <table width="100%">
+          <tr style="height:32px;">
+            <td align="left">
+              <a href="#" class="checkboxlink" data="isveterinary">
+                {{#if data.isveterinary}}
+                  <i class="fa fa-check-square-o fa-fw"></i>
+                {{else}}
+                  <i class="fa fa-square-o fa-fw"></i>
+                {{/if}}
+                &nbsp;der Jäger ist Veterinär.
+              </a>
+            </td>
+            <td align="left">
+              <a href="#" class="checkboxlink" data="isdoctor">
+                {{#if data.isdoctor}}
+                  <i class="fa fa-check-square-o fa-fw"></i>
+                {{else}}
+                  <i class="fa fa-square-o fa-fw"></i>
+                {{/if}}
+                der Jäger ist Humanmediziner.
+              </a>
+            </td>
+          </tr>
+        </table>
+        <h4>Hunde</h4>
+        <button id="add-dog" class="btn btn-sm btn-danger"><i class="fa fa-paw fa-fw"></i>&nbsp; Neuen Hund hinzufügen ...</button>
+        {{#with data.dogs}}
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <td><i class="fa fa-check-square-o fa-fw" style="font-weight:bold;"></i></td><td>Name</td><td>Typ</td><td>Rasse</td><td>Reichweite</td>
+              </tr>
+            </thead>
+            <tbody>
+              {{#each data.dogs}}
+              <tr>
+                <td>
+                  <span class="fa-stack" style="font-size:6pt;">
+                    {{#if this.type }}
+                    <i class="fa fa-circle-o fa-stack-2x"></i>
+                    {{else}}
+                    <i class="fa fa-square-o fa-stack-2x" style="font-weight:bold;"></i>
+                    {{/if}}
+                    <i class="fa fa-paw fa-stack-1x"></i>
+                  </span>
+                </td><td>{{this.name}}</td><td>{{this.type}}</td><td>{{this.race}}</td><td>{{#if this.radius}}{{this.radius}}m{{/if}}</td>
+              </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        {{/with}}
+      {{/if}}
+    </div>
+  </div>
+</template>

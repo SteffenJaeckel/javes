@@ -1,0 +1,49 @@
+button.huntertype {
+  background-color:#fff;
+  border:1px solid #ccc;
+}
+
+.huntertype-1 {
+  color:#45818e;
+}
+.huntertype-1:hover {
+  color:#fff !important;
+  background-color:#45818e;
+}
+.huntertype-1.hover {
+  color:#fff !important;
+  background-color:#45818e;
+}
+.huntertype-2 {
+  color:#6aa84f;
+}
+.huntertype-2:hover{
+  color:#fff !important;
+  background-color:#6aa84f;
+}
+.huntertype-2.hover {
+  color:#fff !important;
+  background-color:#6aa84f;
+}
+.huntertype-3 {
+  color:#e69138;
+}
+.huntertype-3:hover {
+  color:#fff !important;
+  background-color:#e69138;
+}
+.huntertype-3.hover {
+  color:#fff !important;
+  background-color:#e69138;
+}
+.huntertype-4 {
+  color:#c27ba0;
+}
+.huntertype-4:hover {
+  color:#fff !important;
+  background-color:#c27ba0;
+}
+.huntertype-4.hover {
+  color:#fff !important;
+  background-color:#c27ba0;
+}

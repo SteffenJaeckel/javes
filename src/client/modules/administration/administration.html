@@ -1,0 +1,19 @@
+<template name="administration">
+  <div style="padding:15px;background-color:#eee;">
+    <button id="add-customer" class="btn btn-sm btn-default">Neuen Kunden anlegen</button>
+  </div>
+  <div style="padding:15px">
+
+    <h4>Kunden</h4>
+    <table width="100%" class="table table-hover">
+      <thead>
+        <tr><td><b>Kunde</b></td></tr>
+      </thead>
+      <tbody>
+        {{#each customer}}
+          <tr data="{{this._id}}"><td>{{this.name}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</template>

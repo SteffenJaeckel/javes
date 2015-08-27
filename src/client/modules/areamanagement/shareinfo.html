@@ -1,0 +1,106 @@
+<template name="shareinfo">
+	<div class="modal-header">
+		<button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Revier teilen</h4>
+	</div>
+	<div class="modal-body">
+		<h4>Mein Status</h4>
+		<div class="well well-sm">
+			<div class="userimage" style="position:relative;width:64px;height:64px;background-color:#fff;float:left;margin-right:12px;background-image:url('/img/avatars/{{avatar}}')"></div>
+			<h5>{{profile.name}} {{profile.surname}}</h5>
+			<button class="btn btn-sm btn-default disabled" type="button">{{sharetype}}</button>
+			<div style="clear:both;"></div>
+		</div>
+		{{#if sharedusers.length}}
+			<hr/>
+			<h4>Eingeladene Jäger</h4>
+			{{#each sharedusers}}
+				{{> shareuser}}
+			{{/each}}
+		{{/if}}
+		{{#if canInvite }}
+		<hr/>
+		<h4>Weitere Jäger Einladen</h4>
+			{{#if error}}
+				{{#if error.usernotfound}}
+				<div class="alert alert-warning">
+					<b>Achtung !</b> Der Benutzer konnte nicht gefunden werden. Möchten Sie an '{{error.email}}' eine Einladung schicken? Überprüfen Sie gegebenfalls noch einmal die Adresse.<br/>
+					<hr/>
+					<div class="form-group">
+						<label for="invite-name" class="control-label">Vorname</label>
+						<input id="invite-name" class="form-control" placeholder="Vorname" type="text" style="width:100%"/>
+					</div>
+					<div class="form-group">
+						<label for="invite-surname" class="control-label">Nachname</label>
+						<input id="invite-surname" class="form-control" placeholder="Nachname" type="text" style="width:100%"/>
+					</div>
+					<div align="right">
+						<button id="abort-send-invite-email" class="btn btn-sm btn-warning">Abbrechen</button>
+						<button id="send-invite-email" class="btn btn-sm btn-warning" data="{{error.email}}">Einladung schicken</button>
+					</div>
+				</div>
+				{{/if}}
+				{{#if error.invitefail}}
+				<div class="alert alert-danger">
+					<b>Fehler !</b> Sie müssen die Felder Vorname und Nachname ausfüllen.<br/>
+					<hr/>
+					<div class="form-group">
+						<label for="invite-name" class="control-label">Vorname</label>
+						<input id="invite-name" class="form-control" placeholder="Vorname" type="text" style="width:100%" value="{{name}}"/>
+					</div>
+					<div class="form-group">
+						<label for="invite-surname" class="control-label">Nachname</label>
+						<input id="invite-surname" class="form-control" placeholder="Nachname" type="text" style="width:100%" value="{{surname}}"/>
+					</div>
+					<div align="right">
+						<button id="send-invite-email" class="btn btn-sm btn-warning" data="{{error.email}}">Email schicken</button>
+					</div>
+				</div>
+				{{/if}}
+				{{#if error.emailsend}}
+				<div class="alert alert-success">
+					<b>Erfolg !</b> Es wurde eine Einladung an '{{error.email}}' verschickt. Sobald {{error.email}} ein Passwort festgelegt hat kann er auf Ihr Revier zugreifen.
+				</div>
+				{{/if}}
+			{{/if}}
+			<div class="form-group">
+				<label for="invite-email" class="control-label">Um einen Freund, Mitbesitzer oder Gast einzuladen, geben Sie bitte die EMail addresse ein.</label>
+				<input id="invite-email" class="form-control" placeholder="max.musterman@beispiel.de" type="text" style="width:100%"/>
+			</div>
+		{{/if}}
+	</div>
+</template>
+
+<template name="shareuser">
+	<div class="well well-sm">
+		<div class="userimage" style="position:relative;width:64px;height:64px;background-color:#fff;float:left;margin-right:12px;background-image:url('/img/avatars/{{avatar}}.png')"></div>
+		<h5>{{name}} {{surname}}</h5>
+		{{#if isOwner }}
+		<div class="btn-group">
+			<button class="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{type}}&nbsp;<span class="caret"></span></button>
+			<ul class="dropdown-menu" aria-labelledby="edit">
+				<li><a class="set-owner" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Besitzer</a></li>
+				<li><a class="set-coowner" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Mitbesitzer</a></li>
+				<li><a class="set-guest" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Gast</a></li>
+				<li class="divider"></li>
+				<li><a class="remove-share" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Entfernen</a></li>
+			</ul>
+		</div>
+		{{else}}
+			{{#if isCoOwner}}
+				<div class="btn-group">
+					<button class="btn btn-sm btn-default dropdown-toggle {{menuEnabled}}" type="button" data-toggle="dropdown">{{type}}&nbsp;<span class="caret"></span></button>
+					<ul class="dropdown-menu" aria-labelledby="edit">
+						<li><a class="set-coowner" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Mitbesitzer</a></li>
+						<li><a class="set-guest" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Gast</a></li>
+						<li class="divider"></li>
+						<li><a class="remove-share" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Entfernen</a></li>
+					</ul>
+				</div>
+			{{else}}
+				<button class="btn btn-sm btn-default disabled" type="button">{{type}}</button>
+			{{/if}}
+		{{/if}}
+		<div style="clear:both;"></div>
+	</div>
+</template>
