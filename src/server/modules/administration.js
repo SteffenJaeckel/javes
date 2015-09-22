@@ -6,12 +6,12 @@ Meteor.startup( function () {
 Meteor.methods({
   newCustomer: function ( data ) {
     isServerAdmin(this.userId);
-    data = Validate( data , Customermodel );
+    data = Validate( data , DataModels['Customermodel'] );
     Customer.insert( data );
   },
   editCustomer: function( id, data ) {
     checkPermission( this.userId, 'administration.editCustomer' );
-    data = Validate( data , Customermodel );
+    data = Validate( data , DataModels['Customermodel'] );
   },
   deleteCustomer: function( id ) {
     isServerAdmin(this.userId);
