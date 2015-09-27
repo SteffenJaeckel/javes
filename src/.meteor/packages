@@ -16,3 +16,4 @@ tsega:bootstrap3-datetimepicker
 momentjs:moment
 reactive-var
 mrt:bootstrap3-wysihtml5
+standard-minifiers
