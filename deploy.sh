@@ -15,8 +15,8 @@ rm -R -f bundle
 cd ../..
 pwd
 echo "Add new files to git"
-git add build/ubuntu/bundle.tar
-git add src/version.js
-git commit -m "$VERSION erstellt."
-git tag $VERSION
+#git add build/ubuntu/bundle.tar
+#git add src/version.js
+#git commit -m "$VERSION erstellt."
+#git tag $VERSION
 echo "[ok]"
