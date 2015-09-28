@@ -152,7 +152,7 @@ ValidateType = function ( item , type, name, model, items, min, max, obj ) {
         if( item instanceof Object ) {
           var data = {};
           for( var n in item ) {
-            data[n] = ValidateType( item[n] , items.type, name+"."+items.name,items.model, items.items, items.min, items.max, data );
+            data[n] = ValidateType( item[n] , items.type, name+"."+items.name, items.model, items.items, items.min, items.max, data );
           }
           return data;
         } else {
@@ -162,7 +162,11 @@ ValidateType = function ( item , type, name, model, items, min, max, obj ) {
 
       case 'object':
         if( item instanceof Object ) {
-          return Validate( item , model );
+          if(  typeof(model) == "string" ) {
+            return Validate( item , DataModels[model] );
+          } else {
+            return Validate( item , model );
+          }
         } else {
           throw new Meteor.Error(420, { id:key ,text:'Der Parameter '+name+' ist zu kein gültiges Objekt.'});
         }
@@ -176,6 +180,11 @@ ValidateType = function ( item , type, name, model, items, min, max, obj ) {
 */
 Validate = function( data, model ) {
   var clean = {};
+
+  if(  typeof(model) == "string" ) {
+    model = DataModels[model];
+  }
+
   for( key in model ) {
 
     if( (data[key] == null || data[key] == '') && Value(model[key].optional,data) == true ) {

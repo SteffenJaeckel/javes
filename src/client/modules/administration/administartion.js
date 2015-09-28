@@ -4,7 +4,7 @@
 	vergeben werden.
 
 	[user].isServerAdmin : true
-	
+
 */
 console.log("Add Administration to modules");
 

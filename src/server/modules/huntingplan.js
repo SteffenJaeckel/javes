@@ -37,7 +37,7 @@ Meteor.methods({
 
     data['managed'] = true;
     data['invitedBy'] = this.userId;
-    data = Validate( data , Profilemodel );
+    data = Validate( data , 'Profilemodel' );
 
     email = data.email;
 		if( email ) {
@@ -59,12 +59,12 @@ Meteor.methods({
       var user = Meteor.users.findOne({_id:id});
       if( user ) {
         if( user.profile.managed == true ) {
-          user.profile = Validate( profile, Profilemodel );
+          user.profile = Validate( profile, 'Profilemodel' );
           if( email && email != "" ) {
             user.emails = [{address:data.email, verified:false }];
           }
         } else {
-          source = Validate( profile, Managedprofilemodel );
+          source = Validate( profile, 'Managedprofilemodel' );
           user.profile.group = source.group;
           user.profile.type  = source.type;
         }
@@ -106,7 +106,7 @@ Meteor.methods({
       validUntil: {type:'date', min: function() { return new Date(); } }
     };
 
-    options = Validate( options, InviteMail );
+    options = Validate( options, 'InviteMail' );
 
     var me = Meteor.users.findOne( {_id:this.userId});
     var plans = Plans.find({date: {$in:[ ]}});
@@ -238,7 +238,7 @@ Meteor.methods({
     }
   },
   updateHuntingPlanShape : function ( plan, drive , shape ) {
-    var shape = Validate( shape, Shapemodel );
+    var shape = Validate( shape, 'Shapemodel' );
     data = {};
     data['drives.'+drive+'.shape'] = shape;
     Plans.update( { _id: plan },{ $set : data } )
@@ -256,7 +256,7 @@ Meteor.methods({
     Plans.update( {_id:planid}, {$set: item } );
   },
 	addHuntingPlanRoute: function( planid, drive, route ) {
-    var route = Validate( route, Routemodel );
+    var route = Validate( route, 'Routemodel' );
     var item = {};
     var routeid = Random.id();
     item[ 'drives.'+drive+'.routes.'+routeid ] = route;
@@ -277,7 +277,7 @@ Meteor.methods({
     }
 	},
 	updateHuntingPlanRoute: function( planid, drive, id, route ) {
-    var route = Validate( route, Routemodel );
+    var route = Validate( route, 'Routemodel' );
     var item = {};
     item[ 'drives.'+drive+'.routes.'+id ] = route;
     Plans.update( {_id:planid}, {$set: item } );

@@ -6,12 +6,12 @@ DataModels = {
 	  }},
 	  layer: {type:'array',name:'Layer', max:12, items: {
 	    type:'object', name:'Layer Configuration' ,model: {
-	      name: { type:'string', min:1, max:256},
-	      ollayers : {type:'array', max: 6, items: {
+	      name: { type:'string', name:"Name", min:1, max:256},
+	      ollayers : {type:'array', name:"Openlayer 3 Elemente", max: 6, items: {
       		type:'object', name:'ol3 WMS Layer',model:{
-      		  server: {type:'set', items: ['Geoserver','Mapserver'] },
-      		  attribution: {type:'string',name:'Attributirung'},
-      		  url: {type:'string', name:'Url des WMS Dienstes'},
+      		  server: {type:'set', name:"WMS Server Typ", items: ['Geoserver','Mapserver'] },
+      		  attribution: {type:'string',name:'Attributierung'},
+      		  url: {type:'string', name:'Url des WMS Dienstes', min:1, max:1024},
       		  opacity: {type:'number',min:0.0, max:1.0},
       		  params: { type:'object', name:'WMS Parameter', model: {
       		    LAYERS: {type:'string',name:'Ebene'},
