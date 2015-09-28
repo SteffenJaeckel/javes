@@ -19,37 +19,8 @@
 		<div style="position:relative;left:50%;width:0px;top:0px;">
 			<!--div style="position: relative;width: 1024px;height: 678px;left: -512px;top: 50px;background-image: url(/img/back.jpg);"></div-->
 		</div>
-	</div>
-	<div class="container" style="background-color:rgba(255,255,255,128);">
-		<div class="navbar navbar-default shadow" role="navigation" style="margin-top:20px;">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-						<span class="sr-only">Navigation</span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-					<a class="navbar-brand" href="#"><img src="./img/logo_javes_schwarz.png" width="90px"/> ( version {{version}} )</a>
-				</div>
-				<div class="navbar-collapse collapse" style="height: auto;">
-					<ul class="nav navbar-nav navbar-right">
-						{{#if enrollMode}}
-							<li class="{{#if pageMode.enrollaccount}} active{{/if}}" ><a id="index" href="#">Einladung</a></li>
-						{{else}}
-							{{#if resetPasswordMode }}
-								<li class="{{#if pageMode.enrollaccount}} active{{/if}}" ><a id="index" href="#">Passwort zurücksetzen</a></li>
-							{{else}}
-								<li class="{{#if pageMode.index}} active{{/if}}" ><a id="index" href="#">Startseite</a></li>
-								<li class="disabled{{#if pageMode.register}} active{{/if}}" ><a id="register" href="#">Registrierung</a></li>
-							{{/if}}
-						{{/if}}
-						<li class="{{#if pageMode.agbs}} active{{/if}}" ><a id="agbs" href="#">Nutzungsbedingungen</a></li>
-						<li class="{{#if pageMode.privacy}} active{{/if}}" ><a id="privacy" href="#">Datenschutz</a></li>
-						<li class="{{#if pageMode.impress}} active{{/if}}" ><a id="impress" href="#">Impressum</a></li>
-					</ul>
-				</div>
-			</div>
+		<div style="text-align:center;padding:5%;opacity:0.3;">
+			<img src="./img/logo_javes_schwarz.png" width:50%/>
 		</div>
 		<div class="row">
 			{{#if pageMode.index }}
@@ -63,18 +34,6 @@
 			{{/if}}
 			{{#if pageMode.enteremail }}
 				{{> resetPasswordEnterMail }}
-			{{/if }}
-			{{#if pageMode.impress }}
-				{{> impress }}
-			{{/if }}
-			{{#if pageMode.agbs }}
-				{{> agbs }}
-			{{/if }}
-			{{#if pageMode.privacy }}
-				{{> privacy }}
-			{{/if }}
-			{{#if pageMode.register }}
-				{{> register}}
 			{{/if }}
 			{{#if pageMode.deleteaccount }}
 				{{> deleteaccount}}
@@ -141,132 +100,8 @@
 	</div>
 </template>
 
-<template name="impress">
-	<div class="col-md-8 col-md-offset-2">
-		<div class="contend-box">
-			<h2>Impressum</h2>
-			<br/>
-			<h3>Herausgeber</h3>
-			<h4>Anschrift</h4>
-			<p>
-				Steffen Jäckel<br/>
-				Siedlungsweg 10<br/>
-				15537 Grünheide OT Kienbaum<br/>
-			</p>
-			<h4>Email</h4>
-			<p>
-				jaeckel@gmx.net*
-			</p>
-			<h4>Telefon</h4>
-			<p>
-				01792208684
-			</p>
-
-			<p>
-				* Der Nutzung von im Rahmen der Impressumspflicht veröffentlichten Kontaktdaten durch Dritte zur Übersendung von nicht ausdrücklich angeforderter Werbung und Informationsmaterialien wird hiermit ausdrücklich widersprochen. Die Betreiber der Seiten behalten sich ausdrücklich rechtliche Schritte im Falle der unverlangten Zusendung von Werbeinformationen, etwa durch Spam-Mails, vor.
-			</p>
-		</div>
-	</div>
-</template>
-
-<template name="agbs">
-	<div class="col-md-8 col-md-offset-2">
-		<div class="contend-box">
-			<h2>Nutzungbedingungen</h2>
-
-			<h4>Kosten</h4>
-			<p>
-				Der Dienst ist kostenlos.
-			</p>
-			<h4>Verfügbarkeit</h4>
-			<p>
-				Es besteht kein Rechtsanspruch auf die Verfügbarkeit des Dienstes. Die Leistungen von revier-plan.de
-				können jederzeit ohne Angabe von Gründen eingestellt werden. Es besteht kein Rechtsanspruch auf die erzeugten
-				Daten sowie die Konsistens der Daten. Der Dienst befindet sich zur Zeit noch im Teststadium und es kann zu Verlusten von Daten kommen.
-			</p>
-		</div>
-	</div>
-</template>
-
-<template name="privacy">
-	<div class="col-md-8 col-md-offset-2">
-		<div class="contend-box">
-			<h2>Datenschutzerklärung</h2>
-			<p>gemäß § 13 TMG</p>
-			<h4>Benutzerdaten</h4>
-			<p>
-				Um den Dienst der Online Revierkarte nutzen zu können ist es notwendig einen Account bei revier-plan.de zu erstellen.
-				Die Accountdaten werden zum Zweck der Identifizierung auf unserem Server gespeichert. Das angegebene Passwort wird dabei <b>nicht</b>
-				im Klartext gespeichert und so vor Missbrauch geschützt. Zur Übermittlung von Passwörtern nutzt die Seite das
-				<a href="http://en.wikipedia.org/wiki/Secure_Remote_Password_protocol">(SRP) Protokoll</a> um dem Benutzer auch ohne SSL Verbindung
-				die Sicherheit seines Passworts zu gewährleisten.
-				Alle Daten werden, im Rahmen der gesetzlichen Vorschriften, selbstverständlich <b>nicht</b> an Dritte weitergegeben.
-				<br/>
-				<br/>
-				Wir weisen darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation per E-Mail) Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich.
-			</p>
-			<h4>Daten die durch den Nutzer gespeichert werden</h4>
-			<p>
-				Daten von anderen Personen die während der Nutzung durch den Benutzer in Dokumenten (z.B. Plänen) gespeichert werden, stehen nicht im unmittelbaren Zugriff
-				durch den Webseitenbetreiber, so dass die Verantwortung über die Löschung dieser möglicherweise personenbezogenen Daten dem Benutzer obliegt.
-			</p>
-			<h4>Datennutzung</h4>
-			<p>Der Webseitenbetreiber behält sich vor, die Daten in anonymisierter Form in wissenschaftlichen Arbeiten und statistischen Auswertungen zu verwenden.</p>
-			<h4>Löschung von Daten</h4>
-			<p>
-				Daten, die ausschliesslich den Benutzer betreffen und ihn eindeutig indentifizieren (E-Mail Adresse) können <a id="delete-account" href="#">hier</a> gelöscht werden.
-				Daten, die der Nutzer anderen Nutzern zur Verfügung gestellt hat, und die momentan noch im Zugriff dieser Benutzer stehen, bleiben davon unberührt.
-			</p>
-		</div>
-	</div>
-</template>
-
-<template name="news">
-	<div  class="col-md-6">
-		<div class="contend-box">
-			<h2>Neuigkeiten</h2>
-			{{#each items}}
-			<h4>{{head}}</h4>
-			<p>{{formatDate date}}</p>
-			<div>
-			{{#markdown}}{{body}}{{/markdown}}
-			</div>
-			<hr/>
-			{{/each}}
-			<hr/>
-			<h4>Juli Update</h4>
-			<p>Dienstag, 22.7.2014</p>
-			<p>
-				Es wurden wieder einige Fehler behoben.
-				<ul>
-					<li>Die Groß- und Kleinschreibung von Mail Addressen bei der Accounterstellung wird jetzt ignoriert, da es in der Vergangenheit Probleme mit doppelten Accounts gab.<br/><br/></li>
-					<li>Eingetragenen Sichtungen werden jetzt nur noch 14 Tage (einstellbar) angezeigt um die Karte etwas übersichtlicher zu machen.<br/><br/></li>
-				</ul>
-			</p>
-			<hr/>
-			<h4>Mai Update</h4>
-			<p>Donnerstag, 22.5.2014</p>
-			<p>
-				Ich habe einige Fehler behoben und Veränderungen eingebaut.
-				<ul>
-					<li>Der Fehler der zu nicht bearbeitbarten Ständen geführt hat, wurde behoben.<br/><br/></li>
-					<li>Die Dummyelemente "Ansitzplanung", "Standstatistik" und "Kommentare" sind entfernt worden um keine weiteren Verwirrungen zu verursachen.<br/><br/></li>
-				</ul>
-			</p>
-			<hr/>
-			<h4>Testphase läuft an!</h4>
-			<p>Montag, 24.3.2014</p>
-			<p>
-				Es freut mich euch mitzuteilen, dass unsere Testphase begonnen hat. Ich freu mich auf Hinweise zu Fehlern und Verbesserungsvorschläge.
-				Es wird in Kürze weiteres Infomaterial und Bedinungshinweise geben.
-			</p>
-		</div>
-	</div>
-</template>
-
 <template name="login">
-	{{>news}}
-	<div  class="col-md-6">
+	<div  class="col-md-6 col-md-offset-3">
 		<div class="contend-box">
 			<h2>Anmeldung</h2>
 			{{#if error }}
@@ -295,7 +130,6 @@
 </template>
 
 <template name="enrollaccount">
-	{{>news}}
 	<div class="col-md-6">
 		<div class="contend-box">
 			{{#if loaded}}
@@ -328,52 +162,6 @@
 				</div>
 			</form>
 			{{/if}}
-		</div>
-	</div>
-</template>
-
-<template name="register">
-	{{>news}}
-	<div class="col-md-6">
-		<div class="contend-box">
-			<h2>Registrierung</h2>
-			<p>
-			</p>
-			{{#if error }}
-				<div class="alert alert-danger">
-					{{#if error.passwortToShort }} <h4>Fehler</h4> Das neue Passwort ist zu kurz. Die Passwörter für Revier-plan.de sollten mindestens {{error.passwortToShort}} Zeichen lang sein.{{/if}}
-					{{#if error.passwordDontMatch }} <h4>Fehler</h4> Die Passwörter stimmen nicht überein. {{/if}}
-					{{#if error.agbsDontAccepted }} <h4>Fehler</h4> Sie müssen den Nutzungsbedingungen und der Datenschutzerklärung zustimmen um den Dienst nutzen zu können. {{/if}}
-				</div>
-			{{/if}}
-			<form id="register">
-				<div class="form-group">
-					<label for="register-name" class="control-label">Vorname</label>
-					<input id="register-name"  class="form-control" placeholder="Vorname" type="text" name="name" />
-				</div>
-				<div class="form-group">
-					<label for="register-surname" class="control-label">Nachname</label>
-					<input id="register-surname"  class="form-control" placeholder="Nachname" type="text" name="name" />
-				</div>
-				<div class="form-group">
-					<label for="register-email" class="control-label">Email</label>
-					<input id="register-email"  class="form-control" placeholder="Email" type="text" name="name" />
-				</div>
-				<div class="form-group">
-					<label for="register-password" class="control-label">Passwort</label>
-					<input id="register-password" class="form-control" type="password" name="password" placeholder="Passwort"/>
-				</div>
-				<div class="form-group">
-					<label for="register-password-repeat" class="control-label">Passwort wiederholung</label>
-					<input id="register-password-repeat" class="form-control" type="password" name="password" placeholder="Passwort"/>
-				</div>
-				<div class="form-group">
-					<table><tr><td style="vertical-align:top;"><input style="margin-right:8px;" type="checkbox" name="abgs" id="register-abgs-checked"/></td><td><p id="check-register-abgs-checked" >Ich habe die Nutzungsbedingungen und die Datenschutzerklärung gelesen und bin damit einverstanden</p></td></tr></table>
-				</div>
-				<div class="form-group">
-					<button type="submit" class="btn btn-primary">Registrieren</button>
-				</div>
-			</form>
 		</div>
 	</div>
 </template>

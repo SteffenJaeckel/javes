@@ -286,51 +286,6 @@ if (Meteor.isClient) {
 	})
 
 	/// login template ...
-
-	Template.register.error = function () {
-		return Session.get('registration-error');
-	}
-
-	Template.register.events({
-		'submit #register': function ( e ) {
-			e.stopImmediatePropagation();
-			e.preventDefault();
-			if( $('#register-abgs-checked').prop('checked') == false ) {
-				Session.set("registration-error",{ agbsDontAccepted:true })
-			} else {
-				if( $('#register-password').val() != $('#register-password-repeat').val() ) {
-					Session.set("registration-error",{ passwordDontMatch:true });
-				} else {
-					if(  $('#register-password').val().length < passwortlength ) {
-						Session.set("registration-error",{ passwortToShort:passwortlength });
-					} else {
-						$('#loading').show();
-						Accounts.createUser({email: $('#register-email').val().toLowerCase(), password:$('#register-password').val() , profile: { firstname: $('#register-name').val() ,surname: $('#register-surname').val(), currentMode:0 }}, function(e) {
-							$('#loading').hide();
-							if(e) {
-								console.log( e )
-							}
-						})
-						Session.set("registration-error",null);
-					}
-				}
-			}
-		},
-		'click #check-register-abgs-checked': function ( e ) {
-			var item = $('#register-abgs-checked')
-			item.prop( 'checked',  ! item.prop('checked'))
-		}
-	})
-
-	Template.privacy.events({
-		'click #delete-account': function (e) {
-			e.stopImmediatePropagation();
-			e.preventDefault();
-			Session.set('pagemode',{ deleteaccount:true });
-
-		}
-	})
-
 	Template.deleteaccount.events({
 		'submit #deleteaccount': function ( e ) {
 			console.log($('#delete-email').val().toLowerCase());
@@ -368,12 +323,6 @@ if (Meteor.isClient) {
 		return Session.get('enrollaccountdata').invitedBy;
 	}
 
-	Template.enrollaccount.surname = function() {
-		if( Session.get('enrollaccountdata') == null )
-			return '';
-		return Session.get('enrollaccountdata').user.profile.surname;
-	}
-
 	Template.enrollaccount.events({
 		'submit #enrollaccount': function( e ) {
 			e.stopImmediatePropagation();
@@ -402,16 +351,6 @@ if (Meteor.isClient) {
 					}
 				}
 			}
-		},
-		'click #enrollaccount-readagbs': function( e ) {
-			e.stopImmediatePropagation();
-			e.preventDefault();
-			Session.set('pagemode',{agbs:true});
-		},
-		'click #enrollaccount-readprivacy': function( e ) {
-			e.stopImmediatePropagation();
-			e.preventDefault();
-			Session.set('pagemode',{privacy:true});
 		}
 	})
 }
