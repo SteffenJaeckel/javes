@@ -37,16 +37,26 @@ window.mods['administration'] = { index:1, name: "Administration", icon:"fa-grou
 
 Template.administration.created = function() {
 	this.customer = Meteor.subscribe("customer");
+	this.employies = Meteor.subscribe("employies");
 }
 
 Template.administration.destroyed = function() {
 	this.customer.stop();
-
+	this.employies.stop();
 }
 
 Template.administration.helpers({
 	customer: function () {
 		return Customer.find({});
+	},
+	employies : function() {
+		return Meteor.users.find();
+	},
+	role : function ( id ) {
+		return "Admin";
+	},
+	groups : function( id ) {
+		return ["Heidegarten","Hangelsberg"];
 	}
 })
 

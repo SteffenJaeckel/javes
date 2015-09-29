@@ -3,6 +3,11 @@ Meteor.startup( function () {
   console.log("starting module administration ...");
 })
 
+Meteor.publish("employies", function () {
+	return Meteor.users.find();
+});
+
+
 Meteor.methods({
   newCustomer: function ( data ) {
     isServerAdmin(this.userId);
