@@ -17,53 +17,33 @@ window.mods['administration'] = { index:1, name: "Administration", icon:"fa-grou
 	},
 	menuitems: function( path ) {
 		if( path.length == 0 ) {
-			return [
-				{name:'Kundenübersicht',id:'customer',icon:'fa-user'},
-			];
+			if( Meteor.user().isServerAdmin == true ) {
+				return [
+					{name:'Kunden',id:'customer',icon:'fa-book'},
+					{name:'Benutzer',id:'user',icon:'fa-user'},
+				];
+			} else {
+				return [
+					{name:'Benutzer',id:'user',icon:'fa-user'},
+				];
+			}
 		}
 	},
 	selected: function( item ) {
-		console.log( item )
-		switch( item.attr('id')  ) {
-			case 'add-new-customer':
-				modals.push('newcustomer', { name:''});
-			break;
-			default:
-				console.log( item.attr('id') + " not catched ");
-		}
+		console.log( "on select item ",item );
 	}
 };
 
-
-Template.administration.created = function() {
-	this.customer = Meteor.subscribe("customer");
-	this.employies = Meteor.subscribe("employies");
-}
-
-Template.administration.destroyed = function() {
-	this.customer.stop();
-	this.employies.stop();
-}
-
 Template.administration.helpers({
-	customer: function () {
-		return Customer.find({});
-	},
-	employies : function() {
-		return Meteor.users.find();
-	},
-	role : function ( id ) {
-		return "Admin";
-	},
-	groups : function( id ) {
-		return ["Heidegarten","Hangelsberg"];
-	}
-})
-
-Template.administration.events({
-	'click #add-customer': function () {
-		Meteor.call('newCustomer', {name:'LBF',enabled:true, mapconfig: mapconfig }, function(e) {
-				console.log(e);
-		})
+	getsubmodule : function() {
+		var path = app.getPath();
+		if( path.length >= 2 ) {
+			switch( path[1] ) {
+				case 'customer':
+					return 'customer';
+				case 'user':
+					return 'user';
+			}
+		}
 	}
 })
