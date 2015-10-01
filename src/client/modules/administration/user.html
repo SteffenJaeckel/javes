@@ -1,0 +1,22 @@
+<template name="user">
+  <div style="padding: 10px;background-color: #eee;height: 50px;">
+    <button id="add-user" class="btn btn-sm btn-default">Neuen Benutzer anlegen</button>
+    <button id="add-role" class="btn btn-sm btn-default">Neue Rolle anlegen</button>
+  </div>
+  <div style="position:absolute;left:0%;right:30%;top:50px;bottom:0%;overflow-y:auto;border:1px solid #ccc;">
+    <div>Benutzer</div>
+    <div>Rolle</div>
+  </div>
+  <div style="position:absolute;left:70%;right:0%;top:50px;bottom:0%;overflow-y:auto;border:1px solid #ccc;">
+    <table width="100%" class="table table-hover">
+      <thead>
+        <tr><td><b>Benutzer</b></td><td><b>Rolle</b></td></tr>
+      </thead>
+      <tbody style="overflow:scroll">
+        {{#each employies}}
+          <tr data="{{this._id}}"><td>{{this.profile.surname}}, {{this.profile.firstname}}</td><td>{{role this._id}}</td></tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</template>
