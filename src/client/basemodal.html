@@ -1,0 +1,142 @@
+<template name="basemodal">
+<style>
+  label {
+    margin-top:8px;
+  }
+  .folder {
+    position: relative;
+    /*border: 2px solid #ccc;*//*#428BCA*/#428BCA;
+    border-radius: 6px;
+    background: #fff;
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    /*margin-left: 10px;*/
+    padding-left: 11px;
+    border-left: 2px solid #ccc;
+    margin-left: 10px;
+  }
+  .folder.object {
+    border-left: 2px solid #ddd;
+  }
+  .folder-head {
+    position:relative;
+    width:100%;
+    padding: 4px;
+    background-color: #fff;/*#428BCA*/;
+    margin-bottom: 2px;
+    color: #666;
+  }
+  .folder-head:hover {
+    background-color: #ccc;
+  }
+  .folder-head.open {
+    border-radius: 0px;
+  }
+  .folder-head.closed {
+    border-radius: 0px;
+  }
+
+  .item {
+    position: relative;
+    padding: 7px;
+    /*padding-left: 16px;*/
+    font-size: 13px;
+    height: 34px;
+  }
+  /*.item:nth-child(even) {background: #FFFFFF}
+  .item:nth-child(odd) {background: #DCDCDC}*/
+
+  .dnyvalue {
+    position: absolute;
+    /*left:40%;*/
+    width:260px;
+    right:14px;
+    /*right: 40px;*/
+    top: 0px;
+    bottom: 0px;
+    padding: 2px;
+  }
+</style>
+<div class="modal-header">
+  <button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+  <h4 class="modal-title">Neuen Hund hinzufügen</h4>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    {{#each controls }}
+      {{ > Template.dynamic template=this.type data=this}}
+    {{/each}}
+  </div>
+</div>
+<div class="modal-footer">
+  <button id="save" class="btn btn-primary">Hinzufügen</button>
+  <button id="abort" class="btn btn-default">Abbrechen</button>
+</div>
+</template>
+
+<template name="basemodal_folder">
+  <div class="folder object">
+      {{#if this.open}}
+      <div class="folder-head open" data="{{this.path}}" ><span><i class="fa fa-arrow-circle-down"></i>&nbsp;{{this.name}}</span></div>
+      <div style="/*padding:4px;*/">
+        {{#each this.items}}
+          {{> Template.dynamic template=this.type data=this}}
+        {{/each}}
+      </div>
+      {{else}}
+        <div class="folder-head closed" data="{{this.path}}" style="margin-bottom:0px;"><span><i class="fa fa-arrow-circle-right"></i>&nbsp;{{this.name}}</span></div>
+      {{/if}}
+    </div>
+</template>
+
+<template name="basemodal_array">
+  <div class="folder array">
+      {{#if this.open}}
+      <div class="folder-head open" data="{{this.path}}" ><span><i class="fa fa-arrow-circle-down"></i>&nbsp;{{this.name}} [{{this.items.length}}]</span>
+      </div>
+      <div style="/*padding:4px;*/">
+        {{#each this.items}}
+          {{> Template.dynamic template=this.type data=this}}
+        {{/each}}
+        <a class="array-plus" href="#" data="{{this.path}}"><i fa fa-plus></i> Neues Element Einfügen</a>
+      </div>
+      {{else}}
+        <div class="folder-head closed" data="{{this.path}}" style="margin-bottom:0px;"><span><i class="fa fa-arrow-circle-right"></i>&nbsp;{{this.name}}</span>
+        </div>
+      {{/if}}
+    </div>
+</template>
+
+<template name="basemodal_item_string">
+  <div class="item"><span><i class="fa fa-pencil-square-o"></i>&nbsp;{{this.name}}</span>
+    <div class="dnyvalue">
+      <input class="form-control input-sm string" data="{{this.path}}" type="text" value="{{this.value}}"/>
+    </div>
+  </div>
+</template>
+
+<template name="basemodal_item_date">
+  <div class="item"><span><i class="fa fa-calendar"></i>&nbsp;{{this.name}}</span>
+    <div class="dnyvalue">
+      <div class="input-group input-group-sm" style="padding:0px;">
+        <input type="text" class="form-control date" placeholder="Search for..."  data="{{this.path}}" value="{{this.value}}">
+        <span class="input-group-btn">
+          <button class="btn btn-primary" data="{{this.path}}"  type="button"><i class="fa fa-calendar"></i></button>
+        </span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="basemodal_item_set">
+  <div class="item"><span><i class="fa fa-list-ul"></i>&nbsp;{{this.name}}</span>
+    <div class="dnyvalue">
+      <select class="form-control input-sm set">
+        {{#each this.items }}
+          <option value="{{this.k}}">{{this.v}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+</template>
