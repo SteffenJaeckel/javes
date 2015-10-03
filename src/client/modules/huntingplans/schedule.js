@@ -107,7 +107,7 @@ Template.schedule.events( {
     }
   },
   'dblclick .plan': function (e ) {
-    app.setPath( ['huntingplans', $(e.currentTarget).attr('data') ] )
+    app.setPath( [app.getCustomer(), app.getDepartment(),'huntingplans', $(e.currentTarget).attr('data') ] )
   },
   'click .newplan': function(e) {
     var date = new Date( parseInt($(e.currentTarget).attr('data')));

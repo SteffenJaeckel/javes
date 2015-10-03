@@ -125,8 +125,8 @@ select = new ol.interaction.Pointer( {
       dontupdate = true;
       if( route ) {
         var path = app.getPath();
-        if( path.length == 4) {
-          path[3] = route;
+        if( path.length == 6) {
+          path[5] = route;
         } else {
           path.push( route );
         }
@@ -134,7 +134,7 @@ select = new ol.interaction.Pointer( {
         Session.set('selected-route', route );
       } else {
         var path = app.getPath();
-        if( path.length == 4) {
+        if( path.length == 6) {
           path.pop();
           app.setPath(path);
         }
@@ -436,7 +436,6 @@ updateMapData = function () {
       setTimeout( function( ) {
         updateMapData();
       }, 2000)
-      // app.setPath(['huntingplans','schedule']);
     } else {
       if( plan.drives.length < 1 || plan.drives[drive].shape == null ) {
         editor.push('huntingareaeditor',{ color:4 })
@@ -760,20 +759,20 @@ Template.huntingplanmap.events({
   'click #add-drive': function( e ) {
     Meteor.call('addHuntingPlanDrive', getCurrentPlanId() , function ( e, r ) {
       if( e == null ) {
-        app.setPath(['huntingplans', getCurrentPlanId(), 'drive-'+r]);
+        app.setPath([app.getCustomer(),app.getDepartment(),'huntingplans', getCurrentPlanId(), 'drive-'+r]);
       }
     })
   },
   'click #delete-drive': function ( e ) {
     Meteor.call('deleteHuntingPlanDrive', getCurrentPlanId() , getCurrentDriveIndex(), function ( e ) {
       if( e == null ) {
-        app.setPath(['huntingplans', getCurrentPlanId(), 'drive-0']);
+        app.setPath([app.getCustomer(),app.getDepartment(),'huntingplans', getCurrentPlanId(), 'drive-0']);
       }
     })
   },
   'click #delete-plan': function( e ) {
     Meteor.call('deleteHuntingPlan', getCurrentPlanId() , function (e ) {
-      app.setPath(['huntingplans','schedule']);
+      app.setPath([app.getCustomer(),app.getDepartment(),'huntingplans','schedule']);
     })
   },
   'click #new-route' :function( e ) {

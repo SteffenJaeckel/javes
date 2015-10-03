@@ -6,14 +6,14 @@
   .folder {
     position: relative;
     /*border: 2px solid #ccc;*//*#428BCA*/#428BCA;
-    border-radius: 6px;
+    border-radius: 0px 0px 0px 6px;
     background: #fff;
     margin-bottom: 4px;
     font-size: 14px;
     font-weight: bold;
     /*margin-left: 10px;*/
     padding-left: 11px;
-    border-left: 2px solid #ccc;
+    /*border-left: 2px solid #ccc;*/
     margin-left: 10px;
   }
   .folder.object {
@@ -26,15 +26,10 @@
     background-color: #fff;/*#428BCA*/;
     margin-bottom: 2px;
     color: #666;
+    border-radius:4px;
   }
   .folder-head:hover {
     background-color: #ccc;
-  }
-  .folder-head.open {
-    border-radius: 0px;
-  }
-  .folder-head.closed {
-    border-radius: 0px;
   }
 
   .item {
@@ -112,6 +107,19 @@
   <div class="item"><span><i class="fa fa-pencil-square-o"></i>&nbsp;{{this.name}}</span>
     <div class="dnyvalue">
       <input class="form-control input-sm string" data="{{this.path}}" type="text" value="{{this.value}}"/>
+    </div>
+  </div>
+</template>
+
+<template name="basemodal_item_number">
+  <div class="item"><span><i class="fa fa-calendar"></i>&nbsp;{{this.name}}</span>
+    <div class="dnyvalue">
+      <div class="input-group input-group-sm" style="padding:0px;">
+        <input type="text" class="form-control date" placeholder="Search for..."  data="{{this.path}}" value="{{this.value}}">
+        <span class="input-group-btn">
+          <button class="btn btn-primary" data="{{this.path}}"  type="button"><i class="fa fa-caret-left"></i>&nbsp;<i class="fa fa-caret-right"></i></button>
+        </span>
+      </div>
     </div>
   </div>
 </template>

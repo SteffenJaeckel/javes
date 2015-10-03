@@ -11,21 +11,8 @@ Versions.allow({
 	}
 });
 
-Customer = new Meteor.Collection('customer');
-Customer.allow({
-	insert:function(userId) {
-		return false;
-	},
-	update:function(userId,fields,modifier) {
-		return false;
-	},
-	remove:function(userId) {
-		return false;
-	}
-});
-
-Departments = new Meteor.Collection('departments');
-Departments.allow({
+Customers = new Meteor.Collection('customers');
+Customers.allow({
 	insert:function(userId) {
 		return false;
 	},

@@ -49,7 +49,7 @@ function buildItemFromType( type, item, data, path ) {
     break;
 
     case 'number':
-      return { type:'basemodal_item_string', model:type, id:item, path:path+"/"+item, name: type.name, open:true, value: (data) ? data:"" };
+      return { type:'basemodal_item_number', model:type, id:item, path:path+"/"+item, name: type.name, open:true, value: (data) ? data:"" };
     break;
 
     case 'set' :
