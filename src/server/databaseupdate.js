@@ -31,7 +31,7 @@ Meteor.startup( function () {
 
   onVersion( last, 0, 8, function() {
     // convert name to firstname
-    var def = Customer.findOne();
+    var def = Customers.findOne();
 
     if( def == null ) {
       var dep = Random.id();
@@ -43,7 +43,7 @@ Meteor.startup( function () {
         }
       };
 
-      var cust = Customer.insert({
+      var cust = Customers.insert({
         name: {
           short:'LFB',
           long:'Landesbetrieb Forst Brandenburg'
@@ -65,7 +65,37 @@ Meteor.startup( function () {
 
   onVersion( last, 0, 11, function() {
     Meteor.users.find({}).forEach( function( user ) {
-      Meteor.users.update({_id:user._id},{ $unset: {"emails[0]":false}, $set:{dogs:[]} } );
+      Meteor.users.update({_id:user._id},{ $unset: {"emails[0]":false}, $set:{"profile.dogs":[]} } );
+    })
+  })
+  onVersion( last, 0, 12, function() {
+    Meteor.users.find({}).forEach( function( user ) {
+      if( typeof(user.profile.currentpath) == "string" ) {
+        Meteor.users.update({_id:Meteor.user()._id}, { $set: { 'profile.currentpath': user.profile.currentpath.split('|') } });
+      }
+    })
+  })
+  onVersion( last, 0, 13, function() {
+    Meteor.users.find({}).forEach( function( user ) {
+
+      for( var c in user.customers ) {
+        for( var d in user.customers[c].departments ) {
+          user.customers[c].departments[d]['type'] = 0;
+        }
+      }
+      Meteor.users.update({_id:user._id}, user );
+    })
+  })
+  onVersion( last, 0, 15, function() {
+    Meteor.users.find({}).forEach( function( user ) {
+
+      for( var c in user.customers ) {
+        for( var d in user.customers[c].departments ) {
+          user.customers[c].departments[d]['roles'] = [ user.customers[c].departments[d].role ];
+          delete user.customers[c].departments[d].role;
+        }
+      }
+      Meteor.users.update({_id:user._id}, user );
     })
   })
   // Versions.insert({major:0,minor:3,date:new Date(3),changes:[] });

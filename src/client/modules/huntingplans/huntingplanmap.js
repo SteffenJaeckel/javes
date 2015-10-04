@@ -125,8 +125,8 @@ select = new ol.interaction.Pointer( {
       dontupdate = true;
       if( route ) {
         var path = app.getPath();
-        if( path.length == 6) {
-          path[5] = route;
+        if( path.length == 7) {
+          path[6] = route;
         } else {
           path.push( route );
         }
@@ -134,7 +134,7 @@ select = new ol.interaction.Pointer( {
         Session.set('selected-route', route );
       } else {
         var path = app.getPath();
-        if( path.length == 6) {
+        if( path.length == 7) {
           path.pop();
           app.setPath(path);
         }

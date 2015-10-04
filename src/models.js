@@ -47,7 +47,7 @@ Plans.allow({
 		return false;
 	},
 	update:function(userId,area,fields,modifier) {
-		return false;
+		return true;
 	},
 	remove:function(userId,area) {
 		return false;

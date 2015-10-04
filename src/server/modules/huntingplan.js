@@ -22,7 +22,15 @@ Meteor.publish("plan_stands", function ( planid, drive ) {
 });
 
 Meteor.publish("participants", function ( ) {
-	return Meteor.users.find();
+  var user = Meteor.users.findOne({_id:this.userId});
+  if( user && user.profile.currentpath.length >= 2 ) {
+    var cust = user.profile.currentpath[0];
+    var dep = user.profile.currentpath[1];
+    var query = {};
+    query['customers.'+cust+'.departments.'+dep+'.roles'] = { $exists: true };
+    console.log(query);
+  	return Meteor.users.find( query, {customers:1,profile:1,emails:1} );
+  }
 });
 
 Meteor.publish("huntingplans", function () {

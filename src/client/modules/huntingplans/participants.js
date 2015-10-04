@@ -1,9 +1,16 @@
+function getType( user ) {
+  return user.customers[app.getCustomer()].departments[ app.getDepartment() ].type;
+}
+
 function loadUser() {
 
   var groups = {};
   var group = '';
   var selector = {};
   var filter = [];
+
+  var customer = app.getCustomer();
+  var department = app.getDepartment();
 
   if( Session.get('user-filter') ) {
     filter.push( {'profile.surname':{  $regex: '^'+Session.get('user-filter'), $options: 'i' }});
@@ -51,7 +58,7 @@ function loadUser() {
       surname: user.profile.surname,
       title:user.profile.title,
       isdoctor: (user.profile.isdoctor || user.profile.isveterinary),
-      type:'huntertype-'+(user.profile.type+1),
+      type:'huntertype-'+(getType(user)+1),
       dogs: (user.profile.dogs) ? user.profile.dogs:[]
     };
     if( user.profile.group == null || user.profile.group.length == 0 ) {
@@ -343,32 +350,33 @@ Template.basetip.helpers({
         userstates.trackingdogs.push( { class:'sum', invited:0,confirmed:0} );
         userstates.scenthound.push( { class:'sum', invited:0,confirmed:0} );
         var sum = userstates.hunter.length-1;
+
         Meteor.users.find( {_id:{ $in: _.keys(plan.invitestates ) }} ).forEach( function ( user ) {
-          // console.log( user._id , user.profile.surname ,plan.invitestates[ user._id ].state , user.profile.type );
+          var type = getType(user);
           switch( plan.invitestates[ user._id ].state ) {
             case 'confirmed':
-              userstates.hunter[ user.profile.type ].confirmed++;
+              userstates.hunter[ type ].confirmed++;
               userstates.hunter[ sum ].confirmed++;
               if( hasScentHound( user ) ) {
-                userstates.scenthound[ user.profile.type ].confirmed++;
+                userstates.scenthound[ type ].confirmed++;
                 userstates.scenthound[ sum ].confirmed++;
               }
               if( hasTrackingDog( user) ) {
-                userstates.trackingdogs[ user.profile.type ].confirmed++;
+                userstates.trackingdogs[ type ].confirmed++;
                 userstates.trackingdogs[ sum ].confirmed++;
               }
             break;
             case 'refused':
             break;
             default:
-              userstates.hunter[ user.profile.type ].invited++;
+              userstates.hunter[ type ].invited++;
               userstates.hunter[ sum ].invited++;
               if( hasScentHound( user ) ) {
-                userstates.scenthound[ user.profile.type ].invited++;
+                userstates.scenthound[ type ].invited++;
                 userstates.scenthound[ sum ].invited++;
               }
               if( hasTrackingDog( user) ) {
-                userstates.trackingdogs[ user.profile.type ].invited++;
+                userstates.trackingdogs[ type ].invited++;
                 userstates.trackingdogs[ sum ].invited++;
               }
             break;

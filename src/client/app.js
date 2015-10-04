@@ -22,20 +22,11 @@ function getSelectedItem( items , selection ) {
 
 app = {
   getPath : function() {
-    var sel = Meteor.user().profile.currentpath;
-    //var sel = Session.get('data-selection');
-    if( sel == null ) {
-      sel = '';
-    }
-    return sel.split('|');
+    return Meteor.user().profile.currentpath;
   },
   setPath : function( path ) {
     console.log( "set path " , path )
-    var s = path[0];
-    for( var i=1;i < path.length;i++ ) {
-      s += "|"+path[i];
-    }
-    Meteor.users.update({_id:Meteor.user()._id}, { $set: { 'profile.currentpath':s } });
+    Meteor.users.update({_id:Meteor.user()._id}, { $set: { 'profile.currentpath':path } });
     if( path.length >= 2 ) {
       if( window.mods[path[2]] && window.mods[path[2]].selected ) {
         window.mods[path[2]].selected( path );
@@ -49,7 +40,14 @@ app = {
     return app.getPath()[1];
   },
   getRole : function() {
-
+    return app.getPath()[2];
+  },
+  getModulPath: function () {
+    return Meteor.user().profile.currentpath.slice(3,Meteor.user().profile.currentpath.length);
+  },
+  setModulePath : function( path ) {
+    var auth = Meteor.user().profile.currentpath;
+    app.setPath( [ auth[0],auth[1],auth[2] ].concat( path ) );
   }
 }
 
@@ -61,6 +59,7 @@ Template.app.helpers({
 
     var path = [];
     var selitems = app.getPath();
+    var level = 0;
 
     /* Customer selection */
     var data = [];
@@ -69,10 +68,14 @@ Template.app.helpers({
       data.push({index:i, id: customers[i]._id, name: customers[i].name.short, icon: 'fa-book',class:''} );
     }
     var selectedcustomer = getSelectedItem(data, selitems[0]);
-    path.push( { level: 0, 'selected': selectedcustomer, 'items': data } );
-    if( selectedcustomer == null )
-      return path;
-
+    if( data.length == 1 ) {
+      var selectedcustomer = data[0];
+    } else {
+      var selectedcustomer = getSelectedItem(data, selitems[0]);
+      path.push( { level: level++, index:0, 'selected': selectedcustomer, 'items': data } );
+      if( selectedcustomer == null )
+        return path;
+    }
 
 
     /* Department selection */
@@ -84,15 +87,34 @@ Template.app.helpers({
     for( var department in customer.departments ) {
       data.push({index:0, id: department , name: customer.departments[department].name.long, icon: 'fa-bookmark',class:''} );
     }
-    var selecteddepartment = getSelectedItem(data, selitems[1] );
-    path.push( { level: 1, 'selected': selecteddepartment, 'items': data } );
-    if( selecteddepartment == null )
-      return path;
+    if( data.length == 1 ) {
+      var selecteddepartment = data[0];
+    } else {
+      var selecteddepartment = getSelectedItem(data, selitems[1] );
+      path.push( { level: level++, index:1, 'selected': selecteddepartment, 'items': data } );
+      if( selecteddepartment == null )
+        return path;
+    }
+
+    /* Role selection */
+    var roles = Meteor.user().customers[selectedcustomer.id].departments[selecteddepartment.id].roles;
+    var data = [];
+    console.log(roles);
+    for( var i=0;i < roles.length; i++ ) {
+      data.push({index:i, id: roles[i], name: roles[i], icon: 'fa-user',class:''} );
+    }
+    if( data.length == 1 ) {
+      var selectedrole = data[0];
+    } else {
+      var selectedrole = getSelectedItem(data, selitems[2]);
+      path.push( { level: level++, index:2, 'selected': selectedrole, 'items': data } );
+      if( selectedrole == null )
+        return path;
+    }
 
     /* Module selection */
-    var currentrole = Meteor.user().customers[ selectedcustomer.id ].departments[ selecteddepartment.id ].role;
-    console.log( "User is logged on as ", currentrole );
-    var aviablemodules = customer.departments[ selecteddepartment.id ].roles[ currentrole ].modules;
+    console.log( "User is logged on as ", selectedrole.name );
+    var aviablemodules = customer.departments[ selecteddepartment.id ].roles[ selectedrole.name ].modules;
     data = [];
     for( var m in window.mods ) {
       if( m == 'profile' || aviablemodules[m] != null ) {
@@ -108,28 +130,30 @@ Template.app.helpers({
         }
       }
     }
-    var selectedmodule = getSelectedItem(data, selitems[2]);
-    path.push( { level: 2, 'selected': selectedmodule, 'items': data } );
+    var selectedmodule = getSelectedItem(data, selitems[3]);
+    path.push( { level: level++, index:3, 'selected': selectedmodule, 'items': data } );
     if( selectedmodule == null )
         return path;
 
     /* Submodule selection */
+    var modulpath = app.getModulPath();
+
     var subsel = [];
-    for( var i=0;i < selitems.length;i++ ) {
+    for( var i=3;i < selitems.length;i++ ) {
       if( window.mods[ selectedmodule.id ] && window.mods[ selectedmodule.id ].menuitems ) {
         var items = window.mods[ selectedmodule.id ].menuitems( subsel );
         if( items ) {
-          var selected = getSelectedItem( items, selitems[i+3] );
+          var selected = getSelectedItem( items, selitems[i+1] );
           if( selected == null ) {
             var def = window.mods[ selectedmodule.id ].defaultitem( subsel )
             if( def ) {
               var selected = getSelectedItem( items, def );
               if( selected ) {
-                if( selitems.length == i+3 ) {
+                if( selitems.length == i+1 ) {
                   selitems.push( def );
-                } else if(selitems.length >= i+4) {
-                  selitems[i+3] = def;
-                  for( var c=2;c <  (selitems.length -(i+4));c++ ) {
+                } else if(selitems.length >= i+2) {
+                  selitems[i+1] = def;
+                  for( var c=0;c <  (selitems.length -(i+2));c++ ) {
                     selitems.pop();
                   }
                 }
@@ -139,9 +163,9 @@ Template.app.helpers({
               selected = {id:'none',name:'',icon:'fa-reorder'};
             }
           }
-          var obj = { level: (i+3), 'items':items , 'selected': selected };
-          if( selitems.length > (i+3) ) {
-            subsel.push( selitems[i+3] );
+          var obj = { level: level++, index:(i+1), 'items':items , 'selected': selected };
+          if( selitems.length > (i+1) ) {
+            subsel.push( selitems[i+1] );
           }
           path.push( obj );
         } else {
@@ -154,14 +178,13 @@ Template.app.helpers({
     return path;
   },
   getmodul : function () {
-    return app.getPath()[2];
+    return app.getPath()[3];
   },
   getmodal: function () {
     var m = Session.get('modal');
     if( m ) {
       var names = _.keys(m);
           if( names.length > 0 ) {
-        console.log("open modal "+ names[0] )
         return names[0];
       }
     }
@@ -174,16 +197,18 @@ Template.app.helpers({
 
 Template.app.events({
   'click .app-item': function( e ) {
-    var level = $(e.currentTarget).attr('data-level');
+    var index = $(e.currentTarget).attr('data-index');
     var id = $(e.currentTarget).attr('data-id');
     var selitems = app.getPath();
-    if( level < selitems.length) {
-      selitems[level] = id;
-      while( level < (selitems.length-1) ) {
+    if( index < selitems.length) {
+      selitems[index] = id;
+      /*while( index < (selitems.length-1) ) {
         selitems.pop();
+      }*/
+    } else {
+      while( selitems.length <= index ) {
+        selitems.push( id );
       }
-    } else if( level == selitems.length ) {
-      selitems.push( id );
     }
     app.setPath( selitems );
   },

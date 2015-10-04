@@ -50,8 +50,8 @@ window.mods['huntingplans'] = { index:2, name: "Jagdplanung", icon:"fa-server", 
 	},
 	selected: function( path ) {
 		console.log( path );
-		if( path.length >= 4 ) {
-			switch( path[3] ) {
+		if( path.length >= 5 ) {
+			switch( path[4] ) {
 				case 'participants':
 					break;
 				case 'schedule':
@@ -92,8 +92,9 @@ Template.huntingplans.destroyed = function() {
 Template.huntingplans.helpers({
 	getsubmodule : function() {
 		var path = app.getPath();
-		if( path.length >= 4 ) {
-			switch( path[3] ) {
+		console.log("render submodule ",path);
+		if( path.length >= 5 ) {
+			switch( path[4] ) {
 				case 'participants':
 					return 'participants';
 				case 'schedule':
@@ -106,9 +107,9 @@ Template.huntingplans.helpers({
 })
 
 getCurrentPlan = function( write ) {
-	var path = app.getPath();
-	if( path.length >= 3 ) {
-		var cond = { _id: path[3] };
+	var path = app.getModulPath();
+	if( path.length >= 2 ) {
+		var cond = { _id: path[1] };
 		if( write ) {
 			cond['viewer.'+Meteor.userId()] = {'$lte':1 }; // check for write permissions ....
 		}
@@ -118,21 +119,20 @@ getCurrentPlan = function( write ) {
 }
 
 getCurrentPlanId = function () {
-	var path = app.getPath();
-	if( path.length >= 3 ) {
-		return path[3];
+	var path = app.getModulPath();
+	if( path.length >= 2 ) {
+		return path[1];
 	}
 	return '';
 }
 
 getCurrentDrive = function () {
-	var path = app.getPath();
-	if( path.length >= 4 ) {
-		var plan = Plans.findOne( {_id: path[3] });
+	var path = app.getModulPath();
+	if( path.length >= 3 ) {
+		var plan = Plans.findOne( {_id: path[1] });
 		if( plan ) {
-
-			if( path.length >= 5 ) {
-				var id = path[4].split('-');
+			if( path.length >= 3 ) {
+				var id = path[2].split('-');
 				var index = parseInt( id[1] );
 				if( plan.drives.length > index ) {
 					return plan.drives[index];
@@ -148,12 +148,12 @@ getCurrentDrive = function () {
 }
 
 getCurrentDriveIndex = function () {
-	var path = app.getPath();
-	if( path.length >= 4 ) {
-		var plan = Plans.findOne( {_id: path[3] });
+	var path = app.getModulPath();
+	if( path.length >= 2 ) {
+		var plan = Plans.findOne( {_id: path[1] });
 		if( plan ) {
-			if( path.length >= 5 ) {
-				var id = path[4].split('-');
+			if( path.length >= 3 ) {
+				var id = path[2].split('-');
 				var index = parseInt( id[1] );
 				if( plan.drives.length > index ) {
 					return index;
