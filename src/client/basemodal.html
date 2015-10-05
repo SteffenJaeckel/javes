@@ -5,28 +5,49 @@
   }
   .folder {
     position: relative;
-    /*border: 2px solid #ccc;*//*#428BCA*/#428BCA;
     border-radius: 0px 0px 0px 6px;
     background: #fff;
     margin-bottom: 4px;
     font-size: 14px;
     font-weight: bold;
-    /*margin-left: 10px;*/
-    padding-left: 11px;
-    /*border-left: 2px solid #ccc;*/
+    padding-left: 10px;
     margin-left: 10px;
+    border-left: 3px solid #ccc;
+  }
+  .folder.array {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-left-style: dotted;
+  }
+  .folder.array a.array-plus {
+    position:absolute;
+    bottom:-7px;
+    left:14px;
+  }
+  .array-item {
+    position:relative;
+  }
+  .array-item .array-minus {
+    position: absolute;
+    right: 32px;
+    top: 4px;
+    color:#d9534f;
   }
   .folder.object {
+    padding-bottom: 2px;
+    margin-bottom: 2px;
     border-left: 2px solid #ddd;
   }
   .folder-head {
     position:relative;
+    left:-21px;
     width:100%;
     padding: 4px;
-    background-color: #fff;/*#428BCA*/;
+    background-color: #eee;/*#428BCA*/;
     margin-bottom: 2px;
     color: #666;
     border-radius:4px;
+    border: 2px solid #ddd;
   }
   .folder-head:hover {
     background-color: #ccc;
@@ -35,18 +56,15 @@
   .item {
     position: relative;
     padding: 7px;
-    /*padding-left: 16px;*/
     font-size: 13px;
     height: 34px;
   }
-  /*.item:nth-child(even) {background: #FFFFFF}
-  .item:nth-child(odd) {background: #DCDCDC}*/
 
   .dnyvalue {
     position: absolute;
     /*left:40%;*/
     width:260px;
-    right:14px;
+    right:20px;
     /*right: 40px;*/
     top: 0px;
     bottom: 0px;
@@ -74,7 +92,7 @@
   <div class="folder object">
       {{#if this.open}}
       <div class="folder-head open" data="{{this.path}}" ><span><i class="fa fa-arrow-circle-down"></i>&nbsp;{{this.name}}</span></div>
-      <div style="/*padding:4px;*/">
+      <div>
         {{#each this.items}}
           {{> Template.dynamic template=this.type data=this}}
         {{/each}}
@@ -90,11 +108,14 @@
       {{#if this.open}}
       <div class="folder-head open" data="{{this.path}}" ><span><i class="fa fa-arrow-circle-down"></i>&nbsp;{{this.name}} [{{this.items.length}}]</span>
       </div>
-      <div style="/*padding:4px;*/">
+      <div>
         {{#each this.items}}
-          {{> Template.dynamic template=this.type data=this}}
+          <div class="array-item">
+            {{> Template.dynamic template=this.type data=this}}
+            <a class="array-minus" data="{{this.path}}"><i class="fa fa-minus-circle"></i></a>
+          </div>
         {{/each}}
-        <a class="array-plus" href="#" data="{{this.path}}"><i fa fa-plus></i> Neues Element Einfügen</a>
+        <a class="array-plus" href="#" data="{{this.path}}"><i class="fa fa-plus-circle"></i>&nbsp;Neues&nbsp;Element</a>
       </div>
       {{else}}
         <div class="folder-head closed" data="{{this.path}}" style="margin-bottom:0px;"><span><i class="fa fa-arrow-circle-right"></i>&nbsp;{{this.name}}</span>
@@ -115,7 +136,7 @@
   <div class="item"><span><i class="fa fa-calendar"></i>&nbsp;{{this.name}}</span>
     <div class="dnyvalue">
       <div class="input-group input-group-sm" style="padding:0px;">
-        <input type="text" class="form-control date" placeholder="Search for..."  data="{{this.path}}" value="{{this.value}}">
+        <input type="text" class="form-control number" placeholder=""  data="{{this.path}}" value="{{this.value}}">
         <span class="input-group-btn">
           <button class="btn btn-primary" data="{{this.path}}"  type="button"><i class="fa fa-caret-left"></i>&nbsp;<i class="fa fa-caret-right"></i></button>
         </span>

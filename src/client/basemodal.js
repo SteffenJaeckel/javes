@@ -172,7 +172,16 @@ Template.basemodal.events( {
   },
   'click .array-minus': function(e) {
     var path = $(e.currentTarget).attr('data');
+    var p = path.lastIndexOf("/");
+    var key = path.substr(p+1, path.length);
+    var path = path.substr(0,p);
     var item = getItemFromPath( path );
+    for( var i=0;i < item.items.length;i++ ) {
+      if( item.items[i].id == key ) {
+        item.items.splice(i,1);
+      }
+    }
+    setItemAtPath( path , item );
   },
   'blur .string' : function ( e ) {
     var path = $(e.currentTarget).attr('data');

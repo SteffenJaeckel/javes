@@ -57,6 +57,15 @@ Meteor.startup( function () {
     console.log("Create default Customer");
   });
 
+  onVersion( last, 0, 9, function() {
+    Stands.find().forEach( function( stand ) {
+        stand['location'] = {type:"Point", coordinates: [ stand.position.lng, stand.position.lat ] };
+        stand['position'] = null;
+        stand.type = parseInt( stand.type );
+        Stands.update({_id:stand._id},stand);
+    })
+  })
+
   onVersion( last, 0, 10, function() {
     Meteor.users.find({}).forEach( function( user ) {
       Meteor.users.update({_id:user._id},{ $unset: {"profile.currentMode":false,"profile.currentSelectedArea":false,"profile.currentSelectedPlan":false} } );
@@ -77,7 +86,6 @@ Meteor.startup( function () {
   })
   onVersion( last, 0, 13, function() {
     Meteor.users.find({}).forEach( function( user ) {
-
       for( var c in user.customers ) {
         for( var d in user.customers[c].departments ) {
           user.customers[c].departments[d]['type'] = 0;
@@ -88,7 +96,6 @@ Meteor.startup( function () {
   })
   onVersion( last, 0, 15, function() {
     Meteor.users.find({}).forEach( function( user ) {
-
       for( var c in user.customers ) {
         for( var d in user.customers[c].departments ) {
           user.customers[c].departments[d]['roles'] = [ user.customers[c].departments[d].role ];

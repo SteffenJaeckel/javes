@@ -109,6 +109,7 @@ select = new ol.interaction.Pointer( {
   handleEvent : function ( e ) {
 
     if( editor.get() == null  && e.type == 'singleclick') {
+      console.log("Stands:", Stands.find().count());
       overlay.clear();
       var route = null;
       e.map.forEachFeatureAtPixel( e.pixel , function ( f , l ) {

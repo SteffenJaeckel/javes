@@ -89,12 +89,13 @@ Template.app.helpers({
     if( data.length == 1 ) {
       var selectedcustomer = data[0];
       selitems[0] = selectedcustomer.id;
-      app.setPath( selitems );
     } else {
       var selectedcustomer = getSelectedItem(data, selitems[0]);
       path.push( { level: level++, index:0, 'selected': selectedcustomer, 'items': data } );
-      if( selectedcustomer == null )
+      if( selectedcustomer == null ) {
+        app.setPath( selitems );
         return path;
+      }
     }
 
 
@@ -114,8 +115,10 @@ Template.app.helpers({
     } else {
       var selecteddepartment = getSelectedItem(data, selitems[1] );
       path.push( { level: level++, index:1, 'selected': selecteddepartment, 'items': data } );
-      if( selecteddepartment == null )
+      if( selecteddepartment == null ) {
+        app.setPath( selitems );
         return path;
+      }
     }
 
     /* Role selection */
@@ -132,8 +135,10 @@ Template.app.helpers({
     } else {
       var selectedrole = getSelectedItem(data, selitems[2]);
       path.push( { level: level++, index:2, 'selected': selectedrole, 'items': data } );
-      if( selectedrole == null )
+      if( selectedrole == null ) {
+        app.setPath( selitems );
         return path;
+      } 
     }
 
     /* Module selection */

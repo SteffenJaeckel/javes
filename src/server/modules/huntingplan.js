@@ -11,6 +11,7 @@ Meteor.publish("plan_stands", function ( planid, drive ) {
 	condition['_id'] = planid;
 	condition['viewer.'+this.userId ] = { $lte: 2 };
 	var plan = Plans.findOne( condition );
+  console.log("load stands for plan:",planid," drive #",drive);
 	if( plan ) {
 		condition = {};
 		condition['location'] = { "$geoWithin": {"$geometry" : plan.drives[ drive ].shape }} ;
