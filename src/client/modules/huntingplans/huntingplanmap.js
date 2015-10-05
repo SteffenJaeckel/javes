@@ -123,20 +123,19 @@ select = new ol.interaction.Pointer( {
         }
       })
       dontupdate = true;
+      var path = app.getModulPath();
       if( route ) {
-        var path = app.getPath();
-        if( path.length == 7) {
-          path[6] = route;
+        if( path.length == 4) {
+          path[3] = route;
         } else {
           path.push( route );
         }
-        app.setPath(path);
+        app.setModulePath(path);
         Session.set('selected-route', route );
       } else {
-        var path = app.getPath();
-        if( path.length == 7) {
+        if( path.length == 4) {
           path.pop();
-          app.setPath(path);
+          app.setModulePath(path);
         }
         Session.set('selected-route', null );
       }
@@ -185,6 +184,9 @@ olMap = function( ) {
     layers.push( layer_dogs );
     layers.push( layer_stands );
 
+    var role = app.getRole();
+    var location = new ol.format.GeoJSON().readGeometry( role.location , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
+
     olmap = new ol.Map({
       layers: layers,
       target: 'map',
@@ -193,11 +195,13 @@ olMap = function( ) {
       maxExtent: [215121, 5683205, 486755, 5942287], //25833,
       view: new ol.View({
         projection: mapconfig.projection.name,//'CRS:84',
-        center: [	427665, 5808739 ],
+        center: location.getCoordinates(),
         zoom: 17,
         maxZoom:21
       })
     });
+
+
 
     var overlayLayer = new ol.layer.Vector({
       map: olmap,
@@ -759,20 +763,20 @@ Template.huntingplanmap.events({
   'click #add-drive': function( e ) {
     Meteor.call('addHuntingPlanDrive', getCurrentPlanId() , function ( e, r ) {
       if( e == null ) {
-        app.setPath([app.getCustomer(),app.getDepartment(),'huntingplans', getCurrentPlanId(), 'drive-'+r]);
+        app.setModulePath(['huntingplans', getCurrentPlanId(), 'drive-'+r]);
       }
     })
   },
   'click #delete-drive': function ( e ) {
     Meteor.call('deleteHuntingPlanDrive', getCurrentPlanId() , getCurrentDriveIndex(), function ( e ) {
       if( e == null ) {
-        app.setPath([app.getCustomer(),app.getDepartment(),'huntingplans', getCurrentPlanId(), 'drive-0']);
+        app.setModulePath(['huntingplans', getCurrentPlanId(), 'drive-0']);
       }
     })
   },
   'click #delete-plan': function( e ) {
     Meteor.call('deleteHuntingPlan', getCurrentPlanId() , function (e ) {
-      app.setPath([app.getCustomer(),app.getDepartment(),'huntingplans','schedule']);
+      app.setModulePath(['huntingplans','schedule']);
     })
   },
   'click #new-route' :function( e ) {

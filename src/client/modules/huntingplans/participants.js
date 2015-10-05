@@ -274,7 +274,7 @@ Template.participants.events({
     modals.push('edithunter', data );
   },
   'dblclick .plan': function (e ) {
-    app.setPath( [app.getCustomer(), app.getDepartment(),'huntingplans', $(e.currentTarget).attr('data-plan') ] )
+    app.setModulePath( ['huntingplans', $(e.currentTarget).attr('data-plan') ] )
   },
   'click .select-tool':function(e) {
     Session.set('selected-tool', $(e.currentTarget).attr('data') )

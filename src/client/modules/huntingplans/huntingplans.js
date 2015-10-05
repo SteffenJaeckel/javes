@@ -12,7 +12,6 @@ window.mods['huntingplans'] = { index:2, name: "Jagdplanung", icon:"fa-server", 
 		return null;
 	},
 	menuitems: function( path ) {
-		console.log("get items " , path )
 		if( path.length == 0 ) {
 			var items = [
 				{name:'Terminplanung',id:'schedule',icon:'fa-calendar'},
@@ -50,8 +49,8 @@ window.mods['huntingplans'] = { index:2, name: "Jagdplanung", icon:"fa-server", 
 	},
 	selected: function( path ) {
 		console.log( path );
-		if( path.length >= 5 ) {
-			switch( path[4] ) {
+		if( path.length >= 2 ) {
+			switch( path[1] ) {
 				case 'participants':
 					break;
 				case 'schedule':
@@ -149,7 +148,7 @@ getCurrentDrive = function () {
 
 getCurrentDriveIndex = function () {
 	var path = app.getModulPath();
-	if( path.length >= 2 ) {
+	if( path.length >= 3 ) {
 		var plan = Plans.findOne( {_id: path[1] });
 		if( plan ) {
 			if( path.length >= 3 ) {

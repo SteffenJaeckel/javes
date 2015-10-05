@@ -13,6 +13,6 @@ Template.dashboard.events({
   },
   'dblclick .well' : function( e ) {
     $(e.currentTarget).attr('data');
-    app.setPath( ['areamanagement', $(e.currentTarget).attr('data') ])
+    app.setModulePath( ['areamanagement', $(e.currentTarget).attr('data') ])
   }
 })

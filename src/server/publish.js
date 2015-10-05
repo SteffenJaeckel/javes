@@ -2,8 +2,10 @@
 Meteor.publish("customers", function() {
 	var user = Meteor.users.findOne({_id:this.userId});
 	if( user != null ) {
-		var cust = _.keys(user.customers);
-		return Customers.find({_id:{$in:cust}});
+		if( user.customers instanceof Object ) {
+			var cust = _.keys(user.customers);
+			return Customers.find({_id:{$in:cust}});
+		}
 	}
 })
 

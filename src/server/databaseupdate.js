@@ -71,7 +71,7 @@ Meteor.startup( function () {
   onVersion( last, 0, 12, function() {
     Meteor.users.find({}).forEach( function( user ) {
       if( typeof(user.profile.currentpath) == "string" ) {
-        Meteor.users.update({_id:Meteor.user()._id}, { $set: { 'profile.currentpath': user.profile.currentpath.split('|') } });
+        Meteor.users.update({_id:user._id}, { $set: { 'profile.currentpath': user.profile.currentpath.split('|') } });
       }
     })
   })

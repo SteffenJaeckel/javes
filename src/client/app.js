@@ -27,9 +27,9 @@ app = {
   setPath : function( path ) {
     console.log( "set path " , path )
     Meteor.users.update({_id:Meteor.user()._id}, { $set: { 'profile.currentpath':path } });
-    if( path.length >= 2 ) {
-      if( window.mods[path[2]] && window.mods[path[2]].selected ) {
-        window.mods[path[2]].selected( path );
+    if( path.length >= 3 ) {
+      if( window.mods[path[3]] && window.mods[path[3]].selected ) {
+        window.mods[path[3]].selected( app.getModulPath() );
       }
     }
   },
@@ -40,7 +40,25 @@ app = {
     return app.getPath()[1];
   },
   getRole : function() {
-    return app.getPath()[2];
+    var path = app.getPath();
+    if( path.length >=3 ) {
+      var customer = Customers.findOne( {_id: path[0] });
+      if( customer && customer.departments != null ) {
+        if( customer.departments[ path[1]] && customer.departments[ path[1]].roles ) {
+          if( customer.departments[ path[1]].roles[ path[2]] ) {
+            return customer.departments[ path[1]].roles[ path[2] ];
+          }
+        }
+      }
+    }
+    return {};
+  },
+  getModule : function() {
+    var path = app.getPath();
+    if( path.length >= 4) {
+      return path[3];
+    }
+    return null;
   },
   getModulPath: function () {
     return Meteor.user().profile.currentpath.slice(3,Meteor.user().profile.currentpath.length);
@@ -70,6 +88,8 @@ Template.app.helpers({
     var selectedcustomer = getSelectedItem(data, selitems[0]);
     if( data.length == 1 ) {
       var selectedcustomer = data[0];
+      selitems[0] = selectedcustomer.id;
+      app.setPath( selitems );
     } else {
       var selectedcustomer = getSelectedItem(data, selitems[0]);
       path.push( { level: level++, index:0, 'selected': selectedcustomer, 'items': data } );
@@ -89,6 +109,8 @@ Template.app.helpers({
     }
     if( data.length == 1 ) {
       var selecteddepartment = data[0];
+      selitems[1] = selecteddepartment.id;
+      app.setPath( selitems );
     } else {
       var selecteddepartment = getSelectedItem(data, selitems[1] );
       path.push( { level: level++, index:1, 'selected': selecteddepartment, 'items': data } );
@@ -105,6 +127,8 @@ Template.app.helpers({
     }
     if( data.length == 1 ) {
       var selectedrole = data[0];
+      selitems[2] = selectedrole.id;
+      app.setPath( selitems );
     } else {
       var selectedrole = getSelectedItem(data, selitems[2]);
       path.push( { level: level++, index:2, 'selected': selectedrole, 'items': data } );
@@ -114,6 +138,10 @@ Template.app.helpers({
 
     /* Module selection */
     console.log( "User is logged on as ", selectedrole.name );
+    if( customer.departments[ selecteddepartment.id ].roles[ selectedrole.name ] == null ) {
+      console.log("Achtung Role "+selectedrole.name+" ist kein gültiges Rollenprofil");
+      return path;
+    }
     var aviablemodules = customer.departments[ selecteddepartment.id ].roles[ selectedrole.name ].modules;
     data = [];
     for( var m in window.mods ) {
@@ -132,8 +160,9 @@ Template.app.helpers({
     }
     var selectedmodule = getSelectedItem(data, selitems[3]);
     path.push( { level: level++, index:3, 'selected': selectedmodule, 'items': data } );
-    if( selectedmodule == null )
-        return path;
+    if( selectedmodule == null ) {
+      return path;
+    }
 
     /* Submodule selection */
     var modulpath = app.getModulPath();
@@ -178,7 +207,7 @@ Template.app.helpers({
     return path;
   },
   getmodul : function () {
-    return app.getPath()[3];
+    return app.getModule();
   },
   getmodal: function () {
     var m = Session.get('modal');
