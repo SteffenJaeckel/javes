@@ -12,13 +12,11 @@ window.mods['areamanagement'] = { index:2,name: "Revierverwaltung", icon:"fa-com
 			Areas.find().forEach( function ( area ) {
 				areas.push( { name:area.name, id:area._id, icon:'fa-tree' } )
 			})
-			if( areas.length == 0 ) {
-				return [{name:"Neuen Pirschbezik anlegen ...",id:"new_area",icon:"fa-plus"}];
-			} else {
+			if( areas.length > 0 ) {
 				areas.unshift( {divider:true} );
-				areas.unshift( {name:"Übersicht",id:"dashboard",icon:"fa-inbox"} );
-				return areas;
 			}
+			areas.unshift( {name:"Übersicht",id:"dashboard",icon:"fa-inbox"} );
+			return areas;
 		} else {
 			switch( path[0] ) {
 				case 'dashboard':
@@ -60,9 +58,13 @@ Template.areamanagement.created = function () {
 	this.areas = Meteor.subscribe('areas')
 }
 
+Template.areamanagement.destroyed = function () {
+	this.areas.stop();
+}
+
 Template.areamanagement.helpers({
 	showdashboard: function () {
-		return app.getPath()[1] == "dashboard";
+		return app.getModulPath()[1] == "dashboard";
 	},
 	selectedAreaName: function() {
 		var area = Areas.findOne( { _id:Meteor.user().profile.currentSelectedArea } );

@@ -22,7 +22,11 @@
         {{#each path }}
           <div class="btn-group">
             <button class="btn btn-default dropdown-toggle" type="button" id="modul-subitem-selector" data-toggle="dropdown">
-  						<i class="fa {{this.selected.icon}} fa-fw"></i>&nbsp; {{this.selected.name}}
+							{{#if this.selected }}
+  							<i class="fa {{this.selected.icon}} fa-fw"></i>&nbsp; {{this.selected.name}}
+							{{else}}
+								<i class="fa fa-play fa-fw"></i>
+							{{/if}}
   					</button>
   					<ul class="dropdown-menu" aria-labelledby="modul-subitem-selector">
               {{#each this.items}}

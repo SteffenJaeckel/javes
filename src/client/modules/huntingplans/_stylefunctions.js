@@ -85,7 +85,7 @@ getDogStandStyle = function( feature, res ) {
     var dc = item.color.concat([]);
     dc[3] = 0.05;
 
-    if( u && u.profile.dogs.length > 0 ) {
+    if( u && u.profile.dogs && u.profile.dogs.length > 0 ) {
       // hunter += " "+"Teckel"+" (kurz)";
       hunter = ( u ) ? u.profile.surname+', '+u.profile.firstname : '';
       for(var i=0;i < 1;i++) {

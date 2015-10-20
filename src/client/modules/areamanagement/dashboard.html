@@ -2,22 +2,28 @@
   <style>
     .item {
       position: relative;
-      width: 100%;
-      border: 2px solid #ccc;
-      padding: 20px;
-      border-radius: 12px;
+      width: 256px;
+      height: 256px;
+      min-width: 256px;
+      min-height: 256px;
+      overflow: hidden;
+      text-align: center;
+      display: table-cell;
+      vertical-align: middle;
     }
     .well {
       border: 2px solid #ccc;
     }
-
     .well.selected {
       background-color: #fff;
     }
+
+    .
   </style>
   <div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;">
     <div style="position: relative; padding: 24px; overflow: auto; height: 100%; top: 0px; left: 0px;">
       <div class="scroll-y">
+        <div id="new-area" class="well item">Neues Revier anlegen ...</div>
         {{#each areas}}
           <div id="{{id}}" class="well" data="{{id}}">
             <p style="font-size:20pt;">{{name}}</p>

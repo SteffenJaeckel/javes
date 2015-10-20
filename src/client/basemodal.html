@@ -29,9 +29,10 @@
   }
   .array-item .array-minus {
     position: absolute;
-    right: 32px;
-    top: 4px;
-    color:#d9534f;
+    right: -1px;
+    top: 2px;
+    font-size: 18px;
+    color: #d9534f;
   }
   .folder.object {
     padding-bottom: 2px;
@@ -57,18 +58,15 @@
     position: relative;
     padding: 7px;
     font-size: 13px;
-    height: 34px;
+    height: 32px;
   }
 
   .dnyvalue {
     position: absolute;
-    /*left:40%;*/
     width:260px;
-    right:20px;
-    /*right: 40px;*/
+    right:21px;
     top: 0px;
     bottom: 0px;
-    padding: 2px;
   }
 </style>
 <div class="modal-header">
@@ -115,10 +113,10 @@
             <a class="array-minus" data="{{this.path}}"><i class="fa fa-minus-circle"></i></a>
           </div>
         {{/each}}
-        <a class="array-plus" href="#" data="{{this.path}}"><i class="fa fa-plus-circle"></i>&nbsp;Neues&nbsp;Element</a>
+        <a class="array-plus" href="#" data="{{this.path}}"><i class="fa fa-plus-circle"></i>&nbsp;{{this.proto}}&nbsp;hinzufügen</a>
       </div>
       {{else}}
-        <div class="folder-head closed" data="{{this.path}}" style="margin-bottom:0px;"><span><i class="fa fa-arrow-circle-right"></i>&nbsp;{{this.name}}</span>
+        <div class="folder-head closed" data="{{this.path}}" style="margin-bottom:0px;"><span><i class="fa fa-arrow-circle-right"></i>&nbsp;{{this.name}} [{{this.items.length}}]</span>
         </div>
       {{/if}}
     </div>

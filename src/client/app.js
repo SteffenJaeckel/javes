@@ -27,11 +27,6 @@ app = {
   setPath : function( path ) {
     console.log( "set path " , path )
     Meteor.users.update({_id:Meteor.user()._id}, { $set: { 'profile.currentpath':path } });
-    if( path.length >= 3 ) {
-      if( window.mods[path[3]] && window.mods[path[3]].selected ) {
-        window.mods[path[3]].selected( app.getModulPath() );
-      }
-    }
   },
   getCustomer : function () {
     return app.getPath()[0];
@@ -88,7 +83,10 @@ Template.app.helpers({
     var selectedcustomer = getSelectedItem(data, selitems[0]);
     if( data.length == 1 ) {
       var selectedcustomer = data[0];
-      selitems[0] = selectedcustomer.id;
+      if( selitems[0] != selectedcustomer.id ) {
+        selitems[0] = selectedcustomer.id;
+        app.setPath( selitems );
+      }
     } else {
       var selectedcustomer = getSelectedItem(data, selitems[0]);
       path.push( { level: level++, index:0, 'selected': selectedcustomer, 'items': data } );
@@ -110,8 +108,10 @@ Template.app.helpers({
     }
     if( data.length == 1 ) {
       var selecteddepartment = data[0];
-      selitems[1] = selecteddepartment.id;
-      app.setPath( selitems );
+      if( selitems[1] != selecteddepartment.id ) {
+        selitems[1] = selecteddepartment.id;
+        app.setPath( selitems );
+      }
     } else {
       var selecteddepartment = getSelectedItem(data, selitems[1] );
       path.push( { level: level++, index:1, 'selected': selecteddepartment, 'items': data } );
@@ -130,15 +130,17 @@ Template.app.helpers({
     }
     if( data.length == 1 ) {
       var selectedrole = data[0];
-      selitems[2] = selectedrole.id;
-      app.setPath( selitems );
+      if( selitems[2] != selectedrole.id ) {
+        selitems[2] = selectedrole.id;
+        app.setPath( selitems );
+      }
     } else {
       var selectedrole = getSelectedItem(data, selitems[2]);
       path.push( { level: level++, index:2, 'selected': selectedrole, 'items': data } );
       if( selectedrole == null ) {
         app.setPath( selitems );
         return path;
-      } 
+      }
     }
 
     /* Module selection */
@@ -191,10 +193,10 @@ Template.app.helpers({
                     selitems.pop();
                   }
                 }
-                app.setPath( selitems );
+                app.setPath( selitems );                
               }
             } else {
-              selected = {id:'none',name:'',icon:'fa-reorder'};
+              selected = {id:'none',name:'',icon:'fa-play'};
             }
           }
           var obj = { level: level++, index:(i+1), 'items':items , 'selected': selected };
@@ -236,15 +238,20 @@ Template.app.events({
     var selitems = app.getPath();
     if( index < selitems.length) {
       selitems[index] = id;
-      /*while( index < (selitems.length-1) ) {
+      while( index < (selitems.length-1) ) {
         selitems.pop();
-      }*/
+      }
     } else {
       while( selitems.length <= index ) {
         selitems.push( id );
       }
     }
     app.setPath( selitems );
+    if( selitems.length >= 3 ) {
+      if( window.mods[selitems[3]] && window.mods[selitems[3]].selected ) {
+        window.mods[selitems[3]].selected( app.getModulPath() );
+      }
+    }
   },
   'click #logout' : function () {
     Meteor.logout();

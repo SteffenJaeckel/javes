@@ -33,28 +33,29 @@
     }
   </style>
   <div style="position:relative;top:0px;left:0px;width:100%;height:100%;">
-    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:42px;overflow-y:auto;">
+    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:42px;overflow-y:auto;overflow-x:hidden;">
       {{#if error}}
           <div class="alert alert-danger">
             <b>Achtung !</b> {{error.text}}
           </div>
       {{/if}}
       {{#unless checkeditorstate 'selectstands' }}
-        <div>
+        <div style="width:100%;">
           <div class="form-group">
             <label>Gruppe</label>
-
-            <table width="100%">
-              {{#each aviablegroups}}
-                <tr>
-                  {{#each this}}
-                    <td style="margin:2px;">
-                      <div class="btn btn-default groupselection{{#unless aviable}} disabled{{/unless}} {{#if selected}} selected{{/if}}" style="width:100%;" data="{{id}}">{{id}}</div>
-                    </td>
-                  {{/each}}
-                </tr>
-              {{/each}}
-            </table>
+            <div>
+              <table style="width:100%;">
+                {{#each aviablegroups}}
+                  <tr>
+                    {{#each this}}
+                      <td style="text-align:center;padding-top:3px;padding-bottom:3px;">
+                        <div class="btn btn-default groupselection{{#unless aviable}} disabled{{/unless}} {{#if selected}} selected{{/if}}" style="width:42px;" data="{{id}}">{{id}}</div>
+                      </td>
+                    {{/each}}
+                  </tr>
+                {{/each}}
+              </table>
+            </div>
           </div>
           <div class="form-group">
             <label>Ansteller</label>

@@ -39,11 +39,5 @@ window.mods['statistics'] = { name: "Statistiken", icon:"fa-bar-chart", enabled:
 	},
 	selected: function( item ) {
 		console.log( item )
-		switch( item.attr('id')  ) {
-			case 'add-new-hunter':
-				modals.push('newhunter', { type:3, managed:true, firstname:'', surname:'', gender:0, title:'',group:'', email:'',phone1:'',phone2:'',isveterinary:false, isdoctor:false, dogs:[] } );			break;
-			default:
-				console.log( item.attr('id') + " not catched ");
-		}
 	}
 };

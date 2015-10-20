@@ -236,14 +236,14 @@ Template.huntingplanmap.created = function() {
   }
   DataChangeHandler.add("mainmap", function ( path ) {
     Session.set('selected-route',null);
+    console.log("call add handler mainmap", path );
     if( dontupdate == false ) {
-
       if( path.length < 4 )
         updateMapData();
 
       var drive = getCurrentDrive();
       if( drive && drive.shape ) {
-        setTimeout( function() {
+
           if( path.length == 4 ) {
             if( drive && drive.routes[ path[3] ] ) {
               var geo = new ol.format.GeoJSON().readGeometry( drive.routes[ path[3] ].path , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
@@ -260,7 +260,7 @@ Template.huntingplanmap.created = function() {
             map.beforeRender(pan, zoom)
             view.fit( geo, map.getSize() );
           }
-        },100 )
+
       }
     }
   })
@@ -471,6 +471,15 @@ updateMapData = function () {
                 }
               }
             }
+            var map = olMap();
+            if( map && geo) {
+              var view = olMap().getView();
+              var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
+              var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
+              map.beforeRender(pan, zoom)
+              view.fit( geo, map.getSize() );
+            }
+
           },
           removed:function( id ) {
             source_huntingareas.clear();

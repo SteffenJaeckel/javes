@@ -206,7 +206,7 @@ Template.arrangehuntereditor.rendered = function() {
   $(window).on('click', function ( e ) {
     var item = Session.get('drag-item');
     if( item ) {
-      //if( item.stand ) {
+      if( item.stand ) {
         var f = mapsources['stands'].getFeatureById( item.stand );
         var edit = editor.get();
         if( f ) {
@@ -229,7 +229,7 @@ Template.arrangehuntereditor.rendered = function() {
         setTimeout( function () {
           mapsources['stands'].changed()
         },100)
-      //}
+      }
     }
   }).on('mousemove', function ( e ) {
     var item = Session.get('drag-item');

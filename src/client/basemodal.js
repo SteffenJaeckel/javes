@@ -45,11 +45,11 @@ function buildItemFromType( type, item, data, path ) {
     break;
 
     case 'string':
-      return { type:'basemodal_item_string', model:type, id:item, path:path+"/"+item, name: type.name, open:true, value: (data) ? data:"" };
+      return { type:'basemodal_item_string', model:type, id:item, path:path+"/"+item, name: type.name, value: (data) ? data:"" };
     break;
 
     case 'number':
-      return { type:'basemodal_item_number', model:type, id:item, path:path+"/"+item, name: type.name, open:true, value: (data) ? data:"" };
+      return { type:'basemodal_item_number', model:type, id:item, path:path+"/"+item, name: type.name, value: (data) ? data:"" };
     break;
 
     case 'set' :
@@ -62,7 +62,7 @@ function buildItemFromType( type, item, data, path ) {
 
     case 'array':
       //var sub = buildItemFromModel(type.model, (data) ? data[item]:null, path+"/"+item );
-      return { type:'basemodal_array', model:type, id:item, path:path+"/"+item, name: type.name, open:false, items: [] };
+      return { type:'basemodal_array', model:type, id:item, path:path+"/"+item, name: type.name, proto: type.items.name, open:false, items: [] };
     break;
   }
   console.log("unkown type ", type );
@@ -78,30 +78,14 @@ function buildItemFromModel( model, data, path ) {
 }
 
 newBaseModal = function( model , title, data ) {
-  console.log("new basemodel");
-  /*var data = [
-    {type:'basemodal_folder', id:"head", path:"head", name:"Koptdaten der Sache", open:true, items:[
-      {type:'basemodal_item_string', id:"name", path:"head/name", name:'Name',value:''},
-      {type:'basemodal_item_string', id:"desc", path:"head/desc", name:'Beschreibung der Location',value:''},
-      {type:'basemodal_item_date', id:"date", path:"head/date", name:'Datum',value:''},
-      {type:'basemodal_item_set', id:"date", path:"head/date", name:'Haustier', value:'', items:[{k:0,v:"Hund"},{k:1,v:"Katze"},{k:2,v:"Maus"}]},
-    ]},
-    {type:'basemodal_folder', id:"advanced", path:"advanced", name:"Möglichkleiten", items: [
-      {type:'basemodal_item_string' ,id:"name", path:"advanced/name", name:'Name',value:''},
-      {type:'basemodal_item_string', id:"desc", path:"advanced/name", name:'Beschreibung',value:''},
-      {type:'basemodal_array', id:"subadvanced", path:"advanced/subadvanced", name:"Weitere Untermöglichkleiten",items: [
-        {type:'basemodal_folder', id:"0", path:"advanced/subadvanced/0", name:"0", open:true, items: [
-          {type:'basemodal_item_string', id:"name", path:"advanced/subadvanced/0/name", name:'Name',value:''},
-          {type:'basemodal_item_string', id:"desc", path:"advanced/subadvanced/0/desc", name:'Beschreibung',value:''},
-          {type:'basemodal_item_date', id:"date", path:"advanced/subadvanced/0/date", name:'Datum',value:''}
-        ]},
-      ]}
-    ]}
-  ];*/
+
   MapConfigmodel = {
 	  projection: {type:'object',name:'Projektion' ,model: {
 	    name:{type:'string',name:'Name', min:4,max:20},
 	    code:{type:'string',name:'Code (proj4js)', min:1,max:512}
+	  }},
+    group : {type:'array', name:'Gruppen', max: 16, items: {
+	    type: 'string', name:'Gruppe', min:1, max: 256
 	  }},
 	  layer: {type:'array',name:'Layer', max:12, items: {
 	    type:'object', name:'Layer Configuration' ,model: {
@@ -111,7 +95,7 @@ newBaseModal = function( model , title, data ) {
       		  server: {type:'set', name:"WMS Server Typ", items: ['Geoserver','Mapserver'] },
       		  attribution: {type:'string',name:'Attributierung'},
       		  url: {type:'string', name:'Url des WMS Dienstes', min:1, max:1024},
-      		  opacity: {type:'number',min:0.0, max:1.0},
+      		  opacity: {type:'number',name:'Transparenz',min:0.0, max:1.0},
       		  params: { type:'object', name:'WMS Parameter', model: {
       		    LAYERS: {type:'string',name:'Ebene'},
       		    TILED: {type:'set',items:['True','False'],name:'Kacheln',optional:true},
@@ -123,6 +107,7 @@ newBaseModal = function( model , title, data ) {
 	    }
 	  }}
 	};
+
   var data = buildItemFromModel( MapConfigmodel, null, "root" );
   modals.push('basemodal', { name:"model", data: data  } )
 }
