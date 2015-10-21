@@ -48,6 +48,10 @@ function buildItemFromType( type, item, data, path ) {
       return { type:'basemodal_item_string', model:type, id:item, path:path+"/"+item, name: type.name, value: (data) ? data:"" };
     break;
 
+    case 'text':
+      return { type:'basemodal_item_text', model:type, id:item, path:path+"/"+item, name: type.name, open:true, value: (data) ? data:"" };
+    break;
+
     case 'number':
       return { type:'basemodal_item_number', model:type, id:item, path:path+"/"+item, name: type.name, value: (data) ? data:"" };
     break;
@@ -64,6 +68,11 @@ function buildItemFromType( type, item, data, path ) {
       //var sub = buildItemFromModel(type.model, (data) ? data[item]:null, path+"/"+item );
       return { type:'basemodal_array', model:type, id:item, path:path+"/"+item, name: type.name, proto: type.items.name, open:false, items: [] };
     break;
+
+    case 'table':
+      //var sub = buildItemFromModel(type.model, (data) ? data[item]:null, path+"/"+item );
+      return { type:'basemodal_table', model:type, id:item, path:path+"/"+item, name: type.name, open:true, items: [] };
+    break;
   }
   console.log("unkown type ", type );
 }
@@ -78,7 +87,6 @@ function buildItemFromModel( model, data, path ) {
 }
 
 newBaseModal = function( model , title, data ) {
-
   MapConfigmodel = {
 	  projection: {type:'object',name:'Projektion' ,model: {
 	    name:{type:'string',name:'Name', min:4,max:20},
@@ -108,7 +116,53 @@ newBaseModal = function( model , title, data ) {
 	  }}
 	};
 
-  var data = buildItemFromModel( MapConfigmodel, null, "root" );
+  InnerPage = {
+    leftpage: { type:'object', name:"Linke Seite", model: {
+  	  timetable: {
+        type:'object',name:'Zeitplan' ,model: {
+    	    name:{type:'string',name:'Überschrift', min:4,max:80},
+          desc:{type:'text',name:'Absatz', min:0,max:2000, optional:true},
+          topic: {type:'table',name:'Tagesordungspunkte', max:12, items: {
+            	type:'object', name:'Tagesordungspunkt',model:{
+                time:{type:'string',name:'Uhrzeit', min:1,max:64},
+                topic:{type:'string',name:'Beschreibung', min:1,max:512}
+              }
+          }}
+    	  }
+      },
+      approval: {
+        type:'object',name:'Freigabe' ,model: {
+    	    name:{type:'string',name:'Überschrift', min:4,max:80},
+          desc:{type:'string',name:'Absatz', min:0,max:2000, optional:true},
+          gametypes: {type:'array',name:'Freigaben', max:12, items: {
+            	type:'object', name:'Freigabe',model:{
+                gametype:{type:'string',name:'Wildart', min:1,max:80},
+                ageclasses:{type:'string',name:'Altersklassen / Bemerkungen', min:1,max:512}
+              }
+          }}
+    	  }
+      },
+      notifocations: {
+        type:'object',name:'Hinweise' ,model: {
+    	    name:{type:'string',name:'Überschrift', min:4,max:80},
+          desc:{type:'string',name:'Absatz', min:0,max:2000, optional:true}
+    	  }
+      }
+    }},
+    rightpage: { type:'object', name:'Rechte Seite' ,model: {
+        securityadvise : { type:'object', name:'Sicherheitsbelehrung' ,model: {
+          name:{type:'string',name:'Überschrift', min:4,max:80},
+          gametypes: {type:'array',name:'Punkte', max:12, items: {
+            type:'object', name:'Absatz',model:{
+              gametype:{type:'string',name:'Überschrift', min:1,max:80},
+              ageclasses:{type:'string',name:'Text', min:1,max:512}
+            }
+          }}
+        }}
+    }}
+  };
+
+  var data = buildItemFromModel( InnerPage, null, "root" );
   modals.push('basemodal', { name:"model", data: data  } )
 }
 
@@ -126,19 +180,17 @@ Template.basemodal.helpers( {
     for( var i=0;i < keys.length;i++ ) {
 
     }*/
-
     return modals.get().data;
+  },
+  controlType : function( base , parent ) {
+    return parent+"_"+base;
   }
-
-
 })
 
 Template.basemodal.created = function() {
-  console.log('basemodal created');
 }
 
 Template.basemodal.deleted = function() {
-  console.log('basemodal deleted');
 }
 
 Template.basemodal.events( {
