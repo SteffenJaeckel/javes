@@ -1,39 +1,46 @@
 <template name="dashboard">
   <style>
-    .item {
-      position: relative;
-      width: 256px;
-      height: 256px;
-      min-width: 256px;
-      min-height: 256px;
+
+    .area {
+      font-size: 8pt;
+      padding: 10px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       overflow: hidden;
-      text-align: center;
-      display: table-cell;
-      vertical-align: middle;
-    }
-    .well {
-      border: 2px solid #ccc;
-    }
-    .well.selected {
       background-color: #fff;
+      color: #333;
+      /* color: #fff; */
+      text-align: left;
+      border-radius: 4px;
+      margin: 14px;
+      border: 2px solid #999999;
+    }
+
+    .area:hover {
+      border: 2px solid #428bca;
+      background-color: #E3E9EF;
     }
 
     .
   </style>
   <div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;">
-    <div style="position: relative; padding: 24px; overflow: auto; height: 100%; top: 0px; left: 0px;">
-      <div class="scroll-y">
-        <div id="new-area" class="well item">Neues Revier anlegen ...</div>
-        {{#each areas}}
-          <div id="{{id}}" class="well" data="{{id}}">
-            <p style="font-size:20pt;">{{name}}</p>
-            <span><i class="fa fa-envelope fa-fw"></i>&nbsp;Neue Nachrichten: 0</span>&nbsp;|&nbsp;
-            <span><i class="fa fa-user fa-fw"></i>&nbsp;Mitbenutzer 2</span>&nbsp;|&nbsp;
-            <span style="color:#aaa;"><i class="fa fa-crosshairs fa-fw"></i>&nbsp;Neue Abschüsse 0</span>
-            <span><i class="fa fa-binoculars fa-fw"></i>&nbsp;Neue Beobachtungen 2</span>
-            <span style="color:#aaa;"><i class="fa fa-pagelines fa-rotate-90 fa-fw"></i>&nbsp;Neue Nachsuchen 0</span>
-          </div>
-        {{/each}}
+    <div style="position: relative; widht:100%;height:100%;">
+      <div style="position:absolute; top:0px; left:0px; right:0px; height:58px; padding:14px; border-bottom: 2px solid #ccc; background-color:#eee;">
+        <button id="new-area" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i>&nbsp;Neuen Pirschbezirk anlegen ...</button>
+      </div>
+      <div style="position: absolute; padding: 24px; overflow: auto; top: 52px; bottom:0px; left: 0px; right:0px;">
+        <div class="scroll-y">
+          {{#each areas}}
+            <div id="{{id}}" class="area" data="{{id}}">
+              <p style="font-size:14pt;font-weight:bold;">{{name}}</p>
+              <span><i class="fa fa-envelope fa-fw"></i>&nbsp;Neue Nachrichten: 0</span>&nbsp;|&nbsp;
+              <span><i class="fa fa-user fa-fw"></i>&nbsp;Mitbenutzer 2</span>&nbsp;|&nbsp;
+              <span style="color:#aaa;"><i class="fa fa-crosshairs fa-fw"></i>&nbsp;Neue Abschüsse 0</span>
+              <span><i class="fa fa-binoculars fa-fw"></i>&nbsp;Neue Beobachtungen 2</span>
+              <span style="color:#aaa;"><i class="fa fa-pagelines fa-rotate-90 fa-fw"></i>&nbsp;Neue Nachsuchen 0</span>
+            </div>
+          {{/each}}
+        </div>
       </div>
     </div>
   </div>
