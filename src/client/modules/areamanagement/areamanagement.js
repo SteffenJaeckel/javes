@@ -26,6 +26,7 @@ window.mods['areamanagement'] = { index:2,name: "Revierverwaltung", icon:"fa-com
 					];*/
 				break;
 				default:
+				return null;
 					return [
 						{id:"new-area" , name:"Neues Revier" ,icon:'fa-plus'},
 						{divider:true},

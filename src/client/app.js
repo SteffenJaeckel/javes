@@ -21,6 +21,16 @@ function getSelectedItem( items , selection ) {
 }
 
 app = {
+  map : {},
+  getMap: function() {
+    return null;
+  },
+  getMapConfig: function() {
+    var auth = Meteor.user().profile.currentpath;
+    if( auth.length > 0 ) {
+
+    }
+  },
   getPath : function() {
     return Meteor.user().profile.currentpath;
   },
@@ -46,7 +56,8 @@ app = {
         }
       }
     }
-    return {};
+    Meteor.users.update({_id:Meteor.user()._id}, { $set: { 'profile.currentpath':[] } });
+    return null;
   },
   getModule : function() {
     var path = app.getPath();
@@ -122,6 +133,11 @@ Template.app.helpers({
     }
 
     /* Role selection */
+    if( Meteor.user().customers == null || 
+        Meteor.user().customers[selectedcustomer.id] == null || 
+        Meteor.user().customers[selectedcustomer.id].departments[selecteddepartment.id] == null )
+      return path;
+
     var roles = Meteor.user().customers[selectedcustomer.id].departments[selecteddepartment.id].roles;
     var data = [];
     console.log(roles);
@@ -193,7 +209,7 @@ Template.app.helpers({
                     selitems.pop();
                   }
                 }
-                app.setPath( selitems );                
+                app.setPath( selitems );
               }
             } else {
               selected = {id:'none',name:'',icon:'fa-play'};

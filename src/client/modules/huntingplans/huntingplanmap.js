@@ -123,7 +123,6 @@ select = new ol.interaction.Pointer( {
           }
         }
       })
-      dontupdate = true;
       var path = app.getModulPath();
       if( route ) {
         if( path.length == 4) {
@@ -140,7 +139,6 @@ select = new ol.interaction.Pointer( {
         }
         Session.set('selected-route', null );
       }
-      dontupdate = false;
       source_routes.changed();
       source_stands.changed();
       olmap.render();
@@ -180,12 +178,10 @@ olMap = function( ) {
     proj4.defs( mapconfig.projection.name ,mapconfig.projection.code );
     var layers = getBaseLayer();
 
-    layers.push( layer_huntingarea );
-    layers.push( layer_routes );
-    layers.push( layer_dogs );
-    layers.push( layer_stands );
-
     var role = app.getRole();
+    if( role == null ) {
+      return null;
+    }
     var location = new ol.format.GeoJSON().readGeometry( role.location , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
 
     olmap = new ol.Map({
@@ -264,6 +260,9 @@ Template.huntingplanmap.created = function() {
       }
     }
   })
+  for( var layer in maplayer ) {
+    olMap().getLayers().push( maplayer[layer] );
+  }
 }
 
 Template.huntingplanmap.destroyed = function() {
@@ -271,6 +270,10 @@ Template.huntingplanmap.destroyed = function() {
     this.stands.stop();
   }
   DataChangeHandler.remove("mainmap")
+  for( var layer in maplayer ) {
+    olMap().getLayers().remove( maplayer[layer] );
+  }
+  olMap().getLayers().remove( overlayLayer );
 }
 
 Template.huntingplanmap.rendered = function() {
@@ -423,16 +426,15 @@ getRoute = function ( rid ) {
 }
 
 updateMapData = function () {
-
-  console.log("begin update map");
   olmap = olMap();
   if( olmap ) {
-
-    source_huntingareas.clear();
-    source_routes.clear();
-    source_stands.clear();
-
-    overlay.getFeaturesCollection().clear()
+    olmap.setTarget( document.getElementById("map") );
+    olmap.getLayers().forEach( function ( layer ) {
+      if( layer instanceof ol.layer.Vector ) {
+        console.log("clear layer ", layer );
+        layer.getSource().clear();
+      }
+    })
 
     var plan   = getCurrentPlan();
     var drive  = getCurrentDriveIndex();

@@ -5,14 +5,8 @@ Template.dashboard.helpers({
 })
 
 Template.dashboard.events({
-  'mouseenter .well' : function( e ) {
-    $(e.currentTarget).addClass('selected');
-  },
-  'mouseleave .well' : function( e ) {
-    $(e.currentTarget).removeClass('selected');
-  },
-  'dblclick .well' : function( e ) {
-    $(e.currentTarget).attr('data');
+  'dblclick .area' : function( e ) {
+    console.log( $(e.currentTarget).attr('data'));
     app.setModulePath( ['areamanagement', $(e.currentTarget).attr('data') ] )
   }
 })
