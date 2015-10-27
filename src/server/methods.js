@@ -33,11 +33,3 @@ Meteor.methods({
 	},
 
 });
-
-Accounts.onCreateUser( function(options, user) {
-	if (options.profile) {
-		options.profile.avatar = Math.round( Math.random() * 1000 );
-		user.profile = options.profile;
-	}
-	return user;
-});

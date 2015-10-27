@@ -283,7 +283,8 @@ Template.participants.events({
     Session.set($(e.currentTarget).attr('data'),null);
   },
   'click #add-hunter' : function ( e ) {
-    modals.push('newhunter', { type:3, managed:true, firstname:'', surname:'', gender:0, title:'',group:[], email:'',phone1:'',phone2:'',isveterinary:false, isdoctor:false, dogs:[] } );
+    modals.push('adduser',{title:"Neuen Teilnehmer hinzufügen" });
+    //modals.push('newhunter', { type:3, managed:true, firstname:'', surname:'', gender:0, title:'',group:[], email:'',phone1:'',phone2:'',isveterinary:false, isdoctor:false, dogs:[] } );
   },
   'click #send-requests' : function ( e ) {
     modals.push('sendrequests', { subject:'', body:'', signature:'', date: new Date( new Date().getTime() + (14*24*60*60*60*1000) )} );
