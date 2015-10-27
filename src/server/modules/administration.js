@@ -4,7 +4,15 @@ Meteor.startup( function () {
 })
 
 Meteor.publish("employies", function () {
-	return Meteor.users.find();
+
+  var me = Meteor.users.findOne({ _id:this.userId } );
+  if( me && me.profile.currentpath.length >= 2 ) {
+    var query = {};
+    query[ 'customers.'+me.profile.currentpath[0]+'.departments.'+me.profile.currentpath[1] ] = {$exists:true};
+    console.log(query);
+    return Meteor.users.find( query );
+  }
+  return null;
 });
 
 

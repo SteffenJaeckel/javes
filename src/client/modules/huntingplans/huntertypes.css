@@ -8,22 +8,22 @@ button.huntertype {
 }
 .huntertype-1:hover {
   color:#fff !important;
-  background-color:#45818e;
+  background-color:#45818e !important;
 }
 .huntertype-1.hover {
   color:#fff !important;
-  background-color:#45818e;
+  background-color:#45818e !important;
 }
 .huntertype-2 {
   color:#6aa84f;
 }
 .huntertype-2:hover{
   color:#fff !important;
-  background-color:#6aa84f;
+  background-color:#6aa84f !important;
 }
 .huntertype-2.hover {
   color:#fff !important;
-  background-color:#6aa84f;
+  background-color:#6aa84f !important;
 }
 .huntertype-3 {
   color:#e69138;

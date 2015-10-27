@@ -13,13 +13,13 @@ if( window.mods == null ) {
 }
 window.mods['administration'] = { index:1, name: "Administration", icon:"fa-group", enabled:true,
 	defaultitem: function() {
-		return 'customer';
+		return 'user';
 	},
 	menuitems: function( path ) {
 		if( path.length == 0 ) {
 			if( Meteor.user().isServerAdmin == true ) {
 				return [
-					{name:'Kunden',id:'customer',icon:'fa-book'},
+					{name:'Einstellungen',id:'settings',icon:'fa-cogs'},
 					{name:'Benutzer',id:'user',icon:'fa-user'},
 				];
 			} else {
@@ -36,10 +36,10 @@ window.mods['administration'] = { index:1, name: "Administration", icon:"fa-grou
 
 Template.administration.helpers({
 	getsubmodule : function() {
-		var path = app.getPath();
+		var path = app.getModulPath();
 		if( path.length >= 2 ) {
 			switch( path[1] ) {
-				case 'customer':
+				case 'settings':
 					return 'customer';
 				case 'user':
 					return 'user';

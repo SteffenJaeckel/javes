@@ -1,3 +1,7 @@
+function getType( user ) {
+  return user.customers[app.getCustomer()].departments[ app.getDepartment() ].type;
+}
+
 function getStandByUser( stands , user ) {
   for( var id in stands ) {
     if( stands[id].user == user )
@@ -144,7 +148,7 @@ Template.arrangehuntereditor.helpers({
                 surname: user.profile.surname,
                 title:user.profile.title,
                 isdoctor: (user.profile.isdoctor || user.profile.isveterinary),
-                type:'huntertype-'+(user.profile.type+1),
+                type:'huntertype-'+(getType( user )+1),
                 dogs: (user.profile.dogs) ? user.profile.dogs:[],
                 state: plan.invitestates[id].state,
                 stand: (stand) ? stand.name : ''
