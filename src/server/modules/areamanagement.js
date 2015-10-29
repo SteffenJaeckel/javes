@@ -1,5 +1,5 @@
 function readableName( user ) {
-	return user.profile.name+" "+user.profile.surname;
+	return user.profile.firstname+" "+user.profile.surname;
 }
 
 function addAreaNofification( areaId, userId, message ) {
@@ -31,7 +31,7 @@ Meteor.publish("areas", function () {
 	return Areas.find( querry, { fields: {deleted:0} });
 });
 
-Meteor.publish("stands", function ( areaId ) {
+Meteor.publish("area_stands", function ( areaId ) {
 	var querry = {};
 	querry[ '_id' ] = areaId;
 	querry[ 'deleted' ] = false;
@@ -40,7 +40,7 @@ Meteor.publish("stands", function ( areaId ) {
 	if( area ) {
 
 		var start = new Date();
-		var collection = Stands.find({"location": { "$geoWithin": {"$polygon" : area.borders.coordinates }}});
+		var collection = Stands.find({"location": { "$geoWithin": {"$geometry" : area.geometry }}});
 		var end = new Date();
 		console.log("request stands ("+collection.count()+") in "+(end.getTime()-start.getTime())+"ms")
 		return collection;
@@ -49,14 +49,14 @@ Meteor.publish("stands", function ( areaId ) {
 	return Stands.find({ unkown: true });
 });
 
-Meteor.publish("reports", function ( areaId, days, period ) {
+Meteor.publish("area_reports", function ( areaId, days, period ) {
 
 	if(days == null ) {
-		days = 14;
+		days = 365; // 1 Jahre abholen und auf dem client filtern ...
 	}
 	var range = (days*24*60*60*1000);
 	var date = new Date();
-	range = Math.max( date.getTime() - period.start.getTime(), range );
+	//range = Math.max( date.getTime() - period.start.getTime(), range );
 	var time = date.getTime()-range;
 	date.setTime( time );
 	var querry = {};
@@ -66,7 +66,7 @@ Meteor.publish("reports", function ( areaId, days, period ) {
 	var area = Areas.findOne( querry );
 	if( area ) {
 		var start = new Date();
-		var collection = Reports.find({"location": { "$geoWithin": {"$polygon" : area.borders.coordinates }},date:{ $gt : date }});
+		var collection = Reports.find({"location": { "$geoWithin": {"$geometry" : area.geometry }}/*,date:{ $gt : date }*/});
 		var end = new Date();
 		console.log("request reports ("+collection.count()+") in "+(end.getTime()-start.getTime())+"ms")
 		return collection;
@@ -74,8 +74,8 @@ Meteor.publish("reports", function ( areaId, days, period ) {
 	return Reports.find({ unkown: true });
 });
 
-Meteor.publish("comments", function ( areaId ) {
-	return Comments.find( { area:areaId } );
+Meteor.publish("comments", function ( id ) {
+	return Comments.find( { obj:id } );
 });
 
 Meteor.publish("allocations", function ( areaId ) {
@@ -249,20 +249,13 @@ Meteor.methods({
 		}
 		return true;
 	},
-	editAreaBorder:function( areaId, shape ) {
+	updateAreaShape:function( areaId, shape ) {
+		var shape = Validate( shape, DataModels["Shapemodel"] );
 		var me = Meteor.users.findOne( { _id: this.userId });
 		var area = Areas.findOne({_id:areaId} );
 		if( area.viewer[this.userId] <= 1  ) {
-			var old = area.shape;
-			/// remove me later ///
-			var coordarray = [];
-			for( var i=0; i < area.shape.length;i++ ) {
-					coordarray.push( [ area.shape[i].lng, area.shape[i].lat ] );
-			}
-			var gs = {type:"Polygon",coordinates:coordarray};
-			/// remove me later ///
-			Areas.update({_id:areaId },{$set:{shape:shape,borders:gs}} );
-			addAreaNofification(areaId, this.userId, { areaborders_changed:true,'trigger':readableName(me),'old':old } );
+			Areas.update({_id:areaId },{$set:{geometry:shape}} );
+			//addAreaNofification(areaId, this.userId, { areaborders_changed:true,'trigger':readableName(me),'old':old } );
 		}
 		return true;
 	},
@@ -442,14 +435,14 @@ Meteor.methods({
 			area: areaId,
 			user: { 
 				id:this.userId,
-				name:me.profile.name,
+				name:me.profile.firstname,
 				surname:me.profile.surname
 			},
 			img:me.profile.avatar,
 			text:text,
 			date: new Date()
 		})
-		addAreaNofification( areaId, this.userId, { newcomment:true, trigger:readableName(me), obj:obj } );
+		//addAreaNofification( areaId, this.userId, { newcomment:true, trigger:readableName(me), obj:obj } );
 	},
 	deleteComment: function( id ) {
 		Comments.remove({_id:id,user:this.userId})

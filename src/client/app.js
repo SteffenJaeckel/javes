@@ -1,3 +1,39 @@
+mapconfig = {
+  'projection' : { name:'EPSG:25833',code:'+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs' },
+  'layer' : [ {
+    name:'Forstgrundkarte',
+    ollayers : [{
+        server: 'Geoserver',
+        attribution:'<a href="http://www.brandenburg-forst.de">© LFB Forstgrundkarte | www.brandenburg-forst.de</a> ',
+        url:'http://www.brandenburg-forst.de:8080/geoserver/wms_ext/wms',
+        params:{'LAYERS': 'wms_ext:arcgis_raster','TILED':'True','TRANSPARENT':'False','VERSION':'1.3.0' },
+        opacity:1.0
+      }]
+    },{
+    name:'Luftbild',
+    ollayers : [{
+        server: 'Geoserver',
+        attribution:'<a href="http://isk.geobasis-bb.de">© LGB | www.geobasis-bb.de</a> ',
+        url:'http://isk.geobasis-bb.de/mapproxy/dop20/service',
+        params:{'LAYERS': 'dop20c', 'VERSION': '1.1.1'},
+        opacity:1.0
+    }]},{
+    name:'Hybrid',
+    ollayers : [{
+        server: 'Geoserver',
+        attribution:'<a href="http://isk.geobasis-bb.de">© LGB | www.geobasis-bb.de</a> ',url:'http://isk.geobasis-bb.de/mapproxy/dop20/service',
+        params:{'LAYERS': 'dop20c', 'VERSION': '1.1.1'},
+        opacity:1.0
+    },{
+        server: 'Geoserver',
+        attribution:'<a href="http://www.brandenburg-forst.de">© LFB Forstgrundkarte | www.brandenburg-forst.de</a> ',
+        url:'http://www.brandenburg-forst.de:8080/geoserver/wms_ext/wms',
+        params:{'LAYERS': 'wms_ext:arcgis_raster','TILED':'True','TRANSPARENT':'False','VERSION':'1.3.0' },
+        opacity:0.6
+    }]}
+  ]
+};
+
 Template.app.created = function () {
   this.customers = Meteor.subscribe("customers");
   this.permissions = Meteor.subscribe("permissions");
@@ -20,15 +56,134 @@ function getSelectedItem( items , selection ) {
   return null;
 }
 
+function getBaseLayer( type ) {
+  var layers = [];
+
+  if( type == null || type > mapconfig.layer.length-1 ) {
+    var selected = 2;
+  } else {
+    var selected = type;
+  }
+
+  for( var l=0;l < mapconfig.layer[selected].ollayers.length;l++  ) {
+    var layer = new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+          attributions:  [ new ol.Attribution( { html: mapconfig.layer[selected].ollayers[l].attribution } )],
+          url: mapconfig.layer[selected].ollayers[l].url,
+          params: mapconfig.layer[selected].ollayers[l].params,
+          mapserver: mapconfig.layer[selected].ollayers[l].server,
+        }),
+        opacity:mapconfig.layer[selected].ollayers[l].opacity
+    });
+    layers.push( layer );
+  }
+  return layers;
+}
+
+
+DataChangeHandler = {
+	items: {},
+	add : function( key, func ) {
+		console.log("add datachange handler "+key );
+		DataChangeHandler.items[ key ] = func;
+	},
+	remove : function( key ) {
+		console.log("remove datachange handler "+key );
+		delete DataChangeHandler.items[ key ]
+	},
+	call : function ( path ) {
+		for( var k in DataChangeHandler.items ) {
+			DataChangeHandler.items[k]( path );
+		}
+	}
+};
+
 app = {
-  map : {},
   getMap: function() {
-    return null;
+      if( app.olmap == null  ) {
+        proj4.defs( mapconfig.projection.name ,mapconfig.projection.code );
+        var layers = getBaseLayer();
+
+      /*  var role = app.getRole();
+        if( role == null ) {
+          return null;
+        }
+        var location = new ol.format.GeoJSON().readGeometry( role.location , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
+*/
+        app.olmap = new ol.Map({
+          layers: layers,
+          target: 'map',
+          renderer:'canvas',
+          restrictedExtent: [214029, 5621113, 562926, 5993281],
+          maxExtent: [215121, 5683205, 486755, 5942287], //25833,
+          view: new ol.View({
+            projection: mapconfig.projection.name,//'CRS:84',
+            center: [214029, 5621113],//location.getCoordinates(),
+            zoom: 17,
+            maxZoom:21
+          })
+        });
+      }
+      return app.olmap;
+  },
+  addLayer: function( layer ) {
+    var map = app.getMap();
+    if( map == null ){
+      console.log("add layer "+ layer.get('name')+" failed ... no map aviable");
+      return;
+    }
+    console.log("add layer "+layer.get('name'),layer );
+    map.getLayers().forEach( function(cur ) {
+      if( cur == layer ) {
+        app.olmap.getLayers().remove(cur);
+      }
+    });
+    map.getLayers().push( layer );
+  },
+  removeLayer: function( layer ) {
+    var map = app.getMap();
+    if( map == null ){
+      console.log("add layer "+ layer.get('name')+" failed ... no map aviable");
+      return;
+    }
+    console.log("remove layer "+layer.get('name'),layer );
+    map.getLayers().remove(layer);
+  },
+  clearTool: function ( map ) {
+    if( map == null ) {
+      map = app.getMap();
+    }
+    if( app.current_tool ) {
+      map.removeInteraction( app.current_tool );
+      if( app.current_tool.get('id') ) {
+        $('#'+app.current_tool.get('id') ).removeClass( 'selected' );
+      }
+      if( app.current_tool.get('cursor') ) {
+        $('#map').removeClass( app.current_tool.get('cursor') )
+      }
+    }
+  },
+  setTool : function( tool ) {
+    var map = app.getMap();
+    app.clearTool( map );
+    map.addInteraction( tool )
+    if( tool.get('cursor') ) {
+      $('#map').addClass( tool.get('cursor') );
+    }
+    if( tool.get('id') ) {
+      $('#'+tool.get('id') ).addClass( 'selected' );
+    }
+    if( tool.get('keydown') ) {
+      $(window).on('keydown', tool.get('keydown') )
+    }
+    if( tool.get('keyup') ) {
+      $(window).on('keyup', tool.get('keyup') )
+    }
+    app.current_tool = tool;
   },
   getMapConfig: function() {
     var auth = Meteor.user().profile.currentpath;
     if( auth.length > 0 ) {
-
     }
   },
   getPath : function() {
@@ -88,6 +243,9 @@ Template.app.helpers({
     /* Customer selection */
     var data = [];
     var customers = Customers.find({}).fetch();
+    if( customers.length == 0 ) {
+      return [];
+    }
     for( var i=0;i < customers.length;i++ ) {
       data.push({index:i, id: customers[i]._id, name: customers[i].name.short, icon: 'fa-book',class:''} );
     }
@@ -140,7 +298,7 @@ Template.app.helpers({
 
     var roles = Meteor.user().customers[selectedcustomer.id].departments[selecteddepartment.id].roles;
     var data = [];
-    console.log(roles);
+    // console.log(roles);
     for( var i=0;i < roles.length; i++ ) {
       data.push({index:i, id: roles[i], name: roles[i], icon: 'fa-user',class:''} );
     }
@@ -160,7 +318,7 @@ Template.app.helpers({
     }
 
     /* Module selection */
-    console.log( "User is logged on as ", selectedrole.name );
+    // console.log( "User is logged on as ", selectedrole.name );
     if( customer.departments[ selecteddepartment.id ].roles[ selectedrole.name ] == null ) {
       console.log("Achtung Role "+selectedrole.name+" ist kein gültiges Rollenprofil");
       return path;

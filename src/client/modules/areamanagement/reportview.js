@@ -51,6 +51,11 @@ Template.reportview.events({
 	}
 })
 
-Template.reportview.destroyed = function () {
+Template.reportview.created = function () {
+	this.comments = Meteor.subscribe("comments",Session.get('reportdata')._id)
+}
 
+
+Template.reportview.destroyed = function( ) {
+	this.comments.stop();
 }

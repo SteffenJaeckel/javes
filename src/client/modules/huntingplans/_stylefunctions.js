@@ -42,7 +42,7 @@ function getColor( feature ) {
   }
 
   if( route == null ) {
-    if( feature.get('color') ) {
+    if( feature.get('color') != null ) {
       var c = parseInt(feature.get('color'));
       img = 'img/marker/'+(parseInt(feature.get('type'))+3)+'0'+c+'.png'
       color = ol.color.asArray( Colors[ c ] );
@@ -65,6 +65,38 @@ function getColor( feature ) {
   }
 
   return {'img':img,'color':color,'opacity':opacity};
+}
+
+getReportStyle = function( feature, res, selected ) {
+  var color = parseInt(feature.get('color'));
+  var type = parseInt(feature.get('type'));
+  var text = feature.get('text');
+  var zindex = parseInt(feature.get('z-index'));
+
+  var img = 'img/marker/'+(type)+'0'+(color)+'.png';
+  styles = [];
+  styles.push( new ol.style.Style({
+    image: new ol.style.Icon(({
+      anchor: [0.5, 1],
+      scale: ( res <= minzoom ) ? 1 : 0.5 ,
+      src: img,
+      opacity: 1
+    })),
+    text: new ol.style.Text({
+      text: ( res <= minzoom ) ? text:"",
+      scale: ( res <= minzoom ) ? 1.0 : 0.5 ,
+      offsetY: -16,
+      fill: new ol.style.Fill({
+        color: [0, 0, 0, 1]
+      }),
+      stroke: new ol.style.Stroke({
+        color: [0, 0, 0, 1],
+        width: 1
+      })
+    }),
+    zIndex: zindex
+  }))
+  return styles;
 }
 
 getDogStandStyle = function( feature, res ) {

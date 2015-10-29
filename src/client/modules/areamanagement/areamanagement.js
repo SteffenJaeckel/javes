@@ -9,7 +9,7 @@ window.mods['areamanagement'] = { index:2,name: "Revierverwaltung", icon:"fa-com
 	menuitems: function( path ) {
 		if( path.length == 0 ) {
 			var areas = []
-			Areas.find().forEach( function ( area ) {
+			Areas.find({},{ sort:{ 'name':1 }}).forEach( function ( area ) {
 				areas.push( { name:area.name, id:area._id, icon:'fa-tree' } )
 			})
 			if( areas.length > 0 ) {
@@ -20,36 +20,11 @@ window.mods['areamanagement'] = { index:2,name: "Revierverwaltung", icon:"fa-com
 		} else {
 			switch( path[0] ) {
 				case 'dashboard':
-					return null; /*[
-						{name:'Neuen Jäger hinzufügen',id:'add-new-hunter',icon:'fa-user-plus'},
-						{name:'Einladungen veschicken',id:'send-invitations',icon:'fa-envelope'},
-					];*/
+					return null;
 				break;
 				default:
-				return null;
-					return [
-						{id:"new-area" , name:"Neues Revier" ,icon:'fa-plus'},
-						{divider:true},
-
-						{id:"edit-borders", name:"Pirschbezirksgrenzen anpassen ..." ,icon:'fa-pencil'},
-						{id:"rename-area", name:"Pirschbezirk umbennen ..." ,icon:'fa-edit'},
-						{id:"share-info", name:"Pirschbezirk teilen ..." ,icon:'fa-share'},
-						{divider:true},
-
-						{id:"report-overview", name:"Übersicht Berichte ..." ,icon:'fa-table'},
-						{id:"area-overview", name:"Übersicht jagdliche Einrichtungen ..." ,icon:'fa-table'},
-						{divider:true},
-
-						{id:"new-stand", name:"Neue jagdliche Einrichtung ..." ,icon:'fa-plus'},
-						{divider:true},
-
-						{id:"new-view-report", name:"Sichtung eintragen ..." ,icon:'fa-binoculars'},
-						{id:"new-miss-report", name:"Anschuss eintragen ..." ,icon:'fa-pagelines fa-rotate-90'},
-						{id:"new-kill-report", name:"Abschuss eintragen ..." ,icon:'fa-crosshairs '},
-						{divider:true},
-						{id:"delete-area", name:"Revier entfernen", icon:'fa-trash'},
-					];
-					break;
+					DataChangeHandler.call( path );
+				break;
 			}
 		}
 	}
@@ -61,6 +36,14 @@ Template.areamanagement.created = function () {
 
 Template.areamanagement.destroyed = function () {
 	this.areas.stop();
+}
+
+getCurrentArea = function( ) {
+	var path = app.getModulPath();
+	if( path.length >= 1 ){
+		return Areas.findOne({_id:path[1]});
+	}
+	return null;
 }
 
 Template.areamanagement.helpers({
@@ -85,7 +68,7 @@ Template.areamanagement.helpers({
 		return false;
 	}
 })
-
+/*
 Template.areamanagement.events({
 	'click .area-item':function ( e ) {
 		var area = Areas.findOne({_id:$(e.currentTarget).attr('id')})
@@ -123,9 +106,6 @@ Template.areamanagement.events({
 	},
 	'click #new-stand':function ( e ) {
 		newWizzard('stand')
-		/*Session.set('standdata',{ name:'Neue jagdliche Einrichtung',desc:'',type:1 });
-		Session.set('modal', { newstand: true } );
-		Session.set('editmode',{ editstandposition:true } );*/
 	},
 	'click #share-info':function ( e ) {
 		Session.set('modal', { shareinfo: true } );
@@ -165,3 +145,4 @@ Template.areamanagement.events({
 		}
 	}
 })
+*/

@@ -288,9 +288,9 @@ Template.viewstand.events({
 })
 
 Template.viewstand.created = function( ) {
-
+	this.comments = Meteor.subscribe("comments",Session.get('standdata')._id)
 }
 
 Template.viewstand.destroyed = function( ) {
-
+	this.comments.stop();
 }

@@ -238,7 +238,7 @@ Template.arrangehuntereditor.rendered = function() {
   }).on('mousemove', function ( e ) {
     var item = Session.get('drag-item');
     if( item ) {
-      var map = olMap();
+      var map = app.getMap();
       item.stand = '';
       var off = $('#map').offset();
       map.forEachFeatureAtPixel( [e.pageX-off.left, e.pageY-off.top ], function( f,l ) {
@@ -253,7 +253,7 @@ Template.arrangehuntereditor.rendered = function() {
   });
   $('#map').click( function ( e ) {
     if( Session.get('drag-item') == null ) {
-      var map = olMap();
+      var map = app.getMap();
       var off = $('#map').offset();
       map.forEachFeatureAtPixel( [e.pageX-off.left, e.pageY-off.top ], function( f,l ) {
         if( l && l == maplayer['stands'] && editor.get() ) {

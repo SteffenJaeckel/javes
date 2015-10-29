@@ -8,43 +8,49 @@
     <div id="mapcontainer">
       <div id="map"></div>
     </div>
-    <div id="selection">
-      <h4>Pirschbezirk</h4>
-      <p>
-        Der Pirschbezirk ist 45ha groß. Es sind 3 Begehungsscheininhaber zugewiesen.
-      </p>
-      <div class="form-group">
-        <button class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-pencil fa-fw"></i>&nbsp;Fläche anpassen ...</button>
+    {{#if editor }}
+      <div id="editmode">
+        {{> Template.dynamic template=editortemplate }}
       </div>
-      <div class="form-group">
-        <button class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-edit fa-fw"></i>&nbsp;Pirschbezirk umbennen ...</button>
+    {{else}}
+      <div id="selection">
+        <h4>Pirschbezirk</h4>
+        <p>
+          Der Pirschbezirk ist 45ha groß. Es sind 3 Begehungsscheininhaber zugewiesen.
+        </p>
+        <div class="form-group">
+          <button id="adjust-area" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-pencil fa-fw"></i>&nbsp;Fläche anpassen ...</button>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-edit fa-fw"></i>&nbsp;Pirschbezirk umbennen ...</button>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-share fa-fw"></i>&nbsp;Pirschbezirk teilen ...</button>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-sm btn-danger" style="width:100%; text-align:left;"><i class="fa fa-trash fa-fw"></i>&nbsp;Pirschbezirk löschen</button>
+        </div>
+        <h4>Jagdliche Einrichtungen</h4>
+        <div class="form-group">
+          <button id="area-overview" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-table fa-fw"></i>&nbsp;Übersicht jagdliche Einrichtungen anzeigen</button>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-plus fa-fw"></i>&nbsp;Neue jagdliche Einrichtung ...</button>
+        </div>
+        <h4>Berichte</h4>
+        <div class="form-group">
+          <button class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-table fa-fw"></i>&nbsp;Übersicht Berichte anzeigen</button>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-binoculars fa-fw"></i>&nbsp;Wildbeobachtung eintragen ...</button>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-crosshairs fa-fw"></i>&nbsp;Abschuss eintragen ...</button>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-pagelines fa-rotate-90 fa-fw"></i>&nbsp;Nachsuche melden ...</button>
+        </div>
       </div>
-      <div class="form-group">
-        <button class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-share fa-fw"></i>&nbsp;Pirschbezirk teilen ...</button>
-      </div>
-      <div class="form-group">
-        <button class="btn btn-sm btn-danger" style="width:100%; text-align:left;"><i class="fa fa-trash fa-fw"></i>&nbsp;Pirschbezirk löschen</button>
-      </div>
-      <h4>Jagdliche Einrichtungen</h4>
-      <div class="form-group">
-        <button class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-table fa-fw"></i>&nbsp;Übersicht jagdliche Einrichtungen anzeigen</button>
-      </div>
-      <div class="form-group">
-        <button class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-plus fa-fw"></i>&nbsp;Neue jagdliche Einrichtung ...</button>
-      </div>
-      <h4>Berichte</h4>
-      <div class="form-group">
-        <button class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-table fa-fw"></i>&nbsp;Übersicht Berichte anzeigen</button>
-      </div>
-      <div class="form-group">
-        <button class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-binoculars fa-fw"></i>&nbsp;Wildbeobachtung eintragen ...</button>
-      </div>
-      <div class="form-group">
-        <button class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-crosshairs fa-fw"></i>&nbsp;Abschuss eintragen ...</button>
-      </div>
-      <div class="form-group">
-        <button class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-pagelines fa-rotate-90 fa-fw"></i>&nbsp;Nachsuche melden ...</button>
-      </div>
-    </div>
+    {{/if}}
   </div>
 </template>

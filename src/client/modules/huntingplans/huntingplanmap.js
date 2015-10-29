@@ -1,40 +1,3 @@
-
-mapconfig = {
-  'projection' : { name:'EPSG:25833',code:'+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs' },
-  'layer' : [ {
-    name:'Forstgrundkarte',
-    ollayers : [{
-        server: 'Geoserver',
-        attribution:'<a href="http://www.brandenburg-forst.de">© LFB Forstgrundkarte | www.brandenburg-forst.de</a> ',
-        url:'http://www.brandenburg-forst.de:8080/geoserver/wms_ext/wms',
-        params:{'LAYERS': 'wms_ext:arcgis_raster','TILED':'True','TRANSPARENT':'False','VERSION':'1.3.0' },
-        opacity:1.0
-      }]
-    },{
-    name:'Luftbild',
-    ollayers : [{
-        server: 'Geoserver',
-        attribution:'<a href="http://isk.geobasis-bb.de">© LGB | www.geobasis-bb.de</a> ',
-        url:'http://isk.geobasis-bb.de/mapproxy/dop20/service',
-        params:{'LAYERS': 'dop20c', 'VERSION': '1.1.1'},
-        opacity:1.0
-    }]},{
-    name:'Hybrid',
-    ollayers : [{
-        server: 'Geoserver',
-        attribution:'<a href="http://isk.geobasis-bb.de">© LGB | www.geobasis-bb.de</a> ',url:'http://isk.geobasis-bb.de/mapproxy/dop20/service',
-        params:{'LAYERS': 'dop20c', 'VERSION': '1.1.1'},
-        opacity:1.0
-    },{
-        server: 'Geoserver',
-        attribution:'<a href="http://www.brandenburg-forst.de">© LFB Forstgrundkarte | www.brandenburg-forst.de</a> ',
-        url:'http://www.brandenburg-forst.de:8080/geoserver/wms_ext/wms',
-        params:{'LAYERS': 'wms_ext:arcgis_raster','TILED':'True','TRANSPARENT':'False','VERSION':'1.3.0' },
-        opacity:0.6
-    }]}
-  ]
-}
-
 DistanceToKm = function( dist ) {
   return Math.round(dist/100)/10;
 }
@@ -42,7 +5,6 @@ DistanceToKm = function( dist ) {
 var olmap=null;
 var dontupdate = false;
 
-overlay = {};
 mapsources = {};
 
 var source_huntingareas = new ol.source.Vector(
@@ -70,6 +32,7 @@ var layer_huntingarea = new ol.layer.Vector({
     return getHuntingAreaStyle( feature, res, false );
   }
 });
+layer_huntingarea.set('name','Jagdfläche');
 
 maplayer['huntingareas'] = layer_huntingarea;
 
@@ -79,6 +42,7 @@ var layer_routes = new ol.layer.Vector({
     return getHuntingAreaStyle( feature, res, false );
   }
 });
+layer_routes.set('name','Anstellrouten');
 maplayer['routes'] = layer_routes;
 
 var layer_dogs = new ol.layer.Vector({
@@ -87,6 +51,7 @@ var layer_dogs = new ol.layer.Vector({
     return getDogStandStyle( f, r);
   }
 });
+layer_dogs.set('name','Hunde');
 maplayer['dogs'] = layer_dogs;
 
 var layer_stands = new ol.layer.Vector({
@@ -95,137 +60,61 @@ var layer_stands = new ol.layer.Vector({
     return getStandStyle( f, r, false);
   }
 });
+layer_stands.set('name','Jagdliche Einrichtungen');
 maplayer['stands'] = layer_stands;
 
 gotoStand = function ( standid ) {
   var s = Stands.findOne( {_id: standid } )
-  var view = olMap().getView();
+  var view = app.getMap().getView();
   var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
-  olMap().beforeRender(pan)
+  app.getMap().beforeRender(pan)
   view.setCenter( proj4('WGS84',mapconfig.projection.name,s.location.coordinates) )
 }
 
-select = new ol.interaction.Pointer( {
-  handleEvent : function ( e ) {
-
-    if( editor.get() == null  && e.type == 'singleclick') {
-      console.log("Stands:", Stands.find().count());
-      overlay.clear();
-      var route = null;
-      e.map.forEachFeatureAtPixel( e.pixel , function ( f , l ) {
-        if( l ) {
-          if( route == null ) {
-            if( l == layer_stands ) {
-              route = f.get('route');
-            } else if( l == layer_routes ) {
-              route = f.getId();
+function getSelectionTool() {
+  select = new ol.interaction.Pointer( {
+    handleEvent : function ( e ) {
+      if( editor.get() == null  && e.type == 'singleclick') {
+        console.log("Stands:", Stands.find().count());
+        //app.overlay.clear();
+        var route = null;
+        e.map.forEachFeatureAtPixel( e.pixel , function ( f , l ) {
+          if( l ) {
+            if( route == null ) {
+              if( l == layer_stands ) {
+                route = f.get('route');
+              } else if( l == layer_routes ) {
+                route = f.getId();
+              }
             }
           }
-        }
-      })
-      var path = app.getModulPath();
-      if( route ) {
-        if( path.length == 4) {
-          path[3] = route;
-        } else {
-          path.push( route );
-        }
-        app.setModulePath(path);
-        Session.set('selected-route', route );
-      } else {
-        if( path.length == 4) {
-          path.pop();
+        })
+        var path = app.getModulPath();
+        if( route ) {
+          if( path.length == 4) {
+            path[3] = route;
+          } else {
+            path.push( route );
+          }
           app.setModulePath(path);
-        }
-        Session.set('selected-route', null );
-      }
-      source_routes.changed();
-      source_stands.changed();
-      olmap.render();
-    }
-    return true;
-  }
-})
-
-
-getBaseLayer = function( type ) {
-  var layers = [];
-
-  if( type == null || type > mapconfig.layer.length-1 ) {
-    var selected = 2;
-  } else {
-    var selected = type;
-  }
-
-  for( var l=0;l < mapconfig.layer[selected].ollayers.length;l++  ) {
-    var layer = new ol.layer.Tile({
-        source: new ol.source.TileWMS({
-          attributions:  [ new ol.Attribution( { html: mapconfig.layer[selected].ollayers[l].attribution } )],
-          url: mapconfig.layer[selected].ollayers[l].url,
-          params: mapconfig.layer[selected].ollayers[l].params,
-          mapserver: mapconfig.layer[selected].ollayers[l].server,
-        }),
-        opacity:mapconfig.layer[selected].ollayers[l].opacity
-    });
-    layers.push( layer );
-  }
-  return layers;
-}
-
-olMap = function( ) {
-
-  if( olmap == null  ) {
-    proj4.defs( mapconfig.projection.name ,mapconfig.projection.code );
-    var layers = getBaseLayer();
-
-    var role = app.getRole();
-    if( role == null ) {
-      return null;
-    }
-    var location = new ol.format.GeoJSON().readGeometry( role.location , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
-
-    olmap = new ol.Map({
-      layers: layers,
-      target: 'map',
-      renderer:'canvas',
-      restrictedExtent: [214029, 5621113, 562926, 5993281],
-      maxExtent: [215121, 5683205, 486755, 5942287], //25833,
-      view: new ol.View({
-        projection: mapconfig.projection.name,//'CRS:84',
-        center: location.getCoordinates(),
-        zoom: 17,
-        maxZoom:21
-      })
-    });
-
-
-
-    var overlayLayer = new ol.layer.Vector({
-      map: olmap,
-      source: new ol.source.Vector({
-        features: new ol.Collection(),
-        useSpatialIndex: false // optional, might improve performance
-      }),
-      style: function ( f,r ) {
-        if( f.getGeometry() instanceof ol.geom.Point ) {
-          return getStandStyle( f,r,true );
+          Session.set('selected-route', route );
         } else {
-          return getHuntingAreaStyle(f,r,true);
+          if( path.length == 4) {
+            path.pop();
+            app.setModulePath(path);
+          }
+          Session.set('selected-route', null );
         }
-      },
-      updateWhileAnimating: true, // optional, for instant visual feedback
-      updateWhileInteracting: true // optional, for instant visual feedback
-    });
-
-    overlay = overlayLayer.getSource();
-
-    olmap.addInteraction( select );
-  }
-  return olmap;
+        source_routes.changed();
+        source_stands.changed();
+      }
+      return true;
+    }
+  })
+  return select;
 }
 
-Template.huntingplanmap.created = function() {
-  olmap = null;
+Template.huntingplanmap.rendered = function() {
   Session.set('error',null);
   if( this.stands ) {
     this.stands.stop();
@@ -239,30 +128,30 @@ Template.huntingplanmap.created = function() {
 
       var drive = getCurrentDrive();
       if( drive && drive.shape ) {
-
-          if( path.length == 4 ) {
-            if( drive && drive.routes[ path[3] ] ) {
-              var geo = new ol.format.GeoJSON().readGeometry( drive.routes[ path[3] ].path , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
-              Session.set('selected-route',path[3]);
-            }
-          } else {
-            var geo = new ol.format.GeoJSON().readGeometry( drive.shape , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
+        if( path.length == 4 ) {
+          if( drive && drive.routes[ path[3] ] ) {
+            var geo = new ol.format.GeoJSON().readGeometry( drive.routes[ path[3] ].path , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
+            Session.set('selected-route',path[3]);
           }
-          var map = olMap();
-          if( map && geo) {
-            var view = olMap().getView();
-            var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
-            var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
-            map.beforeRender(pan, zoom)
-            view.fit( geo, map.getSize() );
-          }
-
+        } else {
+          var geo = new ol.format.GeoJSON().readGeometry( drive.shape , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
+        }
+        var map = app.getMap();
+        if( map && geo) {
+          var view = app.getMap().getView();
+          var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
+          var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
+          map.beforeRender(pan, zoom)
+          view.fit( geo, map.getSize() );
+        }
       }
     }
   })
   for( var layer in maplayer ) {
-    olMap().getLayers().push( maplayer[layer] );
+    app.addLayer( maplayer[layer] );
   }
+  app.setTool( getSelectionTool() );
+  updateMapData();
 }
 
 Template.huntingplanmap.destroyed = function() {
@@ -271,13 +160,9 @@ Template.huntingplanmap.destroyed = function() {
   }
   DataChangeHandler.remove("mainmap")
   for( var layer in maplayer ) {
-    olMap().getLayers().remove( maplayer[layer] );
+    app.removeLayer( maplayer[layer] );
   }
-  olMap().getLayers().remove( overlayLayer );
-}
-
-Template.huntingplanmap.rendered = function() {
-  updateMapData();
+  app.clearTool();
 }
 
 function updateStands() {
@@ -426,7 +311,7 @@ getRoute = function ( rid ) {
 }
 
 updateMapData = function () {
-  olmap = olMap();
+  olmap = app.getMap();
   if( olmap ) {
     olmap.setTarget( document.getElementById("map") );
     olmap.getLayers().forEach( function ( layer ) {
@@ -473,9 +358,9 @@ updateMapData = function () {
                 }
               }
             }
-            var map = olMap();
+            var map = app.getMap();
             if( map && geo) {
-              var view = olMap().getView();
+              var view = app.getMap().getView();
               var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
               var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
               map.beforeRender(pan, zoom)
@@ -741,7 +626,7 @@ Template.huntingplanmap.events({
   },
   'click #leave-hunting-office':function() {
     Session.set('huntingplan-office', null );
-    setTimeout( function() { olMap().updateSize(); } , 200);
+    setTimeout( function() { app.getMap().updateSize(); } , 200);
   },
   'click #participants' : function () {
     Session.set('huntingplan-office', 'participants' );

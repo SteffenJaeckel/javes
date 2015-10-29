@@ -1,6 +1,6 @@
 Template.dashboard.helpers({
   areas: function () {
-    return Areas.find();
+    return Areas.find({},{ sort : { 'name':1 } });
   }
 })
 

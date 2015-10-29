@@ -1,7 +1,5 @@
-var current_tool = null;
 var stands = [];
 function getDrawPathTool() {
-
   var drawpath = new ol.interaction.Draw( { style:getHuntingAreaSelectionStyle ,type:'LineString', source: overlay, minPoints:2, maxPoints: 256 });
   drawpath.on('drawend', function ( e ) {
     editor.setstate('editpath')
@@ -10,12 +8,11 @@ function getDrawPathTool() {
   drawpath.set('cursor','draw-cursor');
   drawpath.set('keydown', function( e ) {
     if( e.keyCode == 27 ) {
-      var map = olMap();
+      var map = app.getMap();
       map.removeInteraction( drawpath );
       map.addInteraction( drawpath );
     }
   });
-
   return drawpath;
 }
 
@@ -89,48 +86,16 @@ function getSelectStandsTool() {
   return selectstands;
 }
 
-function clearTool( map ) {
-  if( map == null ) {
-    map = olMap();
-  }
-  if( current_tool ) {
-    map.removeInteraction( current_tool );
-    if( current_tool.get('keydown') ) {
-      $(window).off('keydown', current_tool.get('keydown') )
-    }
-    if( current_tool.get('keyup') ) {
-      $(window).off('keyup', current_tool.get('keyup') )
-    }
-    if( current_tool.get('cursor') ) {
-      $('#map').removeClass( current_tool.get('cursor') )
-    }
-  }
-}
-
-function setTool( map, tool ) {
-  map.addInteraction( tool )
-  if( tool.get('cursor') ) {
-    $('#map').addClass( tool.get('cursor') );
-  }
-  if( tool.get('keydown') ) {
-    $(window).on('keydown', tool.get('keydown') )
-  }
-  if( tool.get('keyup') ) {
-    $(window).on('keyup', tool.get('keyup') )
-  }
-  current_tool = tool;
-}
-
 var undo;
 
 function updateEditor() {
 
-  var map = olMap();
-  clearTool( map );
+  var map = app.getMap();
+  app.clearTool( map );
 
   switch( editor.getstate() ) {
     case 'drawpath':
-      setTool(map, getDrawPathTool() )
+      app.setTool(map, getDrawPathTool() )
     break;
     case 'editpath':
       if( overlay.getFeaturesCollection().getLength() == 0 ) {
@@ -139,13 +104,13 @@ function updateEditor() {
           undo = mapsources['routes'].getFeatureById( route );
           overlay.addFeature( undo.clone() );
           mapsources['routes'].removeFeature( undo );
-          setTool(map, getEditPathTool() )
+          app.setTool(map, getEditPathTool() )
         } else {
           editor.setstate('drawpath');
           updateEditor();
         }
       } else {
-        setTool(map, getEditPathTool())
+        app.setTool(map, getEditPathTool())
       }
     break;
     case 'selectstands':
@@ -161,7 +126,7 @@ function updateEditor() {
         stands.sort( function(a,b) { return drive.stands[a].index - drive.stands[b].index; } )
         Session.set('selected-routestands', stands );
       }
-      setTool(map, getSelectStandsTool() )
+      app.setTool(map, getSelectStandsTool() )
     break;
   }
 }
@@ -192,7 +157,7 @@ Template.routeeditor.rendered = function () {
 
 Template.routeeditor.destroyed = function () {
   console.log("route editor destroyed");
-  clearTool()
+  app.clearTool()
   overlay.getFeaturesCollection().clear();
 }
 
@@ -401,7 +366,7 @@ Template.routeeditor.events({
               console.log(e);
             } else {
               Session.set('selected-routestands',null)
-              clearTool();
+              app.clearTool();
               editor.pop();
             }
           })
@@ -416,7 +381,7 @@ Template.routeeditor.events({
     }
     Session.set('selected-routestands',null)
     mapsources['stands'].changed();
-    clearTool();
+    app.clearTool();
     editor.pop();
   },
   'click .groupselection': function( e ) {
@@ -429,7 +394,7 @@ Template.routeeditor.events({
     overlay.getFeaturesCollection().forEach( function ( f ) {
       f.set('color', col );
     })
-    olMap().render();
+    app.getMap().render();
   },
   'click .standitem' : function(e) {
     $('.standitem').removeClass('selected');

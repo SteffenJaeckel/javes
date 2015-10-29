@@ -1,3 +1,11 @@
+function getViewId() {
+	var rd = Session.get("reportdata");
+	if( rd )
+		return rd._id;
+
+	return Session.get("standdata")._id;
+}
+
 Template.comments.created = function () {
 	Session.set('pageindex',0)
 }

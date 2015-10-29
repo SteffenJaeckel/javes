@@ -63,21 +63,6 @@ window.mods['huntingplans'] = { index:2, name: "Jagdplanung", icon:"fa-server", 
 	}
 };
 
-DataChangeHandler = {
-	items: {},
-	add : function( key, func ) {
-		DataChangeHandler.items[ key ] = func;
-	},
-	remove : function( key ) {
-		delete DataChangeHandler.items[ key ]
-	},
-	call : function ( path ) {
-		for( var k in DataChangeHandler.items ) {
-			DataChangeHandler.items[k]( path );
-		}
-	}
-}
-
 Template.huntingplans.created = function() {
 	this.participants = Meteor.subscribe("participants");
   this.plans = Meteor.subscribe("huntingplans");

@@ -16,6 +16,8 @@ var overlaylayer =  new ol.layer.Vector({
   updateWhileInteracting: true // optional, for instant visual feedback
 });
 
+overlaylayer.set("name","Selection");
+
 var overlay = overlaylayer.getSource();
 
 function getDrawPathTool() {
@@ -77,16 +79,26 @@ function updateEditor() {
 
 var undo = [];
 
-Template.huntingareaeditor.created = function () {
+Template.areaeditor.created = function () {
+
   var map = app.getMap();
-  map.getLayers.push( overlaylayer );
+  map.addLayer( overlaylayer );
   overlay.getFeaturesCollection().clear();
   undo = [];
-  mapsources['huntingareas'].forEachFeature( function ( f ) {
-      undo.push( f.clone() );
-      overlay.addFeature( f.clone() );
+  map.getLayers().forEach( function ( layer ) {
+    if(layer.get("name") == "Pirschbezirke" ) {
+      workinglayer = layer;
+    }
   })
-  mapsources['huntingareas'].clear();
+
+  if( workinglayer != null ) {
+    workinglayer.getSource().forEachFeature( function ( f ) {
+        undo.push( f.clone() );
+        overlay.addFeature( f.clone() );
+    })
+    workinglayer.getSource().clear();
+  }
+
   if( overlay.getFeatures().length > 0 ) {
     app.setTool( getEditPathTool() )
   } else {
@@ -94,12 +106,12 @@ Template.huntingareaeditor.created = function () {
   }
 }
 
-Template.huntingareaeditor.destroyed = function () {
+Template.areaeditor.destroyed = function () {
   app.clearTool()
-  app.getMap().getLayers().remove( overlaylayer );
+  app.removeLayer( overlaylayer );
 }
 
-Template.huntingareaeditor.helpers({
+Template.areaeditor.helpers({
     savestate : function () {
       if( false ) {
         return '';
@@ -108,8 +120,7 @@ Template.huntingareaeditor.helpers({
     }
 })
 
-
-Template.huntingareaeditor.events({
+Template.areaeditor.events({
   'click #save' : function ( e ) {
     Session.set( "error",null);
     var feats = overlay.getFeatures();
@@ -120,14 +131,14 @@ Template.huntingareaeditor.events({
     if( coords.length > 0 ) {
       var multi = new ol.geom.MultiPolygon( coords,'XY');
       var shape = new ol.format.GeoJSON().writeGeometryObject( multi , { featureProjection: mapconfig.projection.name ,dataProjection:'WGS84' });
-      Meteor.call('updateHuntingPlanShape', getCurrentPlanId(), getCurrentDriveIndex(), shape, function ( e ) {
+      var area = getCurrentArea();
+      Meteor.call('updateAreaShape', area._id, shape, function ( e ) {
         if( e ) {
           console.log( e );
           Session.set( "error", e.reason );
         } else {
           app.clearTool();
           editor.pop();
-          updateMapData();
         }
       })
     } else {
@@ -135,7 +146,7 @@ Template.huntingareaeditor.events({
     }
   },
   'click #abort' : function ( e ) {
-    mapsources['huntingareas'].addFeatures( undo );
+    workinglayer.getSource().addFeatures( undo );
     app.clearTool();
     editor.pop();
   },
