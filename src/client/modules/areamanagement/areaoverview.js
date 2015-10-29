@@ -37,5 +37,10 @@ Template.areaoverview.events({
 			map.setZoom( 17 );
 			modals.push('viewstand')
 		}
+	},
+	'click #save-execel': function(e) {
+		//$('#dataset')
+		SaveTableAsExcel('dataset','Berichte.xlsx');
+		//alert('save excel');
 	}
 })

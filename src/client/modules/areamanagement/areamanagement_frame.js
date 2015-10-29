@@ -40,6 +40,8 @@ function updateStands() {
     this.stands.stop();
 
   var area = getCurrentArea();
+  if( area == null )
+    return;
 
   this.stands = Meteor.subscribe('area_stands', area._id ,function(e) {
     var cursor = Stands.find({});
@@ -81,6 +83,8 @@ function updateReports() {
     this.reports.stop();
 
   var area = getCurrentArea();
+  if( area == null )
+    return;
 
   this.reports = Meteor.subscribe('area_reports', area._id ,function(e) {
     var cursor = Reports.find({});
@@ -215,6 +219,18 @@ Template.areamanagement_frame.created = function() {
 Template.areamanagement_frame.rendered = function() {
   app.setTool( getSelectionTool());
   updateMap();
+  var area = getCurrentArea();
+  if( area ) {
+    var map = app.getMap();
+    var geo = new ol.format.GeoJSON().readGeometry( area.geometry , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
+    if( map && geo && map.getSize() ) {
+      var view = app.getMap().getView();
+      var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
+      var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
+      map.beforeRender(pan, zoom)
+      view.fit( geo , map.getSize()  );
+    }
+  }
 }
 
 Template.areamanagement_frame.destroyed = function() {
@@ -235,10 +251,16 @@ Template.areamanagement_frame.destroyed = function() {
 }
 
 Template.areamanagement_frame.events({
+  'click #area-share' : function() {
+    Session.set('modal', { shareinfo: true } );
+  },
   'click #adjust-area' : function() {
     editor.push("areaeditor",{},"");
   },
   'click #area-overview' : function() {
+    modals.push("areaoverview",{});
+  },
+  'click #report-overview' : function() {
     modals.push("reportoverview",{});
   }
 })

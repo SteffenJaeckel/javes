@@ -79,7 +79,7 @@ var undo = [];
 
 Template.huntingareaeditor.created = function () {
   var map = app.getMap();
-  map.getLayers.push( overlaylayer );
+  app.addLayer( overlaylayer )
   overlay.getFeaturesCollection().clear();
   undo = [];
   mapsources['huntingareas'].forEachFeature( function ( f ) {
@@ -95,8 +95,8 @@ Template.huntingareaeditor.created = function () {
 }
 
 Template.huntingareaeditor.destroyed = function () {
-  app.clearTool()
-  app.getMap().getLayers().remove( overlaylayer );
+  app.clearTool();
+  app.removeLayer( overlaylayer );
 }
 
 Template.huntingareaeditor.helpers({

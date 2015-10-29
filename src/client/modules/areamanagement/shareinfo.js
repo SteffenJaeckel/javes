@@ -6,24 +6,24 @@
 Template.shareuser.events({
 	'click .set-owner':function (e) {
 		if( confirm('Wollen Sie wirklich die Besitzrechte übertragen? Es kann immer nur einen Besitzer für das Revier geben.') ) {
-			Meteor.call('updateShareWith',Meteor.user().profile.currentSelectedArea, $(e.currentTarget).attr('data'), 0, function(e) {
+			Meteor.call('updateShareWith',getCurrentArea()._id, $(e.currentTarget).attr('data'), 0, function(e) {
 				console.log( e );
 				Deps.flush();
 			});
 		}
 	},
 	'click .set-coowner':function (e) {
-		Meteor.call('updateShareWith',Meteor.user().profile.currentSelectedArea, $(e.currentTarget).attr('data'), 1, function(e) {
+		Meteor.call('updateShareWith',getCurrentArea()._id, $(e.currentTarget).attr('data'), 1, function(e) {
 			console.log( e );
 		});
 	},
 	'click .set-guest':function (e) {
-		Meteor.call('updateShareWith',Meteor.user().profile.currentSelectedArea, $(e.currentTarget).attr('data'), 2, function(e) {
+		Meteor.call('updateShareWith',getCurrentArea()._id, $(e.currentTarget).attr('data'), 2, function(e) {
 			console.log( e );
 		});
 	},
 	'click .remove-share':function (e) {
-		Meteor.call('removeShareWith',Meteor.user().profile.currentSelectedArea, $(e.currentTarget).attr('data'), function(e) {
+		Meteor.call('removeShareWith',getCurrentArea()._id, $(e.currentTarget).attr('data'), function(e) {
 			console.log( e );
 		});
 	}
@@ -31,7 +31,7 @@ Template.shareuser.events({
 
 Template.shareinfo.sharedusers = function () {
 	var data = [];
-	var area = Areas.findOne( { _id:Meteor.user().profile.currentSelectedArea } );
+	var area = getCurrentArea();
 	var type = area.viewer[ Meteor.userId() ];
 	for( var id in area.viewer ) {
 		if( id != Meteor.userId() ) {
@@ -54,7 +54,7 @@ Template.shareinfo.sharedusers = function () {
 }
 
 Template.shareinfo.canInvite = function() {
-	var area = Areas.findOne( { _id:Meteor.user().profile.currentSelectedArea } );
+	var area = getCurrentArea();
 	return (area.viewer[ Meteor.userId() ] < 2);
 }
 
@@ -76,7 +76,7 @@ Template.shareinfo.avatar = function() {
 }
 
 Template.shareinfo.sharetype = function() {
-	var area = Areas.findOne( { _id:Meteor.user().profile.currentSelectedArea } );
+	var area = getCurrentArea();
 	if( area ) {
 		return area.ownertypes[ area.viewer[ Meteor.userId() ]];
 	}
@@ -86,7 +86,7 @@ Template.shareinfo.sharetype = function() {
 var usersubscription = null;
 
 Template.shareinfo.created = function () {
-	usersubscription = Meteor.subscribe('viewer_profiles', Meteor.user().profile.currentSelectedArea );
+	usersubscription = Meteor.subscribe('viewer_profiles', getCurrentArea()._id );
 }
 
 Template.shareinfo.destroyed = function () {
@@ -102,11 +102,12 @@ Template.shareinfo.events({
 		var addr = $(e.currentTarget).attr('data').toLowerCase()
 		var name = $('#invite-name').val();
 		var surname = $('#invite-surname').val();
-		if( name && name != '' && surname && surname != '' ) {
-			Meteor.call('sendInvitation',  Meteor.user().profile.currentSelectedArea , addr, name, surname, function(e) {
+		var area = getCurrentArea();
+		if( name && name != '' && surname && surname != '' && area ) {
+			Meteor.call('sendInvitation',  area._id , addr, name, surname, function(e) {
 				Session.set('error',{ emailsend: true, email:addr, name:name, surname:surname } );
 				usersubscription.stop();
-				usersubscription = Meteor.subscribe('viewer_profiles', Meteor.user().profile.currentSelectedArea );
+				usersubscription = Meteor.subscribe('viewer_profiles', area._id );
 				setTimeout( function() {
 					Session.set('error',null)
 				}, 6000)
@@ -119,10 +120,11 @@ Template.shareinfo.events({
 		Session.set('error',null)
 	},
 	'keypress #invite-email': function (e) {
-		if( e.keyCode == 13) {
+		var area = getCurrentArea();
+		if( e.keyCode == 13 && area ) {
 			Session.set('error',null);
 			var addr = $('#invite-email').val().toLowerCase();
-			Meteor.call('shareWith', Meteor.user().profile.currentSelectedArea , addr  , function(e) {
+			Meteor.call('shareWith', area._id , addr  , function(e) {
 				if( e ) {
 					if(e.reason == 'user_not_found') {
 						Session.set('error', { usernotfound:true , email:addr, name:'', surname:'' } );
@@ -131,7 +133,7 @@ Template.shareinfo.events({
 					}
 				} else {
 					usersubscription.stop();
-					usersubscription = Meteor.subscribe('viewer_profiles', Meteor.user().profile.currentSelectedArea );
+					usersubscription = Meteor.subscribe('viewer_profiles', area._id );
 				}
 				$('#invite-email').val('')
 			})

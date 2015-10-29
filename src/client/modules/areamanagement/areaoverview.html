@@ -13,13 +13,14 @@
 	</div>
 	<div class="modal-body">
 		<h4>Jagdliche Einrichtungen</h4>
+		<div><button id="save-execel" class="btn btn-primary" ><span class="glyphicon glyphicon-cloud-download"></span>&nbsp;&nbsp;Diese Liste als Excel-Datei Speichern</button></div>
 		<h6>Sortierung</h6>
 		<div>
 			{{#each sortitems}}
 				{{> sortitem}}
 			{{/each}}
 		</div>
-		<table class="table table-hover">
+		<table id="dataset" class="table table-hover">
 			<thead>
 				<tr>
 					<td class="unselectable orderby" data="type">Type</td>
@@ -32,8 +33,8 @@
 			<tbody>
 			{{#each stands}}
 			<tr class="goto-stand" data="{{this._id}}">
-				<td width="80px;text-align:center;" align="center">
-					<div class="standicon standtype-{{this.type}}" style="margin:2px;float:none;"></div>
+				<td width="80px;text-align:center;" align="center" class="no-export" >
+					<div class="standicon standtype-{{this.type}}" style="float:none;width:26px;height:26px;background-size: 100% 100%;"></div>
 				</td>
 				<td width="80px;text-align:center;" align="center">
 					{{this.name}}

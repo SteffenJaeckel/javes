@@ -40,7 +40,7 @@
 									{{#if this.divider }}
 	                  <li role="presentation" class="divider"></li>
 	                {{else}}
-	  						  	<li><a class="app-item"  data-level="{{../level}}" data-index="{{../index}}" data-id="{{this.id}}" role="menuitem" tabindex="-1" href="#"><i class="fa {{this.icon}} fa-fw"></i>&nbsp; {{this.name}}</a></li>
+	  						  	<li class="{{this.enabled}}"><a class="app-item {{this.enabled}}"  data-level="{{../level}}" data-index="{{../index}}" data-id="{{this.id}}" role="menuitem" tabindex="-1" href="#"><i class="fa {{this.icon}} fa-fw"></i>&nbsp; {{this.name}}</a></li>
 	              	{{/if}}
 								{{/unless}}
 							{{/each}}

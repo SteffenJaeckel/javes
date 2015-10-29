@@ -130,7 +130,7 @@ if (Meteor.isClient) {
 	})
 
 	Template.registerHelper('formatHuntType',function( value ) {
-		return Huntingtypes[ value ];
+		return Huntingtypes[value];
 	})
 
 	Template.registerHelper('modultoken',function() {

@@ -100,18 +100,18 @@ DataModels = {
 
 	Profilemodel : {
 	  managed : {type:'bool',name:'Verwaltet'},
-	  type: {type:'set', name:'Typ', items: [0,1,2,3] },
+	  type: {type:'set', name:'Typ', items: [0,1,2,3], optional:true },
 	  gender: {type:'set', name:'Anrede', items: [0,1] },
 	  title : {type:'string', name:'Titel'},
 	  firstname : {type:'string', name:'Vorname', min:1,max:120},
 	  surname : {type:'string', name:'Nachname',min:1,max:120},
-	  group : {type:'array', name:'Gruppe', max: 16, items: {
+	  group : {type:'array', name:'Gruppe', max: 16, optional:true, items: {
 	    type: 'string', min:1, max: 256
 	  }},
-	  phone1 : {type:'string', name:'Telefon'},
-	  phone2 : {type:'string', name:'Telefon alternativ' },
-	  isveterinary : { type:'bool', name:'Veterinär'},
-	  isdoctor : { type:'bool', name:'Humanmediziner'},
+	  phone1 : {type:'string', name:'Telefon', optional:true },
+	  phone2 : {type:'string', name:'Telefon alternativ', optional:true },
+	  isveterinary : { type:'bool', name:'Veterinär' , optional:true},
+	  isdoctor : { type:'bool', name:'Humanmediziner', optional:true},
 	  dogs : {type:'array',name:'Hunde', items: {
 	    type:'object', model: 'Dogmodel'
 	  }}

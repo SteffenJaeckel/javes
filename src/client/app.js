@@ -56,7 +56,7 @@ function getSelectedItem( items , selection ) {
   return null;
 }
 
-function getBaseLayer( type ) {
+getBaseLayer = function ( type ) {
   var layers = [];
 
   if( type == null || type > mapconfig.layer.length-1 ) {
@@ -327,13 +327,13 @@ Template.app.helpers({
     data = [];
     for( var m in window.mods ) {
       if( m == 'profile' || aviablemodules[m] != null ) {
-        data.push( { index: (window.mods[m].index) ? window.mods[m].index : 50, id:m , name: window.mods[m].name, icon: window.mods[m].icon, class: (window.mods[m].enabled ) ? '':'disabled' } )
+        data.push( { index: (window.mods[m].index) ? window.mods[m].index : 1000, id:m , name: window.mods[m].name, icon: window.mods[m].icon, class: (window.mods[m].enabled ) ? '':'disabled' } )
       }
     }
     if( data.length > 1 ) {
       data = _.sortBy(data,'index');
       for( var i=0;i < data.length;i++ ) {
-        if( window.mods[ data[i].id ].divider ) {
+        if( window.mods[ data[i].id ].divider && i > 0 ) {
           data.splice( i ,0, {divider:true} );
           i++;
         }

@@ -32,7 +32,7 @@ function addStats( reporttype, element ) {
 		if( 0 <= ac && ac < 6 )
 			ak[ac][id]++;
 	})
-	var data = google.visualization.arrayToDataTable([
+	/*var data = google.visualization.arrayToDataTable([
 		['Gruppe'].concat(items),
 		['Gesamt'].concat(all),
 		['Männlich'].concat(male),
@@ -54,7 +54,7 @@ function addStats( reporttype, element ) {
 	};
 
 	var chart = new google.visualization.ColumnChart(document.getElementById(element));
-	chart.draw(data, options);
+	chart.draw(data, options);*/
 }
 
 Template.reportoverview.formatColor = function( color ) {
@@ -70,7 +70,7 @@ Template.reportoverview.area = function() {
 }
 Template.reportoverview.reports = function() {
 	var period = getCurrentPeriod();
-	return Reports.find({ type:3, date :{ $gte: period.start, $lte: period.end }},{sort:sorting.db()});
+	return Reports.find({ type:3/*, date :{ $gte: period.start, $lte: period.end }*/},{sort:sorting.db()});
 }
 Template.reportoverview.sortitems = function() {
 	return sorting.get();
@@ -112,5 +112,5 @@ Template.reportoverview.events({
 	}
 })
 Template.reportoverview.rendered = function() {
-	addStats(3,'kill_stats')
+	//addStats(3,'kill_stats')
 }
