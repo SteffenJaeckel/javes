@@ -161,6 +161,7 @@ app = {
       if( app.current_tool.get('cursor') ) {
         $('#map').removeClass( app.current_tool.get('cursor') )
       }
+      app.current_tool = null;
     }
   },
   setTool : function( tool ) {

@@ -1,6 +1,9 @@
+var workinglayer = null;
+var overlaylayer;
 var stands = [];
+
 function getDrawPathTool() {
-  var drawpath = new ol.interaction.Draw( { style:getHuntingAreaSelectionStyle ,type:'LineString', source: overlay, minPoints:2, maxPoints: 256 });
+  var drawpath = new ol.interaction.Draw( { style:getHuntingAreaSelectionStyle ,type:'LineString', source: overlaylayer.getSource(), minPoints:2, maxPoints: 256 });
   drawpath.on('drawend', function ( e ) {
     editor.setstate('editpath')
     setTimeout( function () { updateEditor(); } , 100 );
@@ -21,7 +24,7 @@ function getEditPathTool() {
     style: function (f,r) {
       return getHuntingAreaSelectionStyle(f,r)
     },
-    features: overlay.getFeaturesCollection(),
+    features: overlaylayer.getSource().getFeaturesCollection(),
     deleteCondition: function( e ) {
       return ol.events.condition.altKeyOnly(e) && ol.events.condition.singleClick(e);
   }})
@@ -90,27 +93,27 @@ var undo;
 
 function updateEditor() {
 
-  var map = app.getMap();
-  app.clearTool( map );
+  /*var map = app.getMap();
+  app.clearTool( map );*/
 
   switch( editor.getstate() ) {
     case 'drawpath':
-      app.setTool(map, getDrawPathTool() )
+      app.setTool(getDrawPathTool() )
     break;
     case 'editpath':
-      if( overlay.getFeaturesCollection().getLength() == 0 ) {
+      if( overlaylayer.getSource().getFeaturesCollection().getLength() == 0 ) {
         var route = Session.get('selected-route');
         if( route ) {
           undo = mapsources['routes'].getFeatureById( route );
-          overlay.addFeature( undo.clone() );
+          overlaylayer.getSource().addFeature( undo.clone() );
           mapsources['routes'].removeFeature( undo );
-          app.setTool(map, getEditPathTool() )
+          app.setTool( getEditPathTool() )
         } else {
           editor.setstate('drawpath');
           updateEditor();
         }
       } else {
-        app.setTool(map, getEditPathTool())
+        app.setTool( getEditPathTool())
       }
     break;
     case 'selectstands':
@@ -126,14 +129,12 @@ function updateEditor() {
         stands.sort( function(a,b) { return drive.stands[a].index - drive.stands[b].index; } )
         Session.set('selected-routestands', stands );
       }
-      app.setTool(map, getSelectStandsTool() )
+      app.setTool( getSelectStandsTool() )
     break;
   }
 }
 
 Template.routeeditor.rendered = function () {
-  updateEditor();
-
   $('#leader-container .typeahead').typeahead({
     hint: true,
     highlight: true,
@@ -153,12 +154,34 @@ Template.routeeditor.rendered = function () {
         cb(matches);
     }
   });
+  updateEditor();
+}
+
+Template.routeeditor.created = function () {
+  var map = app.getMap();
+  overlaylayer =  new ol.layer.Vector({
+    source: new ol.source.Vector({
+      features: new ol.Collection(),
+      useSpatialIndex: false
+    }),
+    style: function ( f,r ) {
+      if( f.getGeometry() instanceof ol.geom.Point ) {
+        return getStandStyle( f,r,true );
+      } else {
+        return getHuntingAreaStyle(f,r,true);
+      }
+    },
+    updateWhileAnimating: true, // optional, for instant visual feedback
+    updateWhileInteracting: true // optional, for instant visual feedback
+  });
+  app.addLayer( overlaylayer )
+  overlaylayer.getSource().getFeaturesCollection().clear();
 }
 
 Template.routeeditor.destroyed = function () {
   console.log("route editor destroyed");
   app.clearTool()
-  overlay.getFeaturesCollection().clear();
+  overlaylayer.getSource().getFeaturesCollection().clear();
 }
 
 function getUserFromString( str ) {
@@ -292,8 +315,8 @@ Template.routeeditor.events({
 
     if( editor.getstate() == 'editpath' ) {
 
-      if( overlay.getFeaturesCollection().getLength() == 1 ) {
-        var feature = overlay.getFeaturesCollection().item(0);
+      if( overlaylayer.getSource().getFeaturesCollection().getLength() == 1 ) {
+        var feature = overlaylayer.getSource().getFeaturesCollection().item(0);
         var path = feature.getGeometry();
         var shape = new ol.format.GeoJSON().writeGeometryObject( path , { featureProjection: mapconfig.projection.name ,dataProjection:'WGS84' });
         var drive = getCurrentDriveIndex();
@@ -316,7 +339,7 @@ Template.routeeditor.events({
               Session.set( "error", e.reason );
             } else {
               Session.set('selected-route', undo.getId() );
-              overlay.getFeaturesCollection().clear();
+              overlaylayer.getSource().getFeaturesCollection().clear();
               editor.pop();
               undo = null;
             }
@@ -328,7 +351,7 @@ Template.routeeditor.events({
               Session.set( "error", e.reason );
             } else {
               Session.set('selected-route', routeid );
-              overlay.getFeaturesCollection().clear();
+              overlaylayer.getSource().getFeaturesCollection().clear();
               editor.setstate('selectstands')
               updateEditor();
             }
@@ -391,7 +414,7 @@ Template.routeeditor.events({
   'click .colorselector' : function ( e ) {
     var col = parseInt( $(e.currentTarget).attr('data'));
     editor.set( 'color', col );
-    overlay.getFeaturesCollection().forEach( function ( f ) {
+    overlaylayer.getSource().getFeaturesCollection().forEach( function ( f ) {
       f.set('color', col );
     })
     app.getMap().render();
