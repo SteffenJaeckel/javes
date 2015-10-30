@@ -217,7 +217,7 @@ Template.areamanagement_frame.created = function() {
 }
 
 Template.areamanagement_frame.rendered = function() {
-  app.setTool( getSelectionTool());
+  app.pushTool( getSelectionTool());
   updateMap();
   var area = getCurrentArea();
   if( area ) {
@@ -247,7 +247,7 @@ Template.areamanagement_frame.destroyed = function() {
   if( this.reports ) {
     this.reports.stop();
   }
-  app.clearTool();
+  app.popTool();
 }
 
 Template.areamanagement_frame.events({

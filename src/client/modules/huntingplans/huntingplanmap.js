@@ -150,7 +150,7 @@ Template.huntingplanmap.rendered = function() {
   for( var layer in maplayer ) {
     app.addLayer( maplayer[layer] );
   }
-  app.setTool( getSelectionTool() );
+  app.pushTool( getSelectionTool() );
   updateMapData();
 }
 
@@ -162,7 +162,7 @@ Template.huntingplanmap.destroyed = function() {
   for( var layer in maplayer ) {
     app.removeLayer( maplayer[layer] );
   }
-  app.clearTool();
+  app.popTool();
 }
 
 function updateStands() {
@@ -314,12 +314,12 @@ updateMapData = function () {
   olmap = app.getMap();
   if( olmap ) {
     olmap.setTarget( document.getElementById("map") );
-    olmap.getLayers().forEach( function ( layer ) {
-      if( layer instanceof ol.layer.Vector ) {
-        console.log("clear layer ", layer );
-        layer.getSource().clear();
+
+    for( var layer in maplayer ) {
+      if( maplayer[layer] instanceof ol.layer.Vector ) {
+        maplayer[layer].getSource().clear();
       }
-    })
+    }
 
     var plan   = getCurrentPlan();
     var drive  = getCurrentDriveIndex();

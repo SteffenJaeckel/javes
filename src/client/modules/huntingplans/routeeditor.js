@@ -93,12 +93,10 @@ var undo;
 
 function updateEditor() {
 
-  /*var map = app.getMap();
-  app.clearTool( map );*/
-
   switch( editor.getstate() ) {
     case 'drawpath':
-      app.setTool(getDrawPathTool() )
+      app.popTool();
+      app.pushTool(getDrawPathTool() )
     break;
     case 'editpath':
       if( overlaylayer.getSource().getFeaturesCollection().getLength() == 0 ) {
@@ -107,13 +105,15 @@ function updateEditor() {
           undo = mapsources['routes'].getFeatureById( route );
           overlaylayer.getSource().addFeature( undo.clone() );
           mapsources['routes'].removeFeature( undo );
-          app.setTool( getEditPathTool() )
+          app.popTool();
+          app.pushTool( getEditPathTool() )
         } else {
           editor.setstate('drawpath');
           updateEditor();
         }
       } else {
-        app.setTool( getEditPathTool())
+        app.popTool();
+        app.pushTool( getEditPathTool())
       }
     break;
     case 'selectstands':
@@ -129,7 +129,8 @@ function updateEditor() {
         stands.sort( function(a,b) { return drive.stands[a].index - drive.stands[b].index; } )
         Session.set('selected-routestands', stands );
       }
-      app.setTool( getSelectStandsTool() )
+      app.popTool();
+      app.pushTool( getSelectStandsTool() )
     break;
   }
 }
@@ -180,7 +181,7 @@ Template.routeeditor.created = function () {
 
 Template.routeeditor.destroyed = function () {
   console.log("route editor destroyed");
-  app.clearTool()
+  app.popTool()
   overlaylayer.getSource().getFeaturesCollection().clear();
 }
 
@@ -389,7 +390,6 @@ Template.routeeditor.events({
               console.log(e);
             } else {
               Session.set('selected-routestands',null)
-              app.clearTool();
               editor.pop();
             }
           })
@@ -404,7 +404,6 @@ Template.routeeditor.events({
     }
     Session.set('selected-routestands',null)
     mapsources['stands'].changed();
-    app.clearTool();
     editor.pop();
   },
   'click .groupselection': function( e ) {

@@ -61,15 +61,16 @@ function loadUser() {
       type:'huntertype-'+(getType(user)+1),
       dogs: (user.profile.dogs) ? user.profile.dogs:[]
     };
-    if( user.profile.group == null || user.profile.group.length == 0 ) {
+    var groupprofile = user.customers[ customer ].departments[ department ].groups;
+    if( groupprofile == null || groupprofile.length == 0 ) {
       var gr = ' Ohne Gruppe';
       if( groups[ gr ] == null ) {
         groups[ gr ] = { id:gr, name:gr, user:[] };
       }
       groups[ gr ].user.push(cur);
     } else {
-      for( var x=0;x < user.profile.group.length;x++ ) {
-        var gr = user.profile.group[x];
+      for( var x=0;x < groupprofile.length;x++ ) {
+        var gr = groupprofile[x];
 
         if( groupfilter && gr.match( groupfilter ) == null )
           continue;
@@ -78,7 +79,7 @@ function loadUser() {
           groups[ gr ] = { id:gr, name:gr, user:[] };
         }
         groups[ gr ].user.push(cur);
-      }
+      }      
     }
   });
   return _.sortBy(_.values(groups),'name');

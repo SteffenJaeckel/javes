@@ -26,13 +26,6 @@ window.mods['cuttingplans'] = { index: 5, name: "Einschlagsplanung", icon:"fa-tr
 		return 'schedule';
 	},
 	menuitems: function( path ) {
-		if( path.length == 0 ) {
-			return [
-				{name:'Jagd',id:'participants',icon:'fa-crosshair'},
-				{name:'Einschlag',id:'schedule',icon:'fa-tree'},
-				{name:'Verjüngung',id:'schedule',icon:'fa-calendar'}
-			];
-		}
 	},
 	selected: function( item ) {
 		console.log( item )
@@ -45,13 +38,6 @@ window.mods['woodbooks'] = { index: 5, name: "Holzbücher", icon:"fa-book", enab
 		return 'schedule';
 	},
 	menuitems: function( path ) {
-		if( path.length == 0 ) {
-			return [
-				{name:'Jagd',id:'participants',icon:'fa-crosshair'},
-				{name:'Einschlag',id:'schedule',icon:'fa-tree'},
-				{name:'Verjüngung',id:'schedule',icon:'fa-calendar'}
-			];
-		}
 	},
 	selected: function( item ) {
 		console.log( item )
@@ -64,13 +50,6 @@ window.mods['plantingplans'] = { index: 10, name: "Verjüngungsplanung", icon:"f
 		return 'schedule';
 	},
 	menuitems: function( path ) {
-		if( path.length == 0 ) {
-			return [
-				{name:'Jagd',id:'participants',icon:'fa-crosshair'},
-				{name:'Einschlag',id:'schedule',icon:'fa-tree'},
-				{name:'Verjüngung',id:'schedule',icon:'fa-calendar'}
-			];
-		}
 	},
 	selected: function( item ) {
 		console.log( item )

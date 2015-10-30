@@ -71,10 +71,6 @@ function getDeletePathTool() {
   return deletepath;
 }
 
-function updateEditor() {
-  app.setTool( drawpath );
-}
-
 var undo = [];
 
 Template.huntingareaeditor.created = function () {
@@ -88,14 +84,14 @@ Template.huntingareaeditor.created = function () {
   })
   mapsources['huntingareas'].clear();
   if( overlay.getFeatures().length > 0 ) {
-    app.setTool( getEditPathTool() )
+    app.pushTool( getEditPathTool() )
   } else {
-    app.setTool( getDrawPathTool() )
+    app.pushTool( getDrawPathTool() )
   }
 }
 
 Template.huntingareaeditor.destroyed = function () {
-  app.clearTool();
+  app.popTool();
   app.removeLayer( overlaylayer );
 }
 
@@ -125,7 +121,6 @@ Template.huntingareaeditor.events({
           console.log( e );
           Session.set( "error", e.reason );
         } else {
-          app.clearTool();
           editor.pop();
           updateMapData();
         }
@@ -136,17 +131,19 @@ Template.huntingareaeditor.events({
   },
   'click #abort' : function ( e ) {
     mapsources['huntingareas'].addFeatures( undo );
-    app.clearTool();
     editor.pop();
   },
   'click #drawtool' : function()  {
-    app.setTool( getDrawPathTool() );
+    app.pushTool();
+    app.pushTool( getDrawPathTool() );
   },
   'click #edittool' : function()  {
-    app.setTool( getEditPathTool() );
+    app.pushTool();
+    app.pushTool( getEditPathTool() );
   },
   'click #deletetool' : function()  {
-    app.setTool( getDeletePathTool() );
+    app.pushTool();
+    app.pushTool( getDeletePathTool() );
   }
 
 })

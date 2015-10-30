@@ -99,6 +99,9 @@ DataChangeHandler = {
 };
 
 app = {
+
+  toolstack : [],
+
   getMap: function() {
       if( app.olmap == null  ) {
         proj4.defs( mapconfig.projection.name ,mapconfig.projection.code );
@@ -149,10 +152,9 @@ app = {
     console.log("remove layer "+layer.get('name'),layer );
     map.getLayers().remove(layer);
   },
-  clearTool: function ( map ) {
-    if( map == null ) {
-      map = app.getMap();
-    }
+  popTool: function () {
+    map = app.getMap();
+    app.current_tool = app.toolstack.pop();
     if( app.current_tool ) {
       map.removeInteraction( app.current_tool );
       if( app.current_tool.get('id') ) {
@@ -162,11 +164,29 @@ app = {
         $('#map').removeClass( app.current_tool.get('cursor') )
       }
       app.current_tool = null;
+      if( app.toolstack.length > 0 ) {
+        app.current_tool = app.toolstack[app.toolstack.length-1];
+        map.addInteraction( app.current_tool )
+        if( app.current_tool.get('cursor') ) {
+          $('#map').addClass( app.current_tool.get('cursor') );
+        }
+        if( app.current_tool.get('id') ) {
+          $('#'+app.current_tool.get('id') ).addClass( 'selected' );
+        }
+      }
     }
   },
-  setTool : function( tool ) {
+  pushTool : function( tool ) {
     var map = app.getMap();
-    app.clearTool( map );
+    if( app.current_tool ) {
+      map.removeInteraction( tool )
+      if( tool.get('cursor') ) {
+        $('#map').removeClass( tool.get('cursor') );
+      }
+      if( tool.get('id') ) {
+        $('#'+tool.get('id') ).removeClass( 'selected' );
+      }
+    }
     map.addInteraction( tool )
     if( tool.get('cursor') ) {
       $('#map').addClass( tool.get('cursor') );
@@ -174,13 +194,8 @@ app = {
     if( tool.get('id') ) {
       $('#'+tool.get('id') ).addClass( 'selected' );
     }
-    if( tool.get('keydown') ) {
-      $(window).on('keydown', tool.get('keydown') )
-    }
-    if( tool.get('keyup') ) {
-      $(window).on('keyup', tool.get('keyup') )
-    }
     app.current_tool = tool;
+    app.toolstack.push( app.current_tool );
   },
   getMapConfig: function() {
     var auth = Meteor.user().profile.currentpath;
@@ -230,6 +245,24 @@ app = {
     app.setPath( [ auth[0],auth[1],auth[2] ].concat( path ) );
   }
 }
+
+$(window).on('keydown', function(e) {
+  if( app.current_tool ) {
+    var func = app.current_tool.get('keydown');
+    if( func ) {
+      func( e );
+    }
+  }
+});
+
+$(window).on('keyup', function(e) {
+  if( app.current_tool ) {
+    var func = app.current_tool.get('keyup');
+    if( func ) {
+      func( e );
+    }
+  }
+});
 
 Template.app.helpers({
   path: function () {

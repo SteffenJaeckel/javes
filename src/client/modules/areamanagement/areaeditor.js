@@ -73,10 +73,6 @@ function getDeletePathTool() {
   return deletepath;
 }
 
-function updateEditor() {
-  app.setTool( drawpath );
-}
-
 var undo = [];
 
 Template.areaeditor.created = function () {
@@ -100,14 +96,14 @@ Template.areaeditor.created = function () {
   }
 
   if( overlay.getFeatures().length > 0 ) {
-    app.setTool( getEditPathTool() )
+    app.pushTool( getEditPathTool() )
   } else {
-    app.setTool( getDrawPathTool() )
+    app.pushTool( getDrawPathTool() )
   }
 }
 
 Template.areaeditor.destroyed = function () {
-  app.clearTool()
+  app.popTool()
   app.removeLayer( overlaylayer );
 }
 
@@ -137,7 +133,6 @@ Template.areaeditor.events({
           console.log( e );
           Session.set( "error", e.reason );
         } else {
-          app.clearTool();
           editor.pop();
         }
       })
@@ -147,17 +142,19 @@ Template.areaeditor.events({
   },
   'click #abort' : function ( e ) {
     workinglayer.getSource().addFeatures( undo );
-    app.clearTool();
     editor.pop();
   },
   'click #drawtool' : function()  {
-    app.setTool( getDrawPathTool() );
+    app.popTool();
+    app.pushTool( getDrawPathTool() );
   },
   'click #edittool' : function()  {
-    app.setTool( getEditPathTool() );
+    app.popTool();
+    app.pushTool( getEditPathTool() );
   },
   'click #deletetool' : function()  {
-    app.setTool( getDeletePathTool() );
+    app.popTool();
+    app.pushTool( getDeletePathTool() );
   }
 
 })
