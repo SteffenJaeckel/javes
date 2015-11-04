@@ -130,7 +130,7 @@ function updateMap() {
     var area = getCurrentArea();
     if( area ) {
       huntingarea_layer.getSource().clear();
-      var cursor = Areas.find( {_id:area._id } );
+      var cursor = Areas.find( {_id:area._id, geometry: {$exists:true} } );
       cursor.observeChanges({
         added:function( id, fields ) {
           var geo = new ol.format.GeoJSON().readGeometry( fields.geometry , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
@@ -166,6 +166,25 @@ function updateMap() {
     }
   }
 }
+
+function fitArea( area ) {
+  var map = app.getMap();
+  if( area.geometry != null ) {
+    var geo = new ol.format.GeoJSON().readGeometry( area.geometry , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
+  }
+  if( map && map.getSize() ) {
+    var view = app.getMap().getView();
+    var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
+    var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
+    map.beforeRender(pan, zoom)
+    if( geo ) {
+      view.fit( geo , map.getSize()  );
+    } else {
+      var role = app.getRole();
+      console.log( role );
+    }
+}
+
 Template.areamanagement_frame.created = function() {
 
   var olmap = app.getMap();
@@ -201,17 +220,8 @@ Template.areamanagement_frame.created = function() {
   DataChangeHandler.add("areamap", function ( path ) {
      console.log("call areamap Datachange handler ...");
      updateMap();
-     var area = getCurrentArea();
      if( area ) {
-       var map = app.getMap();
-       var geo = new ol.format.GeoJSON().readGeometry( area.geometry , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
-       if( map && geo && map.getSize() ) {
-         var view = app.getMap().getView();
-         var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
-         var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
-         map.beforeRender(pan, zoom)
-         view.fit( geo , map.getSize()  );
-       }
+       fitArea( area );
      }
   })
 }
@@ -221,15 +231,7 @@ Template.areamanagement_frame.rendered = function() {
   updateMap();
   var area = getCurrentArea();
   if( area ) {
-    var map = app.getMap();
-    var geo = new ol.format.GeoJSON().readGeometry( area.geometry , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
-    if( map && geo && map.getSize() ) {
-      var view = app.getMap().getView();
-      var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
-      var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
-      map.beforeRender(pan, zoom)
-      view.fit( geo , map.getSize()  );
-    }
+    fitArea( area );
   }
 }
 

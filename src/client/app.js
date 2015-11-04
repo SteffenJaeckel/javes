@@ -129,6 +129,18 @@ app = {
       }
       return app.olmap;
   },
+  resetView: function( ) {
+    if( app.olmap ) {
+      var role = app.getRole();
+      if( role == null ) {
+        return null;
+      }
+      var location = new ol.format.GeoJSON().readGeometry( role.location , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
+      if( location ) {
+        app.olmap.getView().fit( location, app.olmap.getSize() );
+      }
+    }
+  },
   addLayer: function( layer ) {
     var map = app.getMap();
     if( map == null ){

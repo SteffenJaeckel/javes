@@ -21,10 +21,12 @@ window.mods['administration'] = { index:1, name: "Administration", icon:"fa-grou
 				return [
 					{name:'Einstellungen',id:'settings',icon:'fa-cogs'},
 					{name:'Benutzer',id:'user',icon:'fa-user'},
+					{name:'Rollen',id:'roles',icon:'fa-credit-card'},
 				];
 			} else {
 				return [
 					{name:'Benutzer',id:'user',icon:'fa-user'},
+					{name:'Rollen',id:'roles',icon:'fa-credit-card'},
 				];
 			}
 		}
@@ -43,6 +45,8 @@ Template.administration.helpers({
 					return 'customer';
 				case 'user':
 					return 'user';
+				case 'roles':
+					return 'roles';
 			}
 		}
 	}

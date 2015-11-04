@@ -1,0 +1,44 @@
+<template name="roles">
+  <style>
+    .role-item {
+      padding:4px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .role-item:last-child {
+      
+    }
+
+    .role-item:hover {
+      color: #fff;
+      background-color: #428BCA;
+    }
+  </style>
+  <div style="position:absolute;left:0%;right:0%;top:0%;bottom:0%;">
+    <div id="mapbody">
+      <div id="mapcontainer">
+        <div id="map"></div>
+      </div>
+      {{#if editor }}
+        <div id="editmode">
+          {{> Template.dynamic template=editortemplate }}
+        </div>
+      {{else}}
+        <div id="selection">
+          <div style="position:relative;width:100%;height:100%;">
+            <h4>Rollen</h4>
+            <div class="form-group">
+              <button id="add-role" class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-pencil fa-fw"></i>&nbsp;Zugriffsfläche anpassen ...</button>
+            </div>
+
+            <div style="overflow-y:auto;position:absolute;bottom:42px;top:146px;left:0px;right:0px;border: 1px solid #ccc; border-radius: 6px;background-color: #fff;">
+              {{#each roles}}
+                <div class="role-item">{{this}}</div>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+</template>
