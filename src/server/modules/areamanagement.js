@@ -90,8 +90,28 @@ Meteor.publish("viewer_profiles", function ( areaId ) {
 	return Meteor.users.find({unknown:true});
 });
 
+var actions = {
+  viewAreas: "Pirschbezirke ansehen",
+
+	sendInvitation: "Jäger einladen",
+
+  newArea: 'Pirschbezirke erstellen',
+  deleteArea: 'Pirschbezirke löschen',
+
+  updateArea: 'Pirschbezirke bearbeiten',
+	shareArea: 'Pirschbezirke teilen',
+
+	addStands: 'Stände erstellen',
+  removeStands: 'Stände löschen',
+	allocateStands: 'Stände reservieren',
+
+	addReports: 'Berichte erstellen',
+  editReports: 'Berichte bearbeiten',
+};
+
 Meteor.startup( function () {
   console.log("starting module areamanagement ...");
+	propagateActions( "areamanagement", actions );
 })
 
 Meteor.methods({

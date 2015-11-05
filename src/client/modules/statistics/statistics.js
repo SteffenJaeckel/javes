@@ -9,7 +9,7 @@ window.mods['statistics'] = { index: 50, name: "Statistiken", icon:"fa-bar-chart
 	menuitems: function( path ) {
 		if( path.length == 0 ) {
 			return [
-				{name:'Jagd',id:'participants',icon:'fa-crosshair'},
+				{name:'Jagd',id:'participants',icon:'fa-crosshairs'},
 				{name:'Einschlag',id:'schedule',icon:'fa-tree'},
 				{name:'Verjüngung',id:'schedule',icon:'fa-calendar'}
 			];

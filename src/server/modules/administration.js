@@ -1,6 +1,16 @@
+var actions = {
+  editConfig: 'Configuration bearbeiten',
+
+  addUser: "Benutzer erstellen",
+  editUser: "Benutzer bearbeiten",
+
+  addRoles: 'Benutzerrollen erstellen',
+  editRoles: 'Benutzerrollen bearbeiten'
+};
 
 Meteor.startup( function () {
   console.log("starting module administration ...");
+  propagateActions( "administration", actions );
 })
 
 Meteor.publish("employies", function () {

@@ -24,6 +24,19 @@ Customers.allow({
 	}
 });
 
+Actions = new Meteor.Collection('actions');
+Actions.allow({
+	insert:function(userId) {
+		return false;
+	},
+	update:function(userId,fields,modifier) {
+		return false;
+	},
+	remove:function(userId) {
+		return false;
+	}
+});
+
 Areas = new Meteor.Collection('areas');
 Areas.allow({
 	insert:function(userId,area) {

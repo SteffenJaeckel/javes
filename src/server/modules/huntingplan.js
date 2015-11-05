@@ -1,5 +1,19 @@
+var actions = {
+  viewPlans: "Pläne ansehen",
+  viewParticipants: "Teilnehmer ansehen",
+
+  addHunter: 'Pläne erstellen',
+  deleteHunter: 'Pläne löschen',
+
+  updatePlans: 'Pläne bearbeiten',
+
+  inviteParticipants: "Teilnehmer einladen",
+  changeParticipantsState: "Teilnehmerstatus ändern",
+};
+
 Meteor.startup( function () {
   console.log("starting module huntingplans ...");
+  propagateActions( "huntingplans", actions );
 })
 
 /*
@@ -7,30 +21,35 @@ Meteor.startup( function () {
   bereitgestellt werden.
  */
 Meteor.publish("plan_stands", function ( planid, drive ) {
-	var condition = {};
-	condition['_id'] = planid;
-	condition['viewer.'+this.userId ] = { $lte: 2 };
-	var plan = Plans.findOne( condition );
-  console.log("load stands for plan:",planid," drive #",drive);
-	if( plan ) {
-		condition = {};
-		condition['location'] = { "$geoWithin": {"$geometry" : plan.drives[ drive ].shape }} ;
-		condition['type'] = { $lt:3 };
-		condition['deleted'] = false ;
-		return Stands.find( condition , { fields: {deleted:0} } );
-	}
+  var user = Meteor.users.findOne({_id:this.userId});
+  if( canAccess( user , "huntingplans", "viewPlans") ) {
+    var condition = {};
+  	condition['_id'] = planid;
+  	condition['viewer.'+this.userId ] = { $lte: 2 };
+  	var plan = Plans.findOne( condition );
+    console.log("load stands for plan:",planid," drive #",drive);
+  	if( plan ) {
+  		condition = {};
+  		condition['location'] = { "$geoWithin": {"$geometry" : plan.drives[ drive ].shape }} ;
+  		condition['type'] = { $lt:3 };
+  		condition['deleted'] = false ;
+  		return Stands.find( condition , { fields: {deleted:0} } );
+  	}
+  }
 	return Stands.find({ unkown: true });
 });
 
 Meteor.publish("participants", function ( ) {
   var user = Meteor.users.findOne({_id:this.userId});
-  if( user && user.profile.currentpath.length >= 2 ) {
-    var cust = user.profile.currentpath[0];
-    var dep = user.profile.currentpath[1];
-    var query = {};
-    query['customers.'+cust+'.departments.'+dep+'.roles'] = { $exists: true };
-    console.log(query);
-  	return Meteor.users.find( query, {customers:1,profile:1,emails:1} );
+  if( canAccess( user , "huntingplans", "viewParticipants") ) {
+    if( user && user.profile.currentpath.length >= 2 ) {
+      var cust = user.profile.currentpath[0];
+      var dep = user.profile.currentpath[1];
+      var query = {};
+      query['customers.'+cust+'.departments.'+dep+'.roles'] = { $exists: true };
+      console.log(query);
+    	return Meteor.users.find( query, {customers:1,profile:1,emails:1} );
+    }
   }
 });
 
