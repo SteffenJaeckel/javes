@@ -69,8 +69,9 @@ Template.arrangehuntereditor.helpers({
 
             if( groupfilter && add ) {
               add = false;
-              for( var x = 0; user.profile.group != null  && x < user.profile.group.length;x++ ) {
-                var m = user.profile.group[x].match( groupfilter )
+              var custgroups = user.customers[ app.getCustomer()].departments[app.getDepartment() ].groups;
+              for( var x = 0; custgroups != null  && x <custgroups.length;x++ ) {
+                var m = custgroups[x].match( groupfilter )
                 if( m != null && m.length > 0) {
                   add = true;
                 }

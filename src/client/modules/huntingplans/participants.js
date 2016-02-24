@@ -16,8 +16,10 @@ function loadUser() {
     filter.push( {'profile.surname':{  $regex: '^'+Session.get('user-filter'), $options: 'i' }});
   }
   if( Session.get('group-filter') ) {
-    filter.push( {'profile.group': { $regex: '^'+Session.get('group-filter'), $options: 'i' }});
+    var q = {}
     var groupfilter = new RegExp('^'+Session.get('group-filter'), 'i');
+    q['customers.'+app.getCustomer()+'.departments.'+app.getDepartment()+'.groups'] =  { $regex: '^'+Session.get('group-filter'), $options: 'i' };
+    filter.push( q );
   }
   if( Session.get('type-filter') > 0 ) {
     filter.push({'profile.type':(Session.get('type-filter')-1)})
@@ -71,7 +73,6 @@ function loadUser() {
     } else {
       for( var x=0;x < groupprofile.length;x++ ) {
         var gr = groupprofile[x];
-
         if( groupfilter && gr.match( groupfilter ) == null )
           continue;
 
@@ -79,7 +80,7 @@ function loadUser() {
           groups[ gr ] = { id:gr, name:gr, user:[] };
         }
         groups[ gr ].user.push(cur);
-      }      
+      }
     }
   });
   return _.sortBy(_.values(groups),'name');
