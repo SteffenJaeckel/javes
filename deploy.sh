@@ -11,7 +11,7 @@ rm bundle.tar
 echo "Create new bundle.tar"
 tar -c --file bundle.tar bundle
 echo "Delete bundle dir"
-rm -R -f bundle
+##rm -R -f bundle
 cd ../..
 pwd
 echo "Add new files to git"

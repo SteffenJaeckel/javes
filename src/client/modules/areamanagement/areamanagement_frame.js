@@ -7,7 +7,7 @@ function getSelectionTool() {
           if( l ) {
             if( l.get('name') == 'Jagdliche Einrichtungen' ) {
               var stand = Stands.findOne({_id: f.getId() });
-          		if( stand && Session.set('standdata') == null ) {
+          		if( stand && Session.get('standdata') == null ) {
           			Session.set('standdata',stand);
           			modals.push('viewstand');
                 return false;
@@ -15,7 +15,7 @@ function getSelectionTool() {
             }
             if( l.get('name') == 'Berichte' ) {
               var report = Reports.findOne({_id: f.getId() });
-          		if( report && Session.set('reportdata') == null ) {
+          		if( report && Session.get('reportdata') == null ) {
           			Session.set('reportdata',report);
           			modals.push('reportview');
                 return false;
@@ -183,6 +183,7 @@ function fitArea( area ) {
       var role = app.getRole();
       console.log( role );
     }
+  }
 }
 
 Template.areamanagement_frame.created = function() {
@@ -216,10 +217,10 @@ Template.areamanagement_frame.created = function() {
   huntingareareports_layer.set('name','Berichte');
   olmap.addLayer( huntingareareports_layer );
 
-
   DataChangeHandler.add("areamap", function ( path ) {
      console.log("call areamap Datachange handler ...");
      updateMap();
+     var area = getCurrentArea();
      if( area ) {
        fitArea( area );
      }
@@ -252,6 +253,18 @@ Template.areamanagement_frame.destroyed = function() {
   app.popTool();
 }
 
+
+Template.areamanagement_frame.helpers({
+  areasize : function () {
+    var area = getCurrentArea();
+    if( area.geometry != null ) {
+      var geo = new ol.format.GeoJSON().readGeometry( area.geometry , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
+      return Math.round( geo.getArea()/1000 ) / 10;
+    }
+    return 0.0;
+  }
+})
+
 Template.areamanagement_frame.events({
   'click #area-share' : function() {
     Session.set('modal', { shareinfo: true } );
@@ -264,5 +277,8 @@ Template.areamanagement_frame.events({
   },
   'click #report-overview' : function() {
     modals.push("reportoverview",{});
+  },
+  'click #new-kill-report' : function() {
+    editor.push("pointeditor",{});
   }
 })

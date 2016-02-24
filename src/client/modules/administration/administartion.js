@@ -29,6 +29,21 @@ window.mods['administration'] = { index:1, name: "Administration", icon:"fa-grou
 					{name:'Rollen',id:'roles',icon:'fa-credit-card'},
 				];
 			}
+		} else if( path.length == 1 ) {
+			if( path[0] == 'roles' ) {
+				var customer = Customers.findOne({_id:app.getCustomer()});
+				if( customer ) {
+					var temp = customer.departments[app.getDepartment()].roles;
+					var ret = [];
+					for( var n in temp ) {
+						if( n != 'admin' ) {
+							ret.push({name: n, id: n, icon: 'fa-key'});
+						}
+					}
+					return ret;
+				}
+				return null;
+			}
 		}
 	},
 	selected: function( item ) {
@@ -51,3 +66,11 @@ Template.administration.helpers({
 		}
 	}
 })
+
+getAviableEditRoles = function() {
+
+}
+
+getCurrentEditRole = function() {
+
+}

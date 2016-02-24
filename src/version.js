@@ -1,1 +1,1 @@
-version = { major:0,minor:25}; 
+version = { major:0,minor:26}; 

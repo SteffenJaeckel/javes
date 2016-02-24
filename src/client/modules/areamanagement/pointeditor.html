@@ -1,0 +1,139 @@
+<template name="pointeditor">
+  <style>
+    div.colorselector {
+      position: relative;
+      width:100%;
+      height:24px;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+    }
+    div.color {
+      position: relative;
+      width:100%;
+      height:100%;
+      border: 2px solid #fff;
+      border-radius: 4px;
+    }
+    .twitter-typeahead {
+      width:100%;
+    }
+    .tt-menu {
+      background-color:#fff;
+      border: 1px solid #66afe9;
+      border-radius: 4px;
+      outline: 0;
+      -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+      box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+      padding: 4px;
+      width:100%;
+      margin-top:2px;
+    }
+    .tt-selectable:hover {
+      color: #66afe9;
+    }
+  </style>
+  <div style="position:relative;top:0px;left:0px;width:100%;height:100%;">
+    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:42px;overflow-y:auto;overflow-x:hidden;">
+      {{#if error}}
+          <div class="alert alert-danger">
+            <b>Achtung !</b> {{error.text}}
+          </div>
+      {{/if}}
+      {{#unless checkeditorstate 'selectstands' }}
+        <div style="width:100%;">
+          <div class="form-group">
+            <label>Gruppe</label>
+            <div>
+              <table style="width:100%;">
+                {{#each aviablegroups}}
+                  <tr>
+                    {{#each this}}
+                      <td style="text-align:center;padding-top:3px;padding-bottom:3px;">
+                        <div class="btn btn-default groupselection{{#unless aviable}} disabled{{/unless}} {{#if selected}} selected{{/if}}" style="width:42px;" data="{{id}}">{{id}}</div>
+                      </td>
+                    {{/each}}
+                  </tr>
+                {{/each}}
+              </table>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Ansteller</label>
+            <div id="leader-container">
+              <input id="leader" class="form-control input-sm typeahead" placeholder="Name, Vorname" value="{{leader}}" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Technik</label>
+            <input id="vehicle" class="form-control input-sm" placeholder="Fahrzeug, Anhänger" value="{{data.vehicle}}"/>
+          </div>
+          <div class="form-group">
+            <label>Farbe der Route</label>
+            <table width="100%">
+              <tr>
+                {{#each colors}}
+                  <td style="padding: 1px;">
+                    <div class="colorselector selectable {{class}}" data="{{index}}" >
+                      <div class="color" style="background-color:{{value}};"></div>
+                    </div>
+                  </td>
+                {{/each}}
+              </tr>
+            </table>
+          </div>
+        </div>
+        <hr/>
+      {{/unless}}
+      {{#if checkeditorstate 'drawpath' }}
+        <div>
+          <h4>Anstellroute bearbeiten</h4>
+          <p>
+            Zeichen Sie mit der Maus eine Anstellroute. Drücken Sie die Taste [Esc] um von vorne anzufangen. Doppelklicken Sie den Endpunkt um das Zeichen abzuschliessen.
+          </p>
+        </div>
+      {{/if}}
+      {{#if checkeditorstate 'editpath' }}
+        <div>
+          <h4>Anstellroute bearbeiten</h4>
+          <p>
+            Bearbeiten Sie die Anstellroute in dem Sie mit der linken Maustaste Punkte auf dem Pfad einfügen und bewegen.
+            Wenn Sie einen Punkt löschen wollen halten Sie die [ALT] Taste gedrückt und klicken Sie dann
+            auf den Punkt den Sie löschen möchten.
+          </p>
+        </div>
+      {{/if}}
+
+      {{#if checkeditorstate 'selectstands' }}
+      <div>
+        <h4>Stände auswählen</h4>
+        <p>
+          Wählen Sie jetzt per Mausklick die Stände aus, die Sie in dieser Anstellroute absetzen möchten.
+          Wählen Sie die Stände in der Reihenfolge aus, in der sie später abgesetzt werden sollen.
+        </p>
+        <div style="border-radius:5px;border:1px solid #ccc; padding: 10px;margin-bottom:10px;">
+          <table width="100%">
+            <tr><td class="attribute">Anzahl der Stände</td><td class="value">{{stands.length}}</td><td class="unit"></td></tr>
+            <tr><td class="attribute">Länge der Anstellroute</td><td class="value">{{routelength}}</td><td class="unit">km</td></tr>
+            <tr><td class="attribute">Geschätzte Zeit zum Anstellen</td><td class="value">{{setuptime}}</td><td class="unit">min</td></tr>
+          </table>
+        </div>
+        <div class="standlist">
+            {{#each stands}}
+              {{> standitem}}
+            {{/each}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+    <div style="position:absolute; bottom:0px; left: 0px; right:0px;">
+      <div class="btn-group btn-group-justified">
+        <div class="btn-group">
+          <button id="abort" class="btn btn-sx btn-default"  style="text-align:left;"><i class="fa fa-remove fa-fw"></i>&nbsp;Abbrechen</button>
+        </div>
+        <div class="btn-group">
+            <button id="save" class="btn btn-sx btn-primary {{savestate}}" style="text-align:left;"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp;Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

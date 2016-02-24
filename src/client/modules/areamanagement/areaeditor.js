@@ -94,7 +94,9 @@ Template.areaeditor.created = function () {
     })
     workinglayer.getSource().clear();
   }
+}
 
+Template.areaeditor.rendered = function () {
   if( overlay.getFeatures().length > 0 ) {
     app.pushTool( getEditPathTool() )
   } else {

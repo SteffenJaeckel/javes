@@ -1,11 +1,14 @@
 var actions = {
-  editConfig: 'Configuration bearbeiten',
+  editConfig: { name: 'Configuration bearbeiten' , dependon: ''},
+  listUsers: { name: 'Benutzer anzeigen' , dependon: ''},
 
-  addUser: "Benutzer erstellen",
-  editUser: "Benutzer bearbeiten",
+  addUser: { name: "Benutzer erstellen" , dependon: 'editUser'},
+  deleteUser: { name: "Benutzer löschen" , dependon: 'editUser'},
+  editUser: { name: "Benutzer bearbeiten" , dependon: 'listUsers'},
 
-  addRoles: 'Benutzerrollen erstellen',
-  editRoles: 'Benutzerrollen bearbeiten'
+  addRoles: { name: 'Benutzerrollen erstellen' , dependon: 'editRoles'},
+  deleteRoles: { name: 'Benutzerrollen löschen' , dependon: 'editRoles'},
+  editRoles: { name: 'Benutzerrollen bearbeiten' , dependon: 'listUsers'},
 };
 
 Meteor.startup( function () {
@@ -14,15 +17,15 @@ Meteor.startup( function () {
 })
 
 Meteor.publish("employies", function () {
-
   var me = Meteor.users.findOne({ _id:this.userId } );
-  if( me && me.profile.currentpath.length >= 2 ) {
-    var query = {};
-    query[ 'customers.'+me.profile.currentpath[0]+'.departments.'+me.profile.currentpath[1] ] = {$exists:true};
-    console.log(query);
-    return Meteor.users.find( query );
+  if( canAccess( me , "administration", "listUsers") ) {
+    if( me && me.profile.currentpath.length >= 2 ) {
+      var query = {};
+      query[ 'customers.'+me.profile.currentpath[0]+'.departments.'+me.profile.currentpath[1] ] = {$exists:true};
+      console.log(query);
+      return Meteor.users.find( query );
+    }
   }
-  return null;
 });
 
 
