@@ -187,6 +187,7 @@ app = {
         }
       }
     }
+    console.log("toostack:",app.toolstack)
   },
   pushTool : function( tool ) {
     var map = app.getMap();
@@ -208,6 +209,7 @@ app = {
     }
     app.current_tool = tool;
     app.toolstack.push( app.current_tool );
+    console.log("toostack:",app.toolstack)
   },
   getMapConfig: function() {
     var auth = Meteor.user().profile.currentpath;

@@ -252,8 +252,8 @@ Template.viewstand.events({
 			}
 			Session.set('allocationstate',null);
 		})
-		$('#abort-allocation').disable();
-		$('#commit-allocation').disable();
+		//$('#abort-allocation').disable();
+		//$('#commit-allocation').disable();
 	},
 	'click #edit-stand': function( e ) {
 		modals.push('editstand')
@@ -293,4 +293,5 @@ Template.viewstand.created = function( ) {
 
 Template.viewstand.destroyed = function( ) {
 	this.comments.stop();
+	Session.set('standdata',null)
 }

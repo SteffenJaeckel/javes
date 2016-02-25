@@ -222,6 +222,7 @@ Template.areamanagement_frame.created = function() {
      updateMap();
      var area = getCurrentArea();
      if( area ) {
+       this.allocations = Meteor.subscribe("allocations", area._id );
        fitArea( area );
      }
   })
@@ -232,6 +233,10 @@ Template.areamanagement_frame.rendered = function() {
   updateMap();
   var area = getCurrentArea();
   if( area ) {
+    if( this.allocations ) {
+      this.allocations.stop();
+    }
+    this.allocations = Meteor.subscribe("allocations", area._id );
     fitArea( area );
   }
 }
@@ -250,6 +255,10 @@ Template.areamanagement_frame.destroyed = function() {
   if( this.reports ) {
     this.reports.stop();
   }
+  if( this.allocations ) {
+    this.allocations.stop();
+  }
+
   app.popTool();
 }
 
@@ -257,7 +266,7 @@ Template.areamanagement_frame.destroyed = function() {
 Template.areamanagement_frame.helpers({
   areasize : function () {
     var area = getCurrentArea();
-    if( area.geometry != null ) {
+    if( area && area.geometry != null ) {
       var geo = new ol.format.GeoJSON().readGeometry( area.geometry , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
       return Math.round( geo.getArea()/1000 ) / 10;
     }
@@ -279,6 +288,6 @@ Template.areamanagement_frame.events({
     modals.push("reportoverview",{});
   },
   'click #new-kill-report' : function() {
-    editor.push("pointeditor",{});
+    editor.push("pointeditor",{type:3,name:"34"} );
   }
 })
