@@ -19,11 +19,11 @@ function updateEditor() {
   app.pushTool( getEditPointTool() )
 }
 
-Template.pointeditor.rendered = function () {
+Template.standeditor.rendered = function () {
 
 }
 
-Template.pointeditor.created = function () {
+Template.standeditor.created = function () {
   var map = app.getMap();
   overlaylayer =  new ol.layer.Vector({
     source: new ol.source.Vector({
@@ -53,18 +53,27 @@ Template.pointeditor.created = function () {
   //overlaylayer.getSource().getFeaturesCollection().clear();
 }
 
-Template.pointeditor.destroyed = function () {
+Template.standeditor.destroyed = function () {
   console.log("route editor destroyed");
   app.popTool()
   app.removeLayer( overlaylayer );
   overlaylayer.getSource().getFeaturesCollection().clear();
 }
 
-Template.pointeditor.helpers({
+Template.standeditor.helpers({
+  name: function () {
+    return "test";
+  },
+  desc: function() {
+    return "";
+  },
+  standtype : function( id ) {
+    return (id==1) ? "selected":"";
+  }
 })
 
 
-Template.pointeditor.events({
+Template.standeditor.events({
 
   'click #save' : function ( e ) {
     Session.set( "error",null);
@@ -75,7 +84,6 @@ Template.pointeditor.events({
       mapsources['routes'].addFeature( undo );
       undo = null;
     }
-    Session.set('selected-routestands',null)
     mapsources['stands'].changed();
     editor.pop();
   }

@@ -3,13 +3,15 @@ function getSelectionTool() {
       handleEvent : function ( e ) {
         if( editor.get() == null  && e.type == 'singleclick') {
           var route = null;
+          Session.set('standdata',null);
+          Session.set('reportdata',null);
           e.map.forEachFeatureAtPixel( e.pixel , function ( f , l ) {
           if( l ) {
             if( l.get('name') == 'Jagdliche Einrichtungen' ) {
               var stand = Stands.findOne({_id: f.getId() });
           		if( stand && Session.get('standdata') == null ) {
           			Session.set('standdata',stand);
-          			modals.push('viewstand');
+          			//modals.push('viewstand');
                 return false;
           		}
             }
@@ -17,7 +19,7 @@ function getSelectionTool() {
               var report = Reports.findOne({_id: f.getId() });
           		if( report && Session.get('reportdata') == null ) {
           			Session.set('reportdata',report);
-          			modals.push('reportview');
+          			//modals.push('reportview');
                 return false;
           		}
             }
@@ -36,6 +38,7 @@ var huntingareastands_layer = {};
 var huntingareareports_layer = {};
 
 function updateStands() {
+
   if( this.stands )
     this.stands.stop();
 
@@ -169,6 +172,12 @@ function updateMap() {
 
 function fitArea( area ) {
   var map = app.getMap();
+
+  if( this.allocations ) {
+    this.allocations.stop();
+  }
+  this.allocations = Meteor.subscribe("allocations", area._id );
+
   if( area.geometry != null ) {
     var geo = new ol.format.GeoJSON().readGeometry( area.geometry , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
   }
@@ -222,7 +231,6 @@ Template.areamanagement_frame.created = function() {
      updateMap();
      var area = getCurrentArea();
      if( area ) {
-       this.allocations = Meteor.subscribe("allocations", area._id );
        fitArea( area );
      }
   })
@@ -233,10 +241,6 @@ Template.areamanagement_frame.rendered = function() {
   updateMap();
   var area = getCurrentArea();
   if( area ) {
-    if( this.allocations ) {
-      this.allocations.stop();
-    }
-    this.allocations = Meteor.subscribe("allocations", area._id );
     fitArea( area );
   }
 }
@@ -271,6 +275,12 @@ Template.areamanagement_frame.helpers({
       return Math.round( geo.getArea()/1000 ) / 10;
     }
     return 0.0;
+  },
+  framewidth: function () {
+    return ( Session.get('standdata') == null && Session.get('reportdata') == null ) ?  300 : 600;
+  },
+  selection: function() {
+    return ( Session.get('standdata') != null || Session.get('reportdata') != null );
   }
 })
 
@@ -288,6 +298,6 @@ Template.areamanagement_frame.events({
     modals.push("reportoverview",{});
   },
   'click #new-kill-report' : function() {
-    editor.push("pointeditor",{type:3,name:"34"} );
+    editor.push("standeditor",{type:3,name:"34"} );
   }
 })

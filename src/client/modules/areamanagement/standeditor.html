@@ -1,0 +1,76 @@
+<template name="standeditor">
+  <style>
+
+    div.listitem {
+      position: relative;
+      height: 44px;
+      padding: 4px;
+      padding-top: 12px;
+      padding-left: 46px;
+      border-radius: 5px;
+    }
+
+    div.listicon {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      background-size: 100% 100%;
+      background-position: 0px 0px;
+      left: 4px;
+      top: 4px;
+    }
+    .twitter-typeahead {
+      width:100%;
+    }
+    .tt-menu {
+      background-color:#fff;
+      border: 1px solid #66afe9;
+      border-radius: 4px;
+      outline: 0;
+      -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+      box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+      padding: 4px;
+      width:100%;
+      margin-top:2px;
+    }
+    .tt-selectable:hover {
+      color: #66afe9;
+    }
+  </style>
+  <div style="position:relative;top:0px;left:0px;width:100%;height:100%;">
+    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:42px;overflow-y:auto;overflow-x:hidden;">
+      {{#if error}}
+          <div class="alert alert-danger">
+            <b>Achtung !</b> {{error.text}}
+          </div>
+      {{/if}}
+      <div class="form-group">
+  			<label for="stand-name" class="control-label">Namen der jagdlichen Einrichtung</label>
+  			<input id="stand-name" class="form-control" placeholder="Name" type="text" style="width:100%" value="{{standname}}"/>
+  		</div>
+  		<div class="form-group">
+  			<label for="stand-desc" class="control-label">Beschreibung (optional))</label>
+  			<textarea id="stand-desc" class="form-control" placeholder="Beschreibung" style="width:100%; min-width:100%; max-width:100%;">{{standdesc}}</textarea>
+  		</div>
+  		<div class="form-group">
+  			<label for="stand-desc" class="control-label">Kartensymbol</label>
+  			<div class="standtype-container">
+  				<div class="listitem  {{standtype 1}}" data="1"><div class="listicon standtype-1"></div> Kanzel</div>
+  				<div class="listitem  {{standtype 2}}" data="2"><div class="listicon standtype-2"></div> Drückjagdbock / Leiter</div>
+  				<div class="listitem  {{standtype 3}}" data="3"><div class="listicon standtype-3"></div> Erdsitz / Schirm</div>
+  				<div class="listitem  {{standtype 4}}" data="4"><div class="listicon standtype-4"></div> Suhle / Sulze</div>
+  			</div>
+  		</div>
+    </div>
+    <div style="position:absolute; bottom:0px; left: 0px; right:0px;">
+      <div class="btn-group btn-group-justified">
+        <div class="btn-group">
+          <button id="abort" class="btn btn-sx btn-default"  style="text-align:left;"><i class="fa fa-remove fa-fw"></i>&nbsp;Abbrechen</button>
+        </div>
+        <div class="btn-group">
+            <button id="save" class="btn btn-sx btn-primary {{savestate}}" style="text-align:left;"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp;Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

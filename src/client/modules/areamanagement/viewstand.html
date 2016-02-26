@@ -53,143 +53,137 @@
 			padding:4px;
 		}
 	</style>
-	<div class="modal-header">
-		<button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h4 class="modal-title">Jagdliche Einrichtung: {{standname}}</h4>
-	</div>
-	<div class="modal-body">
-		{{#if canEdit}}
-			<ul class="nav nav-pills">
-				<li><a id="edit-stand" href="#"><span class="glyphicon glyphicon-edit"></span>&nbsp;Bearbeiten</a></li>
-				<li><a id="move-stand" href="#"><span class="glyphicon glyphicon-move"></span>&nbsp;Verschieben</a></li>
-				<li><a id="delete-stand" href="#" style="color:rgb(200,0,0);"><span class="glyphicon glyphicon-trash"></span>&nbsp;Löschen</a></li>
-			</ul>
+	{{#if canEdit}}
+		<ul class="nav nav-pills">
+			<li><a id="edit-stand" href="#"><span class="glyphicon glyphicon-edit"></span>&nbsp;Bearbeiten</a></li>
+			<li><a id="move-stand" href="#"><span class="glyphicon glyphicon-move"></span>&nbsp;Verschieben</a></li>
+			<li><a id="delete-stand" href="#" style="color:rgb(200,0,0);"><span class="glyphicon glyphicon-trash"></span>&nbsp;Löschen</a></li>
+		</ul>
+	{{/if}}
+	<h4>Daten</h4>
+	<div class="well well-sm">
+		<div class="standicon standtype-{{standtype}}"></div>
+		{{#if standdesc}}
+			<p>{{standdesc}}</p>
+		{{else}}
+			<p>Es wurde keine Beschreibung angelegt</p>
 		{{/if}}
-		<h4>Daten</h4>
-		<div class="well well-sm">
-			<div class="standicon standtype-{{standtype}}"></div>
-			{{#if standdesc}}
-				<p>{{standdesc}}</p>
+		<div style="clear:both;"></div>
+	</div>
+	<h4>Ansitzplanung</h4>
+	<div class="well well-sm">
+		<table width="100%">
+			<tr align="center" style="font-size:8pt;font-weight:800;color:#888;">
+				<td align="left">Uhrzeit</td>
+				<td>00</td>
+				<td>01</td>
+				<td>02</td>
+				<td>03</td>
+				<td>04</td>
+				<td>05</td>
+				<td>06</td>
+				<td>07</td>
+				<td>08</td>
+				<td>09</td>
+				<td>10</td>
+				<td>11</td>
+				<td>12</td>
+				<td>13</td>
+				<td>14</td>
+				<td>15</td>
+				<td>16</td>
+				<td>17</td>
+				<td>18</td>
+				<td>19</td>
+				<td>20</td>
+				<td>21</td>
+				<td>22</td>
+				<td>23</td>
+			</tr>
+			{{#each allocation}}
+			{{> calendar}}
+			{{/each}}
+		</table>
+		<div class="info" style="padding-top:10px;">
+			<div class="alert alert-warning" style="padding: 7pt;font-size: 10pt;margin-bottom: 2px;">
+			{{#if allocationinfo}}
+				<h5>Reservierung</h5>
+				<p><b>{{allocationinfo.user.name}} {{allocationinfo.user.surname}}</b> hat diesen Stand vom <b>{{formatDate allocationinfo.from}} {{formatTime allocationinfo.from}}</b> bis zum <b>{{formatDate allocationinfo.to}} {{formatTime allocationinfo.to}}</b> reserviert.</p>
+				<p style="text-align:right;">
+					<button id="abort-allocationinfo" class="btn btn-sm btn-warning">Ok</button>
+				</p>
 			{{else}}
-				<p>Es wurde keine Beschreibung angelegt</p>
-			{{/if}}
-			<div style="clear:both;"></div>
-		</div>
-		<h4>Ansitzplanung</h4>
-		<div class="well well-sm">
-			<table width="100%">
-				<tr align="center" style="font-size:8pt;font-weight:800;color:#888;">
-					<td align="left">Uhrzeit</td>
-					<td>00</td>
-					<td>01</td>
-					<td>02</td>
-					<td>03</td>
-					<td>04</td>
-					<td>05</td>
-					<td>06</td>
-					<td>07</td>
-					<td>08</td>
-					<td>09</td>
-					<td>10</td>
-					<td>11</td>
-					<td>12</td>
-					<td>13</td>
-					<td>14</td>
-					<td>15</td>
-					<td>16</td>
-					<td>17</td>
-					<td>18</td>
-					<td>19</td>
-					<td>20</td>
-					<td>21</td>
-					<td>22</td>
-					<td>23</td>
-				</tr>
-				{{#each allocation}}
-				{{> calendar}}
-				{{/each}}
-			</table>
-			<div class="info" style="padding-top:10px;">
-				<div class="alert alert-warning" style="padding: 7pt;font-size: 10pt;margin-bottom: 2px;">
-				{{#if allocationinfo}}
-					<h5>Reservierung</h5>
-					<p><b>{{allocationinfo.user.name}} {{allocationinfo.user.surname}}</b> hat diesen Stand vom <b>{{formatDate allocationinfo.from}} {{formatTime allocationinfo.from}}</b> bis zum <b>{{formatDate allocationinfo.to}} {{formatTime allocationinfo.to}}</b> reserviert.</p>
+				{{#if editallocation}}
+					<h5>Ihre Reservierung</h5>
+					<p>Sie haben diesen Stand von <b>{{formatDate editallocation.from}} {{formatTime editallocation.from}}</b> bis zum <b>{{formatDate editallocation.to}} {{formatTime editallocation.to}}</b> reserviert.</p>
 					<p style="text-align:right;">
-						<button id="abort-allocationinfo" class="btn btn-sm btn-warning">Ok</button>
+						<button id="abort-editallocation" class="btn btn-sm btn-warning">Abbrechen</button>
+						<button id="remove-editallocation" class="btn btn-sm btn-warning">Stornieren</button>
 					</p>
 				{{else}}
-					{{#if editallocation}}
-						<h5>Ihre Reservierung</h5>
-						<p>Sie haben diesen Stand von <b>{{formatDate editallocation.from}} {{formatTime editallocation.from}}</b> bis zum <b>{{formatDate editallocation.to}} {{formatTime editallocation.to}}</b> reserviert.</p>
-						<p style="text-align:right;">
-							<button id="abort-editallocation" class="btn btn-sm btn-warning">Abbrechen</button>
-							<button id="remove-editallocation" class="btn btn-sm btn-warning">Stornieren</button>
-						</p>
-					{{else}}
-						{{#if allocationstate}}
-							{{#if allocationstate.start }}
-								{{#if allocationstate.inselection }}
-									<p>Klicken Sie auf ein weiters freies Feld um eine Endzeit für Ihren geplanten Ansitz auf diesem Stand festzulegen.</p>
-								{{else}}
-									<h5>Reservierung bestätigen</h5>
-									<p>Wollen sie diesen Stand vom <b>{{formatDate allocationstate.start}} {{formatTime allocationstate.start}}</b> bis zum <b>{{formatDate allocationstate.end}} {{formatTime allocationstate.end}}</b> (für <b>{{timeSpan allocationstate.start allocationstate.end}}</b>) reservieren? Klicken Sie erneut auf ein freies Feld um die Zeitspanne zu verändern.</p>
-									<p style="text-align:right;">
-										<button id="abort-allocation" class="btn btn-sm btn-warning">Abbrechen</button>
-										<button id="commit-allocation" class="btn btn-sm btn-warning">Eintragen</button>
-									</p>
-								{{/if}}
+					{{#if allocationstate}}
+						{{#if allocationstate.start }}
+							{{#if allocationstate.inselection }}
+								<p>Klicken Sie auf ein weiters freies Feld um eine Endzeit für Ihren geplanten Ansitz auf diesem Stand festzulegen.</p>
 							{{else}}
-							<p>Klicken Sie auf ein weißes (freies) Feld um eine Startzeit für Ihren geplanten Ansitz auf diesem Stand festzulegen.</p>
+								<h5>Reservierung bestätigen</h5>
+								<p>Wollen sie diesen Stand vom <b>{{formatDate allocationstate.start}} {{formatTime allocationstate.start}}</b> bis zum <b>{{formatDate allocationstate.end}} {{formatTime allocationstate.end}}</b> (für <b>{{timeSpan allocationstate.start allocationstate.end}}</b>) reservieren? Klicken Sie erneut auf ein freies Feld um die Zeitspanne zu verändern.</p>
+								<p style="text-align:right;">
+									<button id="abort-allocation" class="btn btn-sm btn-warning">Abbrechen</button>
+									<button id="commit-allocation" class="btn btn-sm btn-warning">Eintragen</button>
+								</p>
 							{{/if}}
 						{{else}}
-							<h5>Reservierungsoptionen</h5>
-							<table id="legend">
-								<tr>
-									<td>
-										<div class="hour free"></div>
-									</td>
-									<td>
-										<b>Freies Feld</b> - klicken Sie mit der Maus auf ein freies Feld um eine Startzeit für Ihren geplanten Ansitz festzulegen.
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div class="hour notaviable"></div>
-									</td>
-									<td>
-										<b>Belegt durch einen anderen Jäger</b> - klicken Sie mit Maus auf einen belegten Slot um Informationen zu dieser Reservierung zu erhalten.
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div class="hour reserved"></div>
-									</td>
-									<td>
-										<b>Für Sie reserviert</b> - klicken Sie mit der Maus auf die Reservierung um Änderungen daran vorzunehmen.
-									</td>
-								</tr>
-							</table>
+						<p>Klicken Sie auf ein weißes (freies) Feld um eine Startzeit für Ihren geplanten Ansitz auf diesem Stand festzulegen.</p>
 						{{/if}}
+					{{else}}
+						<h5>Reservierungsoptionen</h5>
+						<table id="legend">
+							<tr>
+								<td>
+									<div class="hour free"></div>
+								</td>
+								<td>
+									<b>Freies Feld</b> - klicken Sie mit der Maus auf ein freies Feld um eine Startzeit für Ihren geplanten Ansitz festzulegen.
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="hour notaviable"></div>
+								</td>
+								<td>
+									<b>Belegt durch einen anderen Jäger</b> - klicken Sie mit Maus auf einen belegten Slot um Informationen zu dieser Reservierung zu erhalten.
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div class="hour reserved"></div>
+								</td>
+								<td>
+									<b>Für Sie reserviert</b> - klicken Sie mit der Maus auf die Reservierung um Änderungen daran vorzunehmen.
+								</td>
+							</tr>
+						</table>
 					{{/if}}
 				{{/if}}
-				</div>
+			{{/if}}
 			</div>
 		</div>
-
-		<h4>Zustand</h4>
-		<div class="well well-sm">
-			<p>Zuletzt kontrolliert am <b>{{conditionInfo.date}}</b> von <b>{{conditionInfo.name}}</b></p>
-			<div class="progress progress-striped">
-				<div class="progress-bar progress-bar-{{conditionInfo.class}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{conditionInfo.value}}%;"></div>
-			</div>
-			<div class="btn-group btn-group-justified">
-				<button id="set-condition-bad" data="{{conditionInfo.id}}" class="btn btn-sm btn-danger" style="width: 33%;">Schlecht</button>
-				<button id="set-condition-ok" data="{{conditionInfo.id}}" class="btn btn-sm btn-warning" style="width: 34%;">Noch Ok</button>
-				<button id="set-condition-new" data="{{conditionInfo.id}}" class="btn btn-sm btn-success" style="width: 33%;">Gut</button>
-			</div>
-		</div>
-		{{>comments}}
 	</div>
+
+	<h4>Zustand</h4>
+	<div class="well well-sm">
+		<p>Zuletzt kontrolliert am <b>{{conditionInfo.date}}</b> von <b>{{conditionInfo.name}}</b></p>
+		<div class="progress progress-striped">
+			<div class="progress-bar progress-bar-{{conditionInfo.class}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{conditionInfo.value}}%;"></div>
+		</div>
+		<div class="btn-group btn-group-justified">
+			<button id="set-condition-bad" data="{{conditionInfo.id}}" class="btn btn-sm btn-danger" style="width: 33%;">Schlecht</button>
+			<button id="set-condition-ok" data="{{conditionInfo.id}}" class="btn btn-sm btn-warning" style="width: 34%;">Noch Ok</button>
+			<button id="set-condition-new" data="{{conditionInfo.id}}" class="btn btn-sm btn-success" style="width: 33%;">Gut</button>
+		</div>
+	</div>
+	{{>comments}}
 </template>
 
 <template name="calendar">
