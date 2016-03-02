@@ -33,7 +33,7 @@
           {{#each areas}}
             <div id="{{_id}}" class="area" data="{{_id}}">
               <p style="font-size:14pt;font-weight:bold;">{{name}}</p>
-              <span style="color:#aaa;"><i class="fa fa-envelope fa-fw"></i>&nbsp;Neue Nachrichten: 0</span>&nbsp;|&nbsp;
+              <span style="color:#aaa;"><i class="fa fa-envelope fa-fw"></i>&nbsp;Neue Nachrichten: {{messages.count this._id}}</span>&nbsp;|&nbsp;
               <span style="color:#aaa;"><i class="fa fa-user fa-fw"></i>&nbsp;Mitbenutzer 0</span>&nbsp;|&nbsp;
               <span style="color:#aaa;"><i class="fa fa-crosshairs fa-fw"></i>&nbsp;Neue Abschüsse 0</span>&nbsp;|&nbsp;
               <span style="color:#aaa;"><i class="fa fa-binoculars fa-fw"></i>&nbsp;Neue Beobachtungen 0</span>&nbsp;|&nbsp;

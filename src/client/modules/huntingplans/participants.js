@@ -53,7 +53,7 @@ function loadUser() {
       break;
   }
 
-  Meteor.users.find( selector , { sort : { 'profile.surname':1 } }).forEach( function( user ) {
+  Meteor.users.find( selector , { sort : { 'profile.surname':1 } , limit: 200 }).forEach( function( user ) {
     var cur = {
       id: user._id,
       firstname:user.profile.firstname,
@@ -218,7 +218,7 @@ Template.participants.events({
       } else {
         tt['top'] = e.clientY+20;
       }
-      Session.set( 'tooltip', tt );
+      //Session.set( 'tooltip', tt );
     }
   },
   'mouseenter .feedback': function( e ) {

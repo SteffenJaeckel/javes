@@ -1,6 +1,9 @@
 
 <template name="comments">
 	<h4>Kommentare</h4>
+	<div class="form-group">
+		<input id="add-comment" class="form-control" placeholder="Hinterlassen Sie einen Kommentar ..." type="text" style="width:100%" value=""/>
+	</div>
 	<div>
 	{{#each entry}}
 		<div class="well well-sm" style="position:relative;">
@@ -38,8 +41,5 @@
 		</ul>
 	</div>
 	{{/if}}
-	</div>
-	<div class="form-group">
-		<input id="add-comment" class="form-control" placeholder="Hinterlassen Sie einen Kommentar ..." type="text" style="width:100%" value=""/>
 	</div>
 </template>

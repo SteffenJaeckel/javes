@@ -21,6 +21,14 @@ function flatPoints( data, flat ) {
 
 function getColor( feature ) {
 
+  var disabled = feature.get('disabled');
+
+  if( disabled ) {
+    img = 'img/disabled/'+(parseInt(feature.get('type'))+3)+'00.png'
+    color = [128,128,128, opacity ];
+    return {'img':img,'color':color,'opacity':opacity};
+  }
+
   var selected_route = Session.get('selected-route');
   var route = feature.get('route');
   var opacity = 1;
@@ -73,7 +81,11 @@ getReportStyle = function( feature, res, selected ) {
   var text = feature.get('text');
   var zindex = parseInt(feature.get('z-index'));
 
-  var img = 'img/marker/'+(type)+'0'+(color)+'.png';
+  if( feature.get("disabled") == 1 ) {
+    var img = 'img/disabled/'+(type)+'00.png';
+  } else {
+    var img = 'img/marker/'+(type)+'0'+(color)+'.png';
+  }
   styles = [];
   styles.push( new ol.style.Style({
     image: new ol.style.Icon(({

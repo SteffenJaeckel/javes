@@ -1,7 +1,7 @@
 <template name="standeditor">
   <style>
 
-    div.listitem {
+    div.standtype {
       position: relative;
       height: 44px;
       padding: 4px;
@@ -46,19 +46,19 @@
       {{/if}}
       <div class="form-group">
   			<label for="stand-name" class="control-label">Namen der jagdlichen Einrichtung</label>
-  			<input id="stand-name" class="form-control" placeholder="Name" type="text" style="width:100%" value="{{standname}}"/>
+  			<input id="stand-name" class="form-control" placeholder="Name" type="text" style="width:100%" value="{{name}}"/>
   		</div>
   		<div class="form-group">
   			<label for="stand-desc" class="control-label">Beschreibung (optional))</label>
-  			<textarea id="stand-desc" class="form-control" placeholder="Beschreibung" style="width:100%; min-width:100%; max-width:100%;">{{standdesc}}</textarea>
+  			<textarea id="stand-desc" class="form-control" placeholder="Beschreibung" style="width:100%; min-width:100%; max-width:100%;">{{desc}}</textarea>
   		</div>
   		<div class="form-group">
   			<label for="stand-desc" class="control-label">Kartensymbol</label>
   			<div class="standtype-container">
-  				<div class="listitem  {{standtype 1}}" data="1"><div class="listicon standtype-1"></div> Kanzel</div>
-  				<div class="listitem  {{standtype 2}}" data="2"><div class="listicon standtype-2"></div> Drückjagdbock / Leiter</div>
-  				<div class="listitem  {{standtype 3}}" data="3"><div class="listicon standtype-3"></div> Erdsitz / Schirm</div>
-  				<div class="listitem  {{standtype 4}}" data="4"><div class="listicon standtype-4"></div> Suhle / Sulze</div>
+  				<div class="standtype  {{standtype 1}}" data="1"><div class="listicon standtype-1"></div> Kanzel</div>
+  				<div class="standtype  {{standtype 2}}" data="2"><div class="listicon standtype-2"></div> Drückjagdbock / Leiter</div>
+  				<div class="standtype  {{standtype 3}}" data="3"><div class="listicon standtype-3"></div> Erdsitz / Schirm</div>
+  				<div class="standtype  {{standtype 4}}" data="4"><div class="listicon standtype-4"></div> Suhle / Sulze</div>
   			</div>
   		</div>
     </div>

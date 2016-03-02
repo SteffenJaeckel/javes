@@ -2,6 +2,20 @@ function readableName( user ) {
 	return user.profile.firstname+" "+user.profile.surname;
 }
 
+function addPositionNofification( position, userId, message ) {
+	var q = { type: "Point", coordinates: [ 13.9341597557067870, 52.4312515705209850 ] };
+	Areas.find( { geometry: {$geoIntersects: { $geometry : position }}}).forEach( function ( area ) {
+		message['area'] = area.name;
+		message['areaId'] = area._id;
+		for( id in area.viewer ) {
+			if( userId != id ) {
+				addUserNotification( id, message )
+				console.log( "send msg to user "+id );
+			}
+		}
+	})
+}
+
 function addAreaNofification( areaId, userId, message ) {
 	var area = Areas.findOne({_id:areaId});
 	message['area'] = area.name;
@@ -91,22 +105,25 @@ Meteor.publish("viewer_profiles", function ( areaId ) {
 });
 
 var actions = {
-  viewAreas: "Pirschbezirke ansehen",
+  viewAreas: { name: "Pirschbezirke ansehen" },
 
-	sendInvitation: "Jäger einladen",
+	sendInvitation: { name: "Jäger einladen", dependon:'viewAreas' },
 
-  newArea: 'Pirschbezirke erstellen',
-  deleteArea: 'Pirschbezirke löschen',
+  newArea: { name: 'Pirschbezirke erstellen', dependon:'viewAreas' },
+  deleteArea: { name: 'Pirschbezirke löschen', dependon:'viewAreas' },
 
-  updateArea: 'Pirschbezirke bearbeiten',
-	shareArea: 'Pirschbezirke teilen',
+  updateArea: { name: 'Pirschbezirke bearbeiten', dependon:'viewAreas' },
+	shareArea: { name: 'Pirschbezirke teilen', dependon:'viewAreas' },
 
-	addStands: 'Stände erstellen',
-  removeStands: 'Stände löschen',
-	allocateStands: 'Stände reservieren',
+	addStands: { name: 'Stände erstellen', dependon:'viewAreas' },
+  removeStands: { name: 'Stände löschen', dependon:'viewAreas' },
+	allocateStands: { name: 'Stände reservieren', dependon:'viewAreas' },
 
-	addReports: 'Berichte erstellen',
-  editReports: 'Berichte bearbeiten',
+	addReports: { name: 'Berichte erstellen', dependon:'viewAreas' },
+  editReports: { name: 'Berichte bearbeiten', dependon:'viewAreas' },
+
+	editComments: { name: 'Kommentare erstellen', dependon:'viewAreas' },
+	deleteComments: { name: 'Kommentare löschen', dependon:'viewAreas' },
 };
 
 Meteor.startup( function () {
@@ -302,45 +319,37 @@ Meteor.methods({
 		return true;
 	},
 	//   stands
-	newStand: function ( areaId, name, desc, type, position ) {
+	newStand: function ( name, desc, type, position ) {
 		var me = Meteor.users.findOne( { _id: this.userId });
-		var area = Areas.findOne({_id:areaId});
+		console.log(me)
+		if( me.profile.currentpath.length <= 4 )
+			throw new Error(403,"internal_error");
+
+		var area = Areas.findOne({_id: me.profile.currentpath[4] });
 		if( area && area.viewer[this.userId] < 2 ) {
 			var id = Stands.insert({
-				area:areaId,
+				area:area._id,
 				name: name,
 				desc: desc,
 				type: type,
 				condition: { user:readableName(me) ,updated:new Date(), value:3.0 },
-				rating:5,
-				position: position,
+				location: position,
 				deleted: false,
 				created:new Date()
 			});
-			addAreaNofification(areaId, this.userId, { stand_created:true, trigger:readableName(me), stand:name, loc:position } );
+			addPositionNofification( position , this.userId, { stand_created:true, trigger:readableName(me), stand:name, loc:position } );
 			return id;
 		}
-		return '';
+		throw new Error(403,"access_denied");
 	},
-	moveStand: function( standId, newposition ) {
+	editStand: function ( standId, name, desc, type, location ) {
 		var me = Meteor.users.findOne( { _id: this.userId });
 		var stand = Stands.findOne({_id:standId});
-		if( stand ) {
-			var area = Areas.findOne({_id:stand.area});
+		if( stand && me.profile.currentpath.length > 4 ) {
+			var area = Areas.findOne({ _id: me.profile.currentpath[4] });
 			if( area && area.viewer[this.userId] < 2 ) {
-				Stands.update( {_id:standId},{ $set:{'position':newposition } });
-				addAreaNofification(area._id, this.userId, { stand_moved:true, trigger:readableName(me), stand:stand.name, loc:newposition, old: stand.position } );
-			}
-		}
-	},
-	editStand: function ( standId, name, desc, type, rating, condition ) {
-		var me = Meteor.users.findOne( { _id: this.userId });
-		var stand = Stands.findOne({_id:standId});
-		if( stand ) {
-			var area = Areas.findOne({_id:stand.area});
-			if( area && area.viewer[this.userId] < 2 ) {
-				Stands.update( {_id:standId},{ $set:{'name':name,'desc':desc,'type':type } });
-				addAreaNofification(me.profile.currentSelectedArea, this.userId, { stand_edited:true, trigger:readableName(me), stand:stand.name, loc:stand.position } );
+				Stands.update( {_id:standId},{ $set:{'name':name,'desc':desc,'type':type, 'location':location } });
+				addPositionNofification( location , this.userId, { stand_edited:true, trigger:readableName(me), stand:stand.name, loc:stand.location } );
 			}
 		}
 	},
@@ -356,7 +365,7 @@ Meteor.methods({
 			var area = Areas.findOne({_id:stand.area});
 			if( area && area.viewer[this.userId] < 2 ) {
 				Stands.update( {_id:standId},{ $set:{'deleted':true } });
-				addAreaNofification(me.profile.currentSelectedArea, this.userId, { stand_deleted:true, trigger:readableName(me), stand:stand.name, loc:stand.position } );
+				addPositionNofification( stand.location , this.userId, { stand_deleted:true, trigger:readableName(me), stand:stand.name, loc:stand.location } );
 			}
 		}
 	},
@@ -400,32 +409,27 @@ Meteor.methods({
 		Allocations.remove({_id:allocationId,'user.id':this.userId});
 	},
 	addReport: function( report ) {
+
 		var me = Meteor.users.findOne( {_id:this.userId});
 		if( report.date == null || report.date > new Date() ) {
 			throw new Meteor.Error(403, "future_dates_are_not_allowed");
 		}
-		console.log( report );
-		/*check(report.type,NumberRange(1,3));
-		check(report.gametype,NumberRange(1,9));
-		if( report.type == 3 ) {
-			check(report.ageclass, NumberRange(0,5));
-			check(report.gender,NumberRange(0,1));
-		}*/
+
 		if( report.type == 3 && report.hunttype == 3 ) {
-			report['reporter'] = { id:this.userId ,name:report.name ,surname:report.surname };
+			report['reporter'] = { id:this.userId ,name:report.firstname ,surname:report.surname };
 		} else {
-			report['reporter'] = { id:this.userId ,name:me.profile.name ,surname:me.profile.surname };
+			report['reporter'] = { id:this.userId ,name:me.profile.firstname ,surname:me.profile.surname };
 		}
 		Reports.insert( report );
 		switch(report.type ) {
 			case 1:
-				addAreaNofification( report.area, this.userId, { view_report_added:true, trigger:readableName(me), loc:report.position } );
+				addPositionNofification( report.location ,  this.userId, { view_report_added:true, trigger:readableName(me), loc:report.location } );
 				break;
 			case 2:
-				addAreaNofification( report.area, this.userId, { miss_report_added:true, trigger:readableName(me), loc:report.position } );
+				addPositionNofification( report.location ,  this.userId, { miss_report_added:true, trigger:readableName(me), loc:report.location } );
 				break;
 			case 3:
-				addAreaNofification( report.area, this.userId, { kill_report_added:true, trigger:readableName(me), loc:report.position } );
+				addPositionNofification( report.location ,  this.userId, { kill_report_added:true, trigger:readableName(me), loc:report.location } );
 				break;
 		}
 	},
@@ -462,6 +466,7 @@ Meteor.methods({
 			text:text,
 			date: new Date()
 		})
+		//addPositionNofification( report.location ,  this.userId, { kill_report_added:true, trigger:readableName(me), loc:report.location } );
 		//addAreaNofification( areaId, this.userId, { newcomment:true, trigger:readableName(me), obj:obj } );
 	},
 	deleteComment: function( id ) {

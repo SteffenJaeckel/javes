@@ -70,6 +70,9 @@ parseDate = function( datestr, timestr, date ) {
 }
 //
 formatDate = function( date ) {
+	if( date == null )
+		return "01.01.1970";
+
 	var d = date.getDate();
 	if( d < 10 ) {d='0'+d;}
 	var m = date.getMonth()+1;

@@ -33,7 +33,7 @@ Template.viewstand.rendered = function() {
 }
 
 Template.viewstand.canEdit = function () {
-	var area = Areas.findOne({_id:Meteor.user().profile.currentSelectedArea });
+	var area = getCurrentArea();
 	if( area ) {
 		return area.viewer[ Meteor.userId() ] < 2;
 	}
@@ -167,7 +167,7 @@ Template.viewstand.standdesc = function () {
 	return Session.get('standdata').desc;
 }
 
-Template.viewstand.standtype = function ( i ) {
+Template.viewstand.standtype = function () {
 	return Session.get('standdata').type;
 }
 
@@ -177,6 +177,7 @@ Template.viewstand.conditionInfo = function () {
 
 Template.viewstand.events({
 	'click .modal-close': function( e ) {
+		Session.set('standdata',null)
 		modals.pop()
 	},
 	'click #move-stand': function( e ) {
@@ -185,6 +186,7 @@ Template.viewstand.events({
 	'click #delete-stand': function( e ) {
 		if( confirm('Wirklich löschen?') ) {
 			Meteor.call('deleteStand',Session.get('standdata')._id, function ( e ) {
+				Session.set('standdata',null)
 				modals.pop();
 			})
 		}
@@ -256,7 +258,7 @@ Template.viewstand.events({
 		//$('#commit-allocation').disable();
 	},
 	'click #edit-stand': function( e ) {
-		modals.push('editstand')
+		editor.push('standeditor',{});
 	},
 	'click #set-condition-bad': function( e ) {
 		var sid = Session.get('standdata')._id;
@@ -286,12 +288,3 @@ Template.viewstand.events({
 		});
 	}
 })
-
-Template.viewstand.created = function( ) {
-	this.comments = Meteor.subscribe("comments",Session.get('standdata')._id)
-}
-
-Template.viewstand.destroyed = function( ) {
-	this.comments.stop();
-	Session.set('standdata',null)
-}

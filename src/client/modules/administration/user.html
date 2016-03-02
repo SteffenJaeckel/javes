@@ -8,6 +8,7 @@
       max-width:64px;
       overflow:hidden;
       text-overflow: ellipsis;
+      margin-bottom: 4px;
     }
 
     input.filter-head {
@@ -30,11 +31,11 @@
           <td><b>Gruppen</b></td>
         </tr>
         <tr>
-          <td><input class="form-control filter-head input-sm" type="text"/></td>
-          <td><input class="form-control filter-head input-sm" type="text"/></td>
-          <td><input class="form-control filter-head input-sm" type="text"/></td>
-          <td><input class="form-control filter-head input-sm" type="text"/></td>
-          <td><input class="form-control filter-head input-sm" type="text"/></td>
+          <td><input id="filter-user" class="form-control filter-head input-sm" type="text"/></td>
+          <td><input id="filter-email" class="form-control filter-head input-sm" type="text"/></td>
+          <td><input id="filter-created" class="form-control filter-head input-sm" type="text"/></td>
+          <td><input id="filter-roles" class="form-control filter-head input-sm" type="text"/></td>
+          <td><input id="filter-groups" class="form-control filter-head input-sm" type="text"/></td>
         </tr>
       </thead>
       <tbody style="overflow:scroll">
@@ -53,12 +54,12 @@
             </td>
             <td>
               {{#each rolesof this}}
-                <button class="btn btn-primary btn-xs tagbutton">{{this}}</button>&nbsp;
+                <button class="btn btn-primary btn-xs tagbutton roletag">{{this}}</button>&nbsp;
               {{/each}}
             </td>
             <td>
               {{#each groupsof this}}
-                <button class="btn btn-primary btn-xs tagbutton">{{this}}</button>&nbsp;
+                <button class="btn btn-primary btn-xs tagbutton grouptag">{{this}}</button>&nbsp;
               {{/each}}
             </td>
           </tr>

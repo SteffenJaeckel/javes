@@ -2,7 +2,7 @@
 	<style>
 #app {position:absolute; left:0px; right:0px; top:0px; bottom:0px; min-width:1024px;	}
 		#main { position:absolute; 		left:0px; right:0px; top:54px; bottom:0px; overflow:hidden; }
-		#toolbar {position:absolute; left: 0px; right:0px; top:0px; height:54px; padding:10px; background-color:#1A3827; }
+		#toolbar {position:absolute; left: 0px; right:0px; top:0px; height:54px; padding:10px; background-color:#285780; }
 		div.logo { display:inline-block; position:relative; width:128px; height:42px; background-size:100% 100%; background-image:url('./img/logo_javes_weiss.png'); margin-right:10px; float:left; }
 		@media print {
 			#app { position: relative; width: width:100%; min-width:100%; max-width_100%;}
@@ -14,14 +14,15 @@
 	    text-overflow: ellipsis;
 	    max-width: 100%;
 		}
-
+		.well {
+			border: 1px solid #428bca;
+		}
 	</style>
 	<div id="app">
     <div id="main">
       {{> Template.dynamic template=getmodul }}
     </div>
 		<div id="toolbar">
-			{{#unless editor}}
 			<div class="btn-group toolgroup">
 				<button id="logout" class="btn btn-default"><i class="fa fa-power-off fa-fw"></i></button>
 				<button id="profile" class="btn btn-default">{{username}}</button>
@@ -48,12 +49,14 @@
           </div>
         {{/each}}
       </div >
-			{{else}}
-				<span style="font-size: 26px;  font-weight: bold;  color: #fff;  opacity: 0.5;">Bearbeitungsmodus</span>
-			{{/unless}}
 			<div style="top:7px;right:74px; position:absolute;">
 				<div class="logo"></div>
 			</div>
+			{{#if editor}}
+				<div style="position: absolute;left: 0px;right: 0px;top: 0px;bottom: 0px;padding: 10px;background-color: #285780;">
+					<span style="font-size: 26px;  font-weight: bold;  color: #fff;  opacity: 0.5;">Bearbeitungsmodus</span>
+				</div>
+			{{/if}}
 		</div>
 	</div>
   {{#if getmodal }}

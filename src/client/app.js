@@ -164,6 +164,16 @@ app = {
     console.log("remove layer "+layer.get('name'),layer );
     map.getLayers().remove(layer);
   },
+  getLayerByName: function( name ) {
+    var map = app.getMap();
+    var layer = null;
+    map.getLayers().forEach( function(cur ) {
+      if( cur.get("name") == name ) {
+        layer = cur;
+      }
+    });
+    return layer;
+  },
   popTool: function () {
     map = app.getMap();
     app.current_tool = app.toolstack.pop();

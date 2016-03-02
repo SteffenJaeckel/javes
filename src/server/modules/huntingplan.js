@@ -1,14 +1,14 @@
 var actions = {
-  viewPlans: "Pläne ansehen",
-  viewParticipants: "Teilnehmer ansehen",
+  viewPlans: { name: "Pläne ansehen" },
+  viewParticipants: { name: "Teilnehmer ansehen",dependon: 'viewPlans' },
 
-  addHunter: 'Pläne erstellen',
-  deleteHunter: 'Pläne löschen',
+  addHunter: { name: 'Pläne erstellen',dependon: 'viewParticipants' },
+  deleteHunter: { name: 'Pläne löschen',dependon: 'viewParticipants' },
 
-  updatePlans: 'Pläne bearbeiten',
+  updatePlans: { name: 'Pläne bearbeiten',dependon: 'viewPlans' },
 
-  inviteParticipants: "Teilnehmer einladen",
-  changeParticipantsState: "Teilnehmerstatus ändern",
+  inviteParticipants: { name: "Teilnehmer einladen",dependon: 'viewParticipants' },
+  changeParticipantsState: { name: "Teilnehmerstatus ändern",dependon: 'viewParticipants' },
 };
 
 Meteor.startup( function () {
@@ -48,7 +48,7 @@ Meteor.publish("participants", function ( ) {
       var query = {};
       query['customers.'+cust+'.departments.'+dep+'.roles'] = { $exists: true };
       console.log(query);
-    	return Meteor.users.find( query, {customers:1,profile:1,emails:1} );
+    	return Meteor.users.find( query, { limit:1000, fields:{ customers:1,profile:1,emails:1} });
     }
   }
 });

@@ -6,25 +6,21 @@ function getSelectionTool() {
           Session.set('standdata',null);
           Session.set('reportdata',null);
           e.map.forEachFeatureAtPixel( e.pixel , function ( f , l ) {
-          if( l ) {
-            if( l.get('name') == 'Jagdliche Einrichtungen' ) {
-              var stand = Stands.findOne({_id: f.getId() });
-          		if( stand && Session.get('standdata') == null ) {
-          			Session.set('standdata',stand);
-          			//modals.push('viewstand');
-                return false;
-          		}
+            if( l ) {
+              if( l.get('name') == 'Berichte' ) {
+            		if( Session.get('reportdata') == null ) {
+            			selectReport(f.getId())
+                  return false;
+            		}
+              }
+              if( l.get('name') == 'Jagdliche Einrichtungen' ) {
+            		if( Session.get('standdata') == null ) {
+                  selectStand( f.getId() );
+                  return false;
+            		}
+              }
             }
-            if( l.get('name') == 'Berichte' ) {
-              var report = Reports.findOne({_id: f.getId() });
-          		if( report && Session.get('reportdata') == null ) {
-          			Session.set('reportdata',report);
-          			//modals.push('reportview');
-                return false;
-          		}
-            }
-          }
-        })
+          })
       }
       return true;
     }
@@ -36,6 +32,29 @@ function getSelectionTool() {
 var huntingarea_layer = {};
 var huntingareastands_layer = {};
 var huntingareareports_layer = {};
+
+
+function selectStand( id ) {
+  var stand = Stands.findOne({_id: id });
+  if( stand ) {
+    if( this.comments )
+      this.comments.stop();
+
+    this.comments = Meteor.subscribe("comments",id )
+    Session.set('standdata',stand);
+  }
+}
+
+function selectReport( id ) {
+  var report = Reports.findOne({_id: id });
+  if( report ) {
+    if( this.comments )
+      this.comments.stop();
+
+    this.comments = Meteor.subscribe("comments",id )
+    Session.set('reportdata',report);
+  }
+}
 
 function updateStands() {
 
@@ -127,6 +146,7 @@ function updateReports() {
 }
 
 function updateMap() {
+
   var olmap = app.getMap();
   if( olmap ) {
     olmap.setTarget( document.getElementById('map') );
@@ -238,9 +258,9 @@ Template.areamanagement_frame.created = function() {
 
 Template.areamanagement_frame.rendered = function() {
   app.pushTool( getSelectionTool());
-  updateMap();
   var area = getCurrentArea();
   if( area ) {
+    updateMap();
     fitArea( area );
   }
 }
@@ -253,12 +273,15 @@ Template.areamanagement_frame.destroyed = function() {
     olmap.removeLayer( huntingareastands_layer );
   }
   DataChangeHandler.remove("areamap");
+
   if( this.stands ) {
     this.stands.stop();
   }
+
   if( this.reports ) {
     this.reports.stop();
   }
+
   if( this.allocations ) {
     this.allocations.stop();
   }
@@ -277,10 +300,31 @@ Template.areamanagement_frame.helpers({
     return 0.0;
   },
   framewidth: function () {
-    return ( Session.get('standdata') == null && Session.get('reportdata') == null ) ?  300 : 600;
+    return ( Session.get('standdata') != null ) ?  600 : ( Session.get('reportdata') != null ) ? 400 : 300;
   },
-  selection: function() {
-    return ( Session.get('standdata') != null || Session.get('reportdata') != null );
+  isstandselected: function() {
+    return Session.get('standdata') != null;
+  },
+  isreportselected: function() {
+    return Session.get('reportdata') != null;
+  },
+  numstands : function() {
+    return Stands.find({type:{$in:[1,2,3]}} ).count();
+  },
+  numviews: function() {
+    return Reports.find({type:1}).count();
+  },
+  nummisses: function() {
+    return Reports.find({type:2}).count();
+  },
+  numkills: function() {
+    return Reports.find({type:3}).count();
+  },
+  areamessages: function() {
+    var area = getCurrentArea();
+    if( area )
+      return Notifications.find({"msg.areaId":area._id});
+    return 0;
   }
 })
 
@@ -297,7 +341,20 @@ Template.areamanagement_frame.events({
   'click #report-overview' : function() {
     modals.push("reportoverview",{});
   },
+  'click #new-stand' : function() {
+    Session.set("standdata", { type:1, desc:"", name: "1" });
+    editor.push("standeditor",{} );
+  },
   'click #new-kill-report' : function() {
-    editor.push("standeditor",{type:3,name:"34"} );
+    Session.set("reportdata", { type:3, hunttype:1, desc:"", date: new Date() });
+    editor.push("reporteditor",{} );
+  },
+  'click #new-view-report' : function() {
+    Session.set("reportdata", { type:1, desc:"", date: new Date() });
+    editor.push("reporteditor",{} );
+  },
+  'click #new-miss-report' : function() {
+    Session.set("reportdata", { type:2, desc:"",gametype:1, date: new Date() });
+    editor.push("reporteditor",{} );
   }
 })

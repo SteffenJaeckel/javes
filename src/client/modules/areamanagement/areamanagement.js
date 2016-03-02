@@ -32,10 +32,12 @@ window.mods['areamanagement'] = { index:2,name: "Revierverwaltung", icon:"fa-com
 
 Template.areamanagement.created = function () {
 	this.areas = Meteor.subscribe('areas')
+	this.notifications = Meteor.subscribe('notifications')
 }
 
 Template.areamanagement.destroyed = function () {
 	this.areas.stop();
+	this.notifications.stop();
 }
 
 getCurrentArea = function( ) {

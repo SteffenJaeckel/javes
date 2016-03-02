@@ -176,6 +176,7 @@ Template.routeeditor.created = function () {
     updateWhileInteracting: true // optional, for instant visual feedback
   });
   app.addLayer( overlaylayer )
+  app.pushTool( getSelectStandsTool() )
   overlaylayer.getSource().getFeaturesCollection().clear();
 }
 

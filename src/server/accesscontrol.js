@@ -55,12 +55,11 @@ propagateActions = function( mod , actions ) {
           customer.departments[dep].roles.admin.modules[ mod ].actions = {};
         }
         customer.departments[dep].roles.admin.modules[ mod ].actions = actions;
-
         Customers.update( {_id:customer._id} , customer );
       }
     }
   });
   for( var a in actions ) {
-    console.log("add action ["+actions[a]+"] to module ["+mod+"]");
+    console.log("add action ["+actions[a].name+"] to module ["+mod+"]");
   }
 }

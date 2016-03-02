@@ -1,3 +1,6 @@
+function readableName( user ) {
+	return user.profile.firstname+" "+user.profile.surname;
+}
 
 Meteor.methods({
 

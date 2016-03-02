@@ -1,6 +1,9 @@
 Template.dashboard.helpers({
   areas: function () {
     return Areas.find({},{ sort : { 'name':1 } });
+  },
+  messages: function( areaid ) {
+    return Notifications.find({"msg.areaId":areaid });
   }
 })
 

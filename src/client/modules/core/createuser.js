@@ -35,6 +35,7 @@ Template.adduser.events({
           console.log(e);
         } else {
           console.log("user found ",id);
+          modals.pop();
         }
     })
     //modals.pop();
