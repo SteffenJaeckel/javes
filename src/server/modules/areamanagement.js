@@ -183,42 +183,6 @@ Meteor.methods({
 		}
 		return true;
 	},
-	sendInvitation:function( areaId, email, name, surname ) {
-		email = email.toLowerCase();
-		var sender = Meteor.users.findOne( { _id: this.userId });
-		var area = Areas.findOne( { _id: areaId, deleted:false } );
-		var newId = Accounts.createUser( { 'email': email , 'profile': { name:name, surname:surname, avatar:0,currentSelectedArea:areaId,currentMode:0, invitedBy : this.userId } } );
-		var obj = {};
-		obj['viewer.'+newId ] = area.viewer[this.userId]+1;
-		console.log("invite @ "+email)
-		Areas.update({'_id':areaId}, { '$set' : obj } );
-		Accounts.emailTemplates.siteName = "revier-plan.de";
-		Accounts.emailTemplates.from = sender.profile.name+" "+sender.profile.surname+"<"+sender.emails[0].address+">";
-		Accounts.emailTemplates.enrollAccount.subject = function (user) {
-			return "Hallo " + user.profile.name+" "+user.profile.surname;
-		};
-
-		Accounts.emailTemplates.enrollAccount.text = function (user, url) {
-			var sender = Meteor.users.findOne( { _id: user.profile.invitedBy });
-			var sendername = readableName( sender );
-			var revier = Areas.findOne({_id: user.profile.currentSelectedArea} );
-			return ""+_.escape(sendername)+" hat Sie eingeladen, mit Ihm gemeinsam das Revier "+_.escape(revier.name)+" auf der Website revier-plan.de zu teilen.⁄n"+
-			"Um der Einladung zu folgen benutzen Sie bitte den folgenden Link : "+url+"⁄n"+
-			"Wenn Sie "+_.escape(sendername)+" nicht kennen und auch sonst keine Beziehung zur Jagd haben, handelt es sich möglicherweise um einen Irrtum. Wir bitten Sie das zu Entschuldigen⁄n⁄n"+
-			"Das Revierplan Team freut sich bereits auf Sie.⁄n";
-		};
-
-		Accounts.emailTemplates.enrollAccount.html = function (user, url) {
-			var sender = Meteor.users.findOne( { _id: user.profile.invitedBy });
-			var sendername = readableName( sender );
-			var revier = Areas.findOne({_id: user.profile.currentSelectedArea} );
-			return "<p><b>"+_.escape(sendername)+"</b> hat Sie eingeladen, mit Ihm gemeinsam das Revier <b>"+_.escape(revier.name)+"</b> auf der Website revier-plan.de zu teilen.</p>"+
-			"<p>Um der Einladung zu folgen benutzen Sie bitte den folgenden Link : <a href="+url+">"+url+"</a>.</p>"+
-			"<p>Wenn Sie <b>"+_.escape(sendername)+"</b> nicht kennen und auch sonst keine Beziehung zur Jagd haben, handelt es sich möglicherweise um einen Irrtum. Wir bitten Sie das zu Entschuldigen</p>"+
-			"<p>Das Revierplan Team freut sich bereits auf Sie.</p>";
-		};
-		Accounts.sendEnrollmentEmail(newId);
-	},
 	loadEnrollInfo:function( token ) {
 		var user = Meteor.users.findOne({"services.password.reset.token": token});
 		var inviter = Meteor.users.findOne({'_id':user.profile.invitedBy});

@@ -260,7 +260,7 @@ Template.arrangehuntereditor.rendered = function() {
       map.forEachFeatureAtPixel( [e.pageX-off.left, e.pageY-off.top ], function( f,l ) {
         if( l && l == maplayer['stands'] && editor.get() ) {
           var stands = editor.get().stands;
-          if( stands && stands[f.getId() ] && stands[f.getId() ].user != '' ){
+          if( stands && stands[ f.getId() ] && stands[f.getId() ].user != '' ){
             var obj = {x: e.pageX+20, y: e.pageY+20, user: stands[f.getId() ].user };
             Session.set('drag-item', obj );
             return;
@@ -315,6 +315,24 @@ Template.arrangehuntereditor.events({
     } else {
       var obj = {x: e.pageX+20, y: e.pageY+20, user: $(e.currentTarget).attr('data-user') };
       Session.set('drag-item', obj )
+      e.stopPropagation();
+    }
+  },
+  'click #hunterlist' : function() {
+    console.log("hunterlist delete")
+    var item = Session.get('drag-item');
+    if( item ) {
+
+      var edit = editor.get();
+      var old = getStandByUser( edit.stands, item.user );
+      if( old != '') {
+        edit.stands[ old ].user = '';
+      }
+      editor.set('stands',edit.stands);
+      Session.set('drag-item', null );
+      setTimeout( function () {
+        mapsources['stands'].changed()
+      },100)
     }
   },
   'click .clear-filter':function (e) {

@@ -241,31 +241,6 @@ a {
 	background-image:url('/img/marker/309.png');
 }
 
-
-.groupbox {
-  background-color: #eee;
-  position: relative;
-  width: 100%;
-  border: 1px solid #337AB7;
-  border-radius: 5px;
-  margin-top: 12px;
-  padding: 4px;
-  padding-top: 10px;
-}
-
-.groupbox-label {
-  position: absolute;
-  top: -11px;
-  left: 5px;
-  background-color: #eee;
-  padding: 4px;
-  color: #337AB7;
-  margin-bottom: 2px;
-  font-weight: bold;
-  font-size: 8.0pt;
-  font-family: sans-serif;
-}
-
 .select-gt {
 	display: inline-block;
 	background-color: #eee;

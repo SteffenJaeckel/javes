@@ -1,4 +1,5 @@
 DataModels = {
+
 	MapConfigmodel : {
 	  projection: {type:'object',name:'Projektion' ,model: {
 	    name:{type:'string',name:'Name', min:4,max:20},
@@ -29,6 +30,15 @@ DataModels = {
 	  name:{type:'string',min:1,max:512},
 	  enabled: {type:'bool',name:'Aktiv'},
 	  mapconfig: {type:'object', name:'Karten Konfiguration', model : 'MapConfigmodel' }
+	},
+
+	Pointmodel : {
+	  type: { type:'set' , items: ['Point'] },
+	  coordinates : {
+      type:'array',name: 'Coordinaten', min:2, max: 2, items: {
+	        type: 'number', name:'Wert'
+      }
+	  }
 	},
 
 	Pathmodel : {
@@ -63,6 +73,16 @@ DataModels = {
 	      }
 	    }
 	  }
+	},
+	StandModel : {
+		name: {type:'string',name:'Name', min:1,max:4},
+		desc: {type:'string',name:'Name', min:0,max:1024},
+		type: {type:'set',items:[1,2,3,4],name:'Typ'},
+		condition : { type:'object', name:'Zustand', optional:true ,model:{
+				user: {type:'string',name:'Username', min:0,max:512},
+				value: {type:'number',min:0.0, max:3.0}
+		}},
+		location : { type:'object', name:'Zustand', optional:true ,model:'Pointmodel' }
 	},
 
 	Drivestandmodel : {

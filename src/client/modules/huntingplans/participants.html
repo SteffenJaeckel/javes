@@ -177,6 +177,7 @@
             </div>
             <div style="position: absolute;top: 126px;left:0px;height: 40px;">
               {{#each plans}}
+                {{planheader this.id}}
                 <div class="plan-details feedback" style="position:absolute;left:{{this.offset}}px; width:{{this.width}}px; height:100%;" data-plan="{{this._id}}">
                   <i class="fa fa-user"></i>&nbsp;{{this.userstates.invited}}/{{this.userstates.confirmed}}<br/>
                   <i class="fa fa-paw"></i>&nbsp;{{this.dogstates.invited}}/{{this.dogstates.confirmed}}
@@ -194,7 +195,7 @@
       </div>
       <div id="workplane" style="position:absolute;top:166px;left:300px;right:0px;bottom:0px;overflow:scroll;">
         <div class="scroll-area">
-          {{#each plans}}
+          {{#each plansstates group}}
           <div style="position:absolute;left:{{this.offset}}px;top:0px;width:{{this.width}}px;float:left;">
             {{#each this.invitestates}}
               <div class="grid-{{this.class}} {{this.type}} feedback" data-user="{{this.id}}" data-plan="{{this.plan}}">

@@ -230,6 +230,67 @@ getStandsAlongPath = function( path, maxdist, stands ) {
 	}
 	return inlist;
 }
+
+pathlib = {
+
+		get : function( obj , path ) {
+			/*Wenn opath noch kein array ist dann umwandeln ...*/
+			if( ! (path instanceof  Array) ) {
+				path = path.split('.');
+			}
+			if( path.length > 1 ) {
+				var child = obj[ path[0] ]
+				if( child == null ) {
+					return null;
+				} else
+					path.shift();
+					return pathlib.get( child , path );
+			} else if( path.length == 1 )
+				return obj[ path[0] ];
+		},
+		set : function( obj , path , value ) {
+			/*Wenn opath noch kein array ist dann umwandeln ...*/
+			if( ! (path instanceof  Array) ) {
+				path = path.split('.');
+			}
+			if( path.length > 1 ) {
+				var index = path[0];
+				path.shift();
+				/*wildcards behandeln ...*/
+				if( index == '*' ) {
+					for( var id in obj ) {
+						var child = obj[ id ]
+						if( child == null ) {
+							child = {}
+						}
+						pathlib.set( child , path, value );
+						obj[ id ] = child;
+					}
+				} else {
+					var child = obj[ index ]
+					if( child == null ) {
+						child = {}
+					}
+					pathlib.set( child , path, value );
+					obj[ index ] = child;
+				}
+			} else if( path.length == 1 )
+				/*wildcards behandeln ...*/
+				if( path[0] == '*' ) {
+					for( var id in obj ) {
+						if( value == null ) {
+							delete obj[ id ];
+						} else
+							obj[ id ] = value;
+					}
+				} else {
+					if( value == null ) {
+						delete obj[ path[0] ];
+					} else
+						obj[ path[0] ] = value;
+				}
+		}
+}
 /*
 	Diese Methode Erzeugt eine Zustandsbeschreibung für eine jagdliche Einrichtung.
 */
@@ -279,6 +340,14 @@ editor = {
 			obj['state'] = state;
 		}
 		Session.set('editor',obj);
+	},
+	getScreenCenterPoint : function () {
+		var map = app.getMap();
+		if( map ) {
+			var center = map.getView().getCenter();
+			var point = new ol.geom.Point( center );
+			return new ol.format.GeoJSON().writeGeometryObject( point , { featureProjection: mapconfig.projection.name ,dataProjection:'WGS84' });
+		}
 	},
 	get: function () {
 		if( Session.get('editor') ) {

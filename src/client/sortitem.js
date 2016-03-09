@@ -1,11 +1,6 @@
 
 /*
 possible types
-
-glyphicon-sort-by-attributes
-glyphicon-sort-by-order
-glyphicon-sort-by-alphabet
-
 */
 
 sorting = {
@@ -52,7 +47,7 @@ sorting = {
 }
 
 Template.sortitem.sortmode = function() {
-	return ( this.mode == 1) ? 'glyphicon-sort-by-attributes':'glyphicon-sort-by-attributes-alt';
+	return ( this.mode == 1) ? 'fa-amount-asc':'fa-amount-desc';
 }
 
 Template.sortitem.events = {

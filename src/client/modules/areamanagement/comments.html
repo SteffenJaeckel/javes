@@ -1,45 +1,47 @@
 
 <template name="comments">
-	<h4>Kommentare</h4>
-	<div class="form-group">
-		<input id="add-comment" class="form-control" placeholder="Hinterlassen Sie einen Kommentar ..." type="text" style="width:100%" value=""/>
-	</div>
-	<div>
-	{{#each entry}}
-		<div class="well well-sm" style="position:relative;">
-			{{#if editComment _id}}
-				<h5>Kommentar berabeiten</h5>
-				<textarea id="edit-comment-text" class="form-control" placeholder="" style="width:100%; min-width:100%; max-width:100%;">{{text}}</textarea>
-				<div style="text-align:right;padding-top:12px;padding-bottom:12px;">
-				<button class="btn btn-sm btn-default abort-edit-comment">Abbrechen</button>
-				<button class="btn btn-sm btn-primary save-edit-comment">Speichern</button>
-				</div>
-			{{else}}
-				{{#if canEdit user.id}}
-				<div style="position:absolute;right:10px;top:10px;width:26px;height:24px;">
-					<button class="btn btn-xs btn-default edit-comment" data="{{_id}}"><span class="glyphicon glyphicon-edit"></span></button>
-					{{#if set}}
-					<button class="btn btn-xs btn-default delete-comment" data="{{_id}}"><span class="glyphicon glyphicon-trash"></span></button>
-					{{/if}}
-				</div>
-				{{/if}}
-				<div class="userimage" style="position:relative; width:64px; height:64px; background-color:#fff; float:left; margin-right:12px; background-image:url('/img/avatars/{{ formatImage img}}')"></div>
-				<p><b>{{user.name}} {{user.surname}}</b> schrieb am {{formatDate date}} um {{formatTime date}} Uhr</p>
-				<div>
-				<p>{{text}}</p>
-				</div>
-				<div style="clear:both;"></div>
-			{{/if}}
+	<div class="groupbox">
+		<span class="groupbox-label">Kommentare</span>
+		<div class="form-group">
+			<input id="add-comment" class="form-control" placeholder="Hinterlassen Sie einen Kommentar ..." type="text" style="width:100%" value=""/>
 		</div>
-	{{/each}}
-	{{#if pagination}}
-	<div style="text-align:center">
-		<ul class="pagination">
-			{{#each pagination}}
-			<li class="{{#if pageselected text}}active{{/if}}"><a class="page" href="#" data="{{text}}">{{text}}</a></li>
-			{{/each}}
-		</ul>
-	</div>
-	{{/if}}
+		<div>
+		{{#each entry}}
+			<div class="commentbox" style="position:relative;">
+				{{#if editComment _id}}
+					<h5>Kommentar berabeiten</h5>
+					<textarea id="edit-comment-text" class="form-control" placeholder="" style="width:100%; min-width:100%; max-width:100%;">{{text}}</textarea>
+					<div style="text-align:right;padding-top:12px;padding-bottom:12px;">
+					<button class="btn btn-sm btn-default abort-edit-comment">Abbrechen</button>
+					<button class="btn btn-sm btn-primary save-edit-comment">Speichern</button>
+					</div>
+				{{else}}
+					{{#if canEdit user.id}}
+					<div style="position:absolute;right:10px;top:10px;width:26px;height:24px;">
+						<button class="btn btn-xs btn-default edit-comment" data="{{_id}}"><span class="fa fa-edit"></span></button>
+						{{#if set}}
+						<button class="btn btn-xs btn-default delete-comment" data="{{_id}}"><span class="fa fa-trash"></span></button>
+						{{/if}}
+					</div>
+					{{/if}}
+					<div class="userimage" style="position:relative; width:64px; height:64px; background-color:#fff; float:left; margin-right:12px; background-image:url('/img/avatars/{{ formatImage img}}')"></div>
+					<p><b>{{user.name}} {{user.surname}}</b><br/>schrieb am {{formatDate date}} um {{formatTime date}} Uhr</p>
+					<div>
+					<p>{{text}}</p>
+					</div>
+					<div style="clear:both;"></div>
+				{{/if}}
+			</div>
+		{{/each}}
+		{{#if pagination}}
+		<div style="text-align:center">
+			<ul class="pagination">
+				{{#each pagination}}
+				<li class="{{#if pageselected text}}active{{/if}}"><a class="page" href="#" data="{{text}}">{{text}}</a></li>
+				{{/each}}
+			</ul>
+		</div>
+		{{/if}}
+		</div>
 	</div>
 </template>

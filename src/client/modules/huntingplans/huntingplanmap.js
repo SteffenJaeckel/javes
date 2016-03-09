@@ -97,13 +97,13 @@ function getSelectionTool() {
             path.push( route );
           }
           app.setModulePath(path);
-          Session.set('selected-route', route );
+          Session.set('gis-selection', route );
         } else {
           if( path.length == 4) {
             path.pop();
             app.setModulePath(path);
           }
-          Session.set('selected-route', null );
+          Session.set('gis-selection', null );
         }
         source_routes.changed();
         source_stands.changed();
@@ -120,7 +120,7 @@ Template.huntingplanmap.rendered = function() {
     this.stands.stop();
   }
   DataChangeHandler.add("mainmap", function ( path ) {
-    Session.set('selected-route',null);
+    Session.set('gis-selection',null);
     console.log("call add handler mainmap", path );
     if( dontupdate == false ) {
       if( path.length < 4 )
@@ -131,7 +131,7 @@ Template.huntingplanmap.rendered = function() {
         if( path.length == 4 ) {
           if( drive && drive.routes[ path[3] ] ) {
             var geo = new ol.format.GeoJSON().readGeometry( drive.routes[ path[3] ].path , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
-            Session.set('selected-route',path[3]);
+            Session.set('gis-selection',path[3]);
           }
         } else {
           var geo = new ol.format.GeoJSON().readGeometry( drive.shape , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
@@ -258,7 +258,7 @@ function updateArrangement( stands ) {
 getSelectedRoute = function( ) {
 
   var drive   = getCurrentDrive();
-  var routeid = Session.get('selected-route');
+  var routeid = Session.get('gis-selection');
   if( drive ) {
     return  drive.routes[ routeid ];
   }
@@ -266,7 +266,7 @@ getSelectedRoute = function( ) {
 }
 
 getCurrentRoute = function() {
-  return getRoute( Session.get('selected-route') )
+  return getRoute( Session.get('gis-selection') )
 }
 
 getRoute = function ( rid ) {
@@ -542,8 +542,8 @@ Template.huntingplanmap.helpers({
         for( var sid in drive.stands ) {
           if( drive.stands[sid].route == rid ) {
             var stand = Stands.findOne({_id:sid});
-            stand['index'] = drive.stands[sid].index;
             if( stand ) {
+                stand['index'] = drive.stands[sid].index;
                 var user = Meteor.users.findOne({_id:drive.stands[sid].user});
                 if( user && plan.invitestates[ user._id ] && plan.invitestates[ user._id ].state != 'refused' ) {
                   if( user._id == drive.routes[rid].leader ) {
@@ -644,10 +644,10 @@ Template.huntingplanmap.events({
     editor.push('routeeditor', getSelectedRoute(), 'editpath' );
   },
   'click #delete-route': function () {
-    Meteor.call('deleteHuntingPlanRoute', getCurrentPlanId(), getCurrentDriveIndex(), Session.get('selected-route'), function (e) {
+    Meteor.call('deleteHuntingPlanRoute', getCurrentPlanId(), getCurrentDriveIndex(), Session.get('gis-selection'), function (e) {
       if( e )
         console.log(e);
-      Session.set('selected-route',null)
+      Session.set('gis-selection',null)
       updateMapData();
     })
   },
@@ -661,6 +661,7 @@ Template.huntingplanmap.events({
     Meteor.call('addHuntingPlanDrive', getCurrentPlanId() , function ( e, r ) {
       if( e == null ) {
         app.setModulePath(['huntingplans', getCurrentPlanId(), 'drive-'+r]);
+        updateMapData();
       }
     })
   },
@@ -668,6 +669,7 @@ Template.huntingplanmap.events({
     Meteor.call('deleteHuntingPlanDrive', getCurrentPlanId() , getCurrentDriveIndex(), function ( e ) {
       if( e == null ) {
         app.setModulePath(['huntingplans', getCurrentPlanId(), 'drive-0']);
+        updateMapData();
       }
     })
   },

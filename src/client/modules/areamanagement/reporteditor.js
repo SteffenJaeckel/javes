@@ -38,7 +38,7 @@ Template.reporteditor.created = function () {
     selectedFeature.set('z-index', 1 )
     app.getLayerByName("Berichte").getSource().addFeature( selectedFeature );
   }
-
+  updateFeatureText();
   selection.push( selectedFeature );
 
   app.pushTool( getEditPointTool() )
@@ -55,6 +55,20 @@ Template.reporteditor.destroyed = function () {
   })
 }
 
+Template.reporteditor.rendered = function() {
+  $('.datetime.date').datetimepicker({
+      format: 'D.MM.YYYY',
+      locale: 'de',
+      maxDate: new Date(),
+      viewMode: 'days'
+  });
+
+  $('.datetime.time').datetimepicker({
+      locale: 'de',
+      format: 'HH:mm',
+  });
+}
+
 Template.reporteditor.helpers({
   is: function( type ) {
     return Session.get('reportdata').type == type;
@@ -64,9 +78,6 @@ Template.reporteditor.helpers({
   },
   type: function( ) {
     return Session.get('reportdata').type;
-  },
-  selectedGameType : function( t ) {
-    return Session.get('reportdata').gametype == t;
   },
   name: function () {
     return Session.get('reportdata').name;
@@ -103,6 +114,13 @@ Template.reporteditor.helpers({
   }
 })
 
+function updateFeatureText() {
+  var data = Session.get('reportdata');
+  if( data.type == 3 ) {
+    var text = (( data.gender == 0 ) ? 'M ':'W ') + data.ageclass;
+    selectedFeature.set('text', text );
+  }
+}
 
 Template.reporteditor.events({
   'click #save' : function ( e ) {
@@ -150,12 +168,15 @@ Template.reporteditor.events({
 		console.log(kr)
 		kr.gender = (kr.gender+1)%2;
 		Session.set('reportdata',kr);
+    updateFeatureText();
 	},
 	'click .hunttype': function( e ) {
 		setObj('reportdata','hunttype',parseInt($(e.currentTarget).attr('data')));
 	},
 	'click .gametype': function( e ) {
-		setObj('reportdata','gametype',parseInt($(e.currentTarget).attr('data')));
+    var type = parseInt($(e.currentTarget).attr('data'));
+    selectedFeature.set('color',type);
+		setObj('reportdata','gametype',type);
 	},
 	'blur #name': function( e ) {
 		setObj('reportdata','name',$(e.currentTarget).val());
@@ -165,6 +186,7 @@ Template.reporteditor.events({
 	},
 	'blur #change-ageclass': function( e ) {
 		setObj('reportdata','ageclass',$(e.currentTarget).val());
+    updateFeatureText();
 	},
 	'blur #change-badgeid': function( e ) {
 		setObj('reportdata','badgeid',$(e.currentTarget).val());

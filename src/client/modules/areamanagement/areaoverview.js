@@ -17,7 +17,7 @@ Template.areaoverview.created = function() {
 	sorting.add('type','Stand');
 }
 
-Template.areaoverview.destroed = function() {
+Template.areaoverview.destroyed = function() {
 	sorting.clear();
 }
 Template.areaoverview.events({
@@ -28,15 +28,9 @@ Template.areaoverview.events({
 		var e = $(e.currentTarget);
 		sorting.add( e.attr('data'), e.text(), 1 );
 	},
-	'click .goto-stand':function (e) {
-		var stand = Stands.findOne({_id:$(e.currentTarget).attr('data')});
-		if( stand ) {
-			Session.set('standdata',stand);
-			map = getMap();
-			map.panTo( m2gCoords( stand.position ) );
-			map.setZoom( 17 );
-			modals.push('viewstand')
-		}
+	'dblclick .goto-stand':function (e) {
+		AreaManagement_SelectStand( $(e.currentTarget).attr('data') , true, 17 );
+		modals.pop();
 	},
 	'click #save-execel': function(e) {
 		//$('#dataset')

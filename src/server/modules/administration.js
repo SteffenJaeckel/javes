@@ -33,7 +33,7 @@ Meteor.methods({
   newCustomer: function ( data ) {
     isServerAdmin(this.userId);
     data = Validate( data , DataModels['Customermodel'] );
-    Customer.insert( data );
+    Customers.insert( data );
   },
   editCustomer: function( id, data ) {
     checkPermission( this.userId, 'administration.editCustomer' );
@@ -41,6 +41,11 @@ Meteor.methods({
   },
   deleteCustomer: function( id ) {
     isServerAdmin(this.userId);
-    Customer.update({_id:id},{$set:{ enabled:false }});
+    Customers.update({_id:id},{$set:{ enabled:false }});
+  },
+  saveMapconfig: function( id, newconfig ) {
+    isServerAdmin( this.userId );
+    data = Validate( newconfig , DataModels['MapConfigmodel'] );
+    Customers.update({_id:id},{$set:{ mapconfig: data }});
   }
 })

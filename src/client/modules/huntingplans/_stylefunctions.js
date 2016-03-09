@@ -29,7 +29,7 @@ function getColor( feature ) {
     return {'img':img,'color':color,'opacity':opacity};
   }
 
-  var selected_route = Session.get('selected-route');
+  var selected_route = Session.get('gis-selection');
   var route = feature.get('route');
   var opacity = 1;
   var color = [128,128,128, opacity ];
@@ -46,12 +46,20 @@ function getColor( feature ) {
   }
 
   if( selected_route && route != selected_route ) {
-    opacity = 0.5;
+    opacity = 0.3;
   }
 
-  if( route == null ) {
+  if( feature.get("area") != null ) {
     if( feature.get('color') != null ) {
       var c = parseInt(feature.get('color'));
+      var alloc = Allocations.findOne( { stand : feature.getId() , from : { $gte: new Date() }} )
+      if( alloc )  {
+        if( alloc.user.id == Meteor.user()._id ) {
+          c = 5;
+        } else {
+          c = 1;
+        }
+      }
       img = 'img/marker/'+(parseInt(feature.get('type'))+3)+'0'+c+'.png'
       color = ol.color.asArray( Colors[ c ] );
       color[3] = opacity;
@@ -60,7 +68,9 @@ function getColor( feature ) {
       color = [128,128,128, opacity ];
     }
   } else {
-    var parent = mapsources['routes'].getFeatureById( route );
+    if( route != null )
+      var parent = mapsources['routes'].getFeatureById( route );
+
     if( parent ) {
       var c = parseInt(parent.get('color'));
       img = 'img/marker/'+(parseInt(feature.get('type'))+3)+'0'+c+'.png'
@@ -76,6 +86,7 @@ function getColor( feature ) {
 }
 
 getReportStyle = function( feature, res, selected ) {
+
   var color = parseInt(feature.get('color'));
   var type = parseInt(feature.get('type'));
   var text = feature.get('text');
@@ -86,23 +97,26 @@ getReportStyle = function( feature, res, selected ) {
   } else {
     var img = 'img/marker/'+(type)+'0'+(color)+'.png';
   }
+
+  var opa =  ( Session.get('gis-selection') && feature.get('route') != Session.get('gis-selection') ) ?  0.3 : 1;
   styles = [];
+
   styles.push( new ol.style.Style({
     image: new ol.style.Icon(({
       anchor: [0.5, 1],
       scale: ( res <= minzoom ) ? 1 : 0.5 ,
       src: img,
-      opacity: 1
+      opacity: opa
     })),
     text: new ol.style.Text({
       text: ( res <= minzoom ) ? text:"",
       scale: ( res <= minzoom ) ? 1.0 : 0.5 ,
       offsetY: -16,
       fill: new ol.style.Fill({
-        color: [0, 0, 0, 1]
+        color: [0, 0, 0, opa]
       }),
       stroke: new ol.style.Stroke({
-        color: [0, 0, 0, 1],
+        color: [0, 0, 0, opa],
         width: 1
       })
     }),
@@ -151,7 +165,7 @@ getDogStandStyle = function( feature, res ) {
       styles.push( new ol.style.Style( {
           text: new ol.style.Text( {
             scale: (res < minzoom ) ? 2:1 /* + Math.round(Math.random()*3)*0.5*/,
-            text: "(((Terrier)))",
+            text: "",/*"(((Terrier)))"*/
             offsetY: (res < minzoom ) ? 30:5,
             fill: new ol.style.Fill({
               color: item.color
@@ -241,17 +255,18 @@ getStandStyle = function( feature , res, selected ) {
         image: new ol.style.Icon({
           anchor: [0.5, 1],
           scale: 0.5 ,
-          src: item.img
+          src: item.img,
+          opacity: item.opacity
         }),
         text: new ol.style.Text({
           text: feature.get('name'),
           scale: 0.7 ,
           offsetY: -11,
           fill: new ol.style.Fill({
-            color: [0, 0, 0, 1]
+            color: [0, 0, 0, item.opacity]
           }),
           stroke: new ol.style.Stroke({
-            color: [0, 0, 0, 0.7],
+            color: [0, 0, 0, item.opacity],
             width: 1
           }),
         }),
@@ -298,7 +313,7 @@ getStandStyle = function( feature , res, selected ) {
 
 getHuntingAreaStyle = function( feature , res, selected ) {
 
-  var route = Session.get('selected-route');
+  var route = Session.get('gis-selection');
   var color;
   var z = 100;
 
@@ -319,7 +334,7 @@ getHuntingAreaStyle = function( feature , res, selected ) {
   }
 
   if( route && route != feature.getId() && feature.getGeometry().getType() != 'Polygon') {
-    color[3] = 0.5;
+    color[3] = 0.3;
   } else {
     color[3] = 1;
     width += 2;

@@ -57,7 +57,7 @@ Template.administration.helpers({
 		if( path.length >= 2 ) {
 			switch( path[1] ) {
 				case 'settings':
-					return 'customer';
+					return 'settings';
 				case 'user':
 					return 'user';
 				case 'roles':

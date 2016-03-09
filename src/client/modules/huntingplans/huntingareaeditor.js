@@ -134,15 +134,15 @@ Template.huntingareaeditor.events({
     editor.pop();
   },
   'click #drawtool' : function()  {
-    app.pushTool();
+    app.popTool();
     app.pushTool( getDrawPathTool() );
   },
   'click #edittool' : function()  {
-    app.pushTool();
+    app.popTool();
     app.pushTool( getEditPathTool() );
   },
   'click #deletetool' : function()  {
-    app.pushTool();
+    app.popTool();
     app.pushTool( getDeletePathTool() );
   }
 
