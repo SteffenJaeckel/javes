@@ -31,9 +31,10 @@ Template.standeditor.created = function () {
   } else {
     selectedFeature = new ol.Feature();
     selectedFeature.setGeometry( new ol.geom.Point( map.getView().getCenter() ) );
-    selectedFeature.setId( 'newstand' );
+    selectedFeature.setId( '0' );
     selectedFeature.set('type', parseInt( Session.get('standdata').type ) )
     selectedFeature.set('name', Session.get('standdata').name )
+    selectedFeature.set('area', getCurrentArea()._id);
     selectedFeature.set('color',0);
     selectedFeature.set('z-index', 1 )
     app.getLayerByName("Jagdliche Einrichtungen").getSource().addFeature( selectedFeature );
@@ -74,13 +75,14 @@ Template.standeditor.events({
     var location = new ol.format.GeoJSON().writeGeometryObject( selectedFeature.getGeometry() , { featureProjection: mapconfig.projection.name ,dataProjection:'WGS84' });
     setObj('standdata','location',location);
     var data = Session.get('standdata');
-    if( selectedFeature.getId() == 'newstand'  ) {
+    if( selectedFeature.getId() == '0'  ) {
       Meteor.call('newStand', data.name, data.desc, parseInt(data.type), data.location, function(e,id) {
         if( e ) {
           Session.set( "error", { text: e.reason });
         } else {
           app.getLayerByName("Jagdliche Einrichtungen").getSource().removeFeature( selectedFeature );
           editor.pop();
+          Session.set("standdata",null);
         }
   		})
     } else {

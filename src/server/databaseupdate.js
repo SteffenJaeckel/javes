@@ -234,5 +234,14 @@ Meteor.startup( function () {
       }
     });
   });
+  onVersion( last, 0, 17, function() {
+    Areas.find({}).forEach( function( area ) {
+      if( area.desc == null ) {
+        area.desc = "";
+        Areas.update({_id:area._id},{$set:{desc:""}});
+      }
+      Areas.update({_id:area._id},{$unset:{shape:true}});
+    });
+  });
   // Versions.insert({major:0,minor:3,date:new Date(3),changes:[] });
 })

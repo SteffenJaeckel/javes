@@ -25,12 +25,12 @@ Template.roleeditor.created = function () {
 
     selectedFeature = new ol.Feature();
     selectedFeature.setGeometry( new ol.geom.Point( map.getView().getCenter() ) );
-    selectedFeature.setId( 'newrole'+Math.random() );
+    selectedFeature.setId( '0' );
     selectedFeature.set('name', edit.name )
     selectedFeature.set('z-index', 1 )
     app.getLayerByName("Rollen").getSource().addFeature( selectedFeature );
 
-  updateFeatureText();
+  //updateFeatureText();
   selection.push( selectedFeature );
 
   app.pushTool( getEditPointTool() )
@@ -45,17 +45,6 @@ Template.roleeditor.destroyed = function () {
 }
 
 Template.roleeditor.rendered = function() {
-  $('.datetime.date').datetimepicker({
-      format: 'D.MM.YYYY',
-      locale: 'de',
-      maxDate: new Date(),
-      viewMode: 'days'
-  });
-
-  $('.datetime.time').datetimepicker({
-      locale: 'de',
-      format: 'HH:mm',
-  });
 }
 
 Template.roleeditor.helpers({
@@ -87,17 +76,16 @@ Template.roleeditor.helpers({
 })
 
 function updateFeatureText() {
-  selectedFeature.set('text', "text" );
+  selectedFeature.set('text', editor.get().name );
 }
 
 Template.roleeditor.events({
   'click #save' : function ( e ) {
     Session.set( "error",null);
     var location = new ol.format.GeoJSON().writeGeometryObject( selectedFeature.getGeometry() , { featureProjection: mapconfig.projection.name ,dataProjection:'WGS84' });
-    setObj('reportdata','location',location);
-    var data = Session.get('reportdata');
-    if( selectedFeature.getId() == 'newstand'  ) {
-      Meteor.call('addReport', data, function(e,id) {
+    editor.set("location", location );
+    if( selectedFeature.getId() == '0'  ) {
+      Meteor.call('createRole', editor.get(), function(e,id) {
   			console.log(e,id);
         if( e ) {
           Session.set( "error", e);
@@ -107,7 +95,7 @@ Template.roleeditor.events({
         }
   		})
     } else {
-      Meteor.call('changeReport', data, function(e) {
+      Meteor.call('updateRole', editor.get(), function(e) {
   			console.log(e);
         if( e ) {
           Session.set( "error", e);
@@ -124,17 +112,17 @@ Template.roleeditor.events({
       selectedFeature.setGeometry( undo.getGeometry() );
       undo = null;
     } else {
-      Session.set('reportdata',null);
       app.getLayerByName("Rollen").getSource().removeFeature( selectedFeature );
     }
     editor.pop();
   },
   'click .action' : function( e ) {
+    console.log("change permission")
     var current = editor.get().permissions;
-    if( $(e.currentTarget).attr("checked") == "checked" ) {
+    if( $(e.currentTarget).is(":checked") == false ) {
       pathlib.set( current , $(e.currentTarget).attr("data"), null );
     } else {
-      pathlib.set( current , $(e.currentTarget).attr("data"),"true");
+      pathlib.set( current , $(e.currentTarget).attr("data"), true );
     }
     editor.set("permissions",current)
   },

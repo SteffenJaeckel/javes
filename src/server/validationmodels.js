@@ -1,5 +1,4 @@
 DataModels = {
-
 	MapConfigmodel : {
 	  projection: {type:'object',name:'Projektion' ,model: {
 	    name:{type:'string',name:'Name', min:4,max:20},

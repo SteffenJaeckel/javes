@@ -111,7 +111,6 @@ var actions = {
 
   newArea: { name: 'Pirschbezirke erstellen', dependon:'viewAreas' },
   deleteArea: { name: 'Pirschbezirke löschen', dependon:'viewAreas' },
-
   updateArea: { name: 'Pirschbezirke bearbeiten', dependon:'viewAreas' },
 	shareArea: { name: 'Pirschbezirke teilen', dependon:'viewAreas' },
 
@@ -151,7 +150,6 @@ Meteor.methods({
 			shape: options.shape,
 			deleted:false,
 			created:new Date(),
-			ownertypes:['Besitzer','Mitbesitzer','Gast'],
 			viewer: obj
 		});
 		Meteor.users.update( {_id:this.userId},{$set:{'profile.currentSelectedArea':id}});
@@ -240,19 +238,31 @@ Meteor.methods({
 		addAreaNofification(areaId, this.userId, { user_remove_user:true,'trigger':readableName(me),'user':readableName(user)});
 		addUserNotification(userId,{your_are_removed_from_area:true,'trigger':readableName(me),'area':area.name})
 	},
-	editArea:function( areaId, name, desc ) {
+	editArea:function( data ) {
+
 		var me = Meteor.users.findOne( { _id: this.userId });
-		var area = Areas.findOne({_id:areaId} );
+		checkPermission( me,"areamanagement.updateArea" );
+
+		data = Validate(data, {
+			_id : { type:'string', name:'Id'},
+			name : { type:'string', name:'Name', min: 1, max: 255 },
+			desc : { type:'string', name:'Beschreibung', min:0, max: 1024 }
+		});
+
+		var me = Meteor.users.findOne( { _id: this.userId });
+		var area = Areas.findOne({_id:data._id} );
 		if( area.viewer[this.userId] <= 1  ) {
 			var oldname = area.name;
-			Areas.update({_id:areaId },{$set:{name:name,desc:desc}} );
-			addAreaNofification(areaId, this.userId, { areadescription_changed:true,'trigger':readableName(me),'oldname':oldname,'newname':name } );
+			Areas.update({_id:data._id },{$set:{name:data.name,desc:data.desc}} );
+			addAreaNofification(data._id, this.userId, { areadescription_changed:true,'trigger':readableName(me),'oldname':oldname,'newname':data.name } );
 		}
 		return true;
 	},
 	updateAreaShape:function( areaId, shape ) {
-		var shape = Validate( shape, DataModels["Shapemodel"] );
 		var me = Meteor.users.findOne( { _id: this.userId });
+		checkPermission( me,"areamanagement.updateArea" );
+
+		var shape = Validate( shape, DataModels["Shapemodel"] );
 		var area = Areas.findOne({_id:areaId} );
 		if( area.viewer[this.userId] <= 1  ) {
 			Areas.update({_id:areaId },{$set:{geometry:shape}} );
@@ -260,25 +270,24 @@ Meteor.methods({
 		}
 		return true;
 	},
-	deleteArea:function( areaId, selectArea ) {
+	deleteArea:function( areaId ) {
 		var me = Meteor.users.findOne( { _id: this.userId });
+		checkPermission( me,"areamanagement.deleteArea" );
+
 		var area  = Areas.findOne({_id:areaId});
 		if( area && area.viewer[this.userId] != null ) {
 			if( _.keys(area.viewer).length == 1 ) {
-				Stands.remove({ area: areaId });
-				Reports.remove({ area: areaId });
-				Areas.remove({ _id:areaId });
+				Areas.update({ _id:areaId },{$set: {deleted:true}});
 			} else {
 				if( area.viewer[this.userId] == 0 ) {
 					throw new Error(403,"owners_cant_delete_areas_with_more_than_one_viewers");
 				} else {
 					var obj = {};
-					obj['viewer.'+this.userId ] = "";
+					obj['viewer.'+this.userId ] = true;
 					Areas.update({'_id':areaId}, { '$unset' : obj } );
 					addAreaNofification(areaId, this.userId, { leftarea:true,'trigger':readableName(me) } );
 				}
 			}
-			Meteor.users.update( {_id:this.userId},{$set:{'profile.currentSelectedArea':selectArea }});
 		}
 		return true;
 	},

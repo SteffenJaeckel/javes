@@ -24,10 +24,15 @@ window.mods['administration'] = { index:1, name: "Administration", icon:"fa-grou
 					{name:'Rollen',id:'roles',icon:'fa-credit-card'},
 				];
 			} else {
-				return [
-					{name:'Benutzer',id:'user',icon:'fa-user'},
-					{name:'Rollen',id:'roles',icon:'fa-credit-card'},
-				];
+				ret = [];
+				
+				if( checkPermission("administration.listUsers") )
+					ret.push({name:'Benutzer',id:'user',icon:'fa-user'})
+
+				if( checkPermission("administration.listRoles") )
+					ret.push( 	{name:'Rollen',id:'roles',icon:'fa-credit-card'} );
+
+				return ret;
 			}
 		} else if( path.length == 1 ) {
 			if( path[0] == 'roles' ) {

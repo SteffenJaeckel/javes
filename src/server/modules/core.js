@@ -1,7 +1,6 @@
-function findCreateUser( data ) {
-  // create user ...
-  var me = Meteor.users.findOne({_id:this.userId});
+function findCreateUser( me, data ) {
 
+  // create user ...
   if( me && me.profile.currentpath.length >= 3 ) {
     var customerid = me.profile.currentpath[0];
     var departmentid = me.profile.currentpath[1];
@@ -139,7 +138,9 @@ Meteor.methods({
 		Accounts.sendEnrollmentEmail(newId);
   },
   findCreateUser : function( data ) {
-    return findCreateUser( data );
+    var me = Meteor.users.findOne({_id:this.userId});
+    checkPermission(me,"administration.addUser");
+    return findCreateUser( me, data );
   }
 });
 

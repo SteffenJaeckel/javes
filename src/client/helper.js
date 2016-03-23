@@ -231,6 +231,34 @@ getStandsAlongPath = function( path, maxdist, stands ) {
 	return inlist;
 }
 
+checkPermission = function( element  ) {
+	var user = Meteor.user();
+	var opt = element.split('.');
+	console.log( opt );
+	if( opt.length == 2 ) {
+		if( user.profile.currentpath.length < 2 ) {
+			return false;
+		}
+		var customer = Customers.findOne({_id:user.profile.currentpath[0]});
+		if( customer == null )
+			return false;
+
+		var department = customer.departments[ user.profile.currentpath[1] ];
+		if( department == null )
+			return false;
+
+		var role = department.roles[ user.profile.currentpath[2] ];
+		if( role == null )
+			return false;
+
+		if( role.modules[ opt[0] ] == null || role.modules[ opt[0] ].actions[ opt[1] ] == null )
+			return false;
+
+		return true;
+	}
+	return false;
+}
+
 pathlib = {
 
 		get : function( obj , path ) {

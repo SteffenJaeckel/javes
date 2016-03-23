@@ -362,8 +362,21 @@ Template.areamanagement_frame.events({
   'click #adjust-area' : function() {
     editor.push("areaeditor",{},"");
   },
+  'click #edit-area' : function() {
+    var current = getCurrentArea();
+    modals.push("editarea",current,"");
+  },
   'click #area-overview' : function() {
     modals.push("areaoverview",{});
+  },
+  'click #delete-area' : function() {
+    if( confirm("Wollen sie wirklich den Pirschbezirk löschen ?" ) ) {
+      Meteor.call('deleteArea', getCurrentArea()._id , function( e ) {
+        if( e ) {
+          console.log( e );
+        }
+      })
+    }
   },
   'click #report-overview' : function() {
     modals.push("reportoverview",{});

@@ -120,6 +120,7 @@ function updateEditor() {
     break;
     case 'selectstands':
       var route = Session.get('gis-selection');
+      var temp = getCurrentDriveIndex()
       var drive = getCurrentDrive();
       if( drive ) {
         var stands = []

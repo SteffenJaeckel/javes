@@ -45,7 +45,7 @@ function getColor( feature ) {
     }
   }
 
-  if( selected_route && route != selected_route ) {
+  if( selected_route && (route != selected_route) && (feature.getId() != '0') ) {
     opacity = 0.3;
   }
 

@@ -31,7 +31,7 @@ Template.reporteditor.created = function () {
   } else {
     selectedFeature = new ol.Feature();
     selectedFeature.setGeometry( new ol.geom.Point( map.getView().getCenter() ) );
-    selectedFeature.setId( 'newstand' );
+    selectedFeature.setId( '0' );
     selectedFeature.set('type',Session.get('reportdata').type)
     selectedFeature.set('name',Session.get('reportdata').name)
     selectedFeature.set('color',Session.get('reportdata').gametype);
@@ -128,7 +128,7 @@ Template.reporteditor.events({
     var location = new ol.format.GeoJSON().writeGeometryObject( selectedFeature.getGeometry() , { featureProjection: mapconfig.projection.name ,dataProjection:'WGS84' });
     setObj('reportdata','location',location);
     var data = Session.get('reportdata');
-    if( selectedFeature.getId() == 'newstand'  ) {
+    if( selectedFeature.getId() == '0'  ) {
       Meteor.call('addReport', data, function(e,id) {
   			console.log(e,id);
         if( e ) {
@@ -136,6 +136,7 @@ Template.reporteditor.events({
         } else {
           app.getLayerByName("Berichte").getSource().removeFeature( selectedFeature );
           editor.pop();
+          Session.set("reportdata",null);
         }
   		})
     } else {
