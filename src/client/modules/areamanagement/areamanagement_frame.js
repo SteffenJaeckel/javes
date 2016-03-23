@@ -318,6 +318,9 @@ Template.areamanagement_frame.destroyed = function() {
 
 
 Template.areamanagement_frame.helpers({
+  viewercount: function () {
+    return _.keys(getCurrentArea().viewer).length;
+  },
   areasize : function () {
     var area = getCurrentArea();
     if( area && area.geometry != null ) {

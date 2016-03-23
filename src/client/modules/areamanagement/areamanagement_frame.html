@@ -35,7 +35,7 @@
             <div class="groupbox">
               <span class="groupbox-label">Pirschbezirk</span>
               <p class="infoblock">
-                Der Pirschbezirk ist <b>{{areasize}}</b>&nbsp;ha groß. Es sind <b>3</b> Begehungsscheininhaber zugewiesen.
+                Der Pirschbezirk ist <b>{{areasize}}</b>&nbsp;ha groß. Es sind <b>{{viewercount}}</b> Benutzer zugewiesen.
               </p>
               {{#if checkPermission "areamanagement.updateArea"}}
               <div class="form-group">
@@ -61,15 +61,18 @@
               <div class="form-group">
                 <button id="area-overview" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-table fa-fw"></i>&nbsp;Übersicht jagdliche Einrichtungen ...</button>
               </div>
+              {{#if checkPermission "areamanagement.addStands"}}
               <div class="form-group">
                 <button id="new-stand" class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-plus fa-fw"></i>&nbsp;Neue jagdliche Einrichtung ...</button>
               </div>
+              {{/if}}
             </div>
             <div class="groupbox">
               <span class="groupbox-label">Berichte</span>
               <div class="form-group">
                 <button id="report-overview" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-table fa-fw"></i>&nbsp;Übersicht Berichte ...</button>
               </div>
+              {{#if checkPermission "areamanagement.addReports"}}
               <div class="form-group">
                 <button id="new-view-report" class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-binoculars fa-fw"></i>&nbsp;Wildbeobachtung eintragen ...</button>
               </div>
@@ -79,6 +82,7 @@
               <div class="form-group">
                 <button id="new-miss-report" class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-pagelines fa-rotate-90 fa-fw"></i>&nbsp;Nachsuche melden ...</button>
               </div>
+              {{/if}}
             </div>
           {{/if}}
         {{/if}}

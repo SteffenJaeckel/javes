@@ -30,6 +30,108 @@ Meteor.startup( function () {
     console.log("Create Default Server Admin ",  "admin@host.local" )
   }
 
+  var def = Customers.findOne();
+  if( def == null ) {
+    var dep = Random.id();
+    var departments = {};
+    departments[ dep ] = {
+      name: {
+        short:"BLN",
+        long:"Berlin"
+      },
+      roles: {
+        admin : {
+            "type" : 0,
+            "location" : {
+                "type" : "Point",
+                "coordinates" : [
+                    13,
+                    52
+                ]
+            },
+            "inviteroles" : []
+        }
+      }
+    };
+    var cust = Customers.insert({
+      name: {
+        short:'ARC',
+        long:'Arc Greenlab'
+      },
+      enabled: true,
+      departments : departments,
+      mapconfig : {
+        "projection" : {
+          "name" : "EPSG:25833",
+          "code" : "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+          },
+          "layer" : [
+              {
+                  "name" : "Forstgrundkarte",
+                  "ollayers" : [
+                      {
+                          "server" : "Geoserver",
+                          "attribution" : "<a href=\"http://www.brandenburg-forst.de\">© LFB Forstgrundkarte | www.brandenburg-forst.de</a> ",
+                          "url" : "http://www.brandenburg-forst.de:8080/geoserver/wms_ext/wms",
+                          "opacity" : 1,
+                          "params" : {
+                              "LAYERS" : "wms_ext:arcgis_raster",
+                              "TILED" : "True",
+                              "TRANSPARENT" : "False",
+                              "VERSION" : "1.3.0"
+                          }
+                      }
+                  ]
+              },
+              {
+                  "name" : "Luftbild",
+                  "ollayers" : [
+                      {
+                          "server" : "Geoserver",
+                          "attribution" : "<a href=\"http://isk.geobasis-bb.de\">© LGB | www.geobasis-bb.de</a> ",
+                          "url" : "http://isk.geobasis-bb.de/mapproxy/dop20/service",
+                          "opacity" : 1,
+                          "params" : {
+                              "LAYERS" : "dop20c",
+                              "VERSION" : "1.1.1"
+                          }
+                      }
+                  ]
+              },
+              {
+                  "name" : "Hybrid",
+                  "ollayers" : [
+                      {
+                          "server" : "Geoserver",
+                          "attribution" : "<a href=\"http://isk.geobasis-bb.de\">© LGB | www.geobasis-bb.de</a> ",
+                          "url" : "http://isk.geobasis-bb.de/mapproxy/dop20/service",
+                          "opacity" : 1,
+                          "params" : {
+                              "LAYERS" : "dop20c",
+                              "VERSION" : "1.1.1"
+                          }
+                      },
+                      {
+                          "server" : "Geoserver",
+                          "attribution" : "<a href=\"http://www.brandenburg-forst.de\">© LFB Forstgrundkarte | www.brandenburg-forst.de</a> ",
+                          "url" : "http://www.brandenburg-forst.de:8080/geoserver/wms_ext/wms",
+                          "opacity" : 0.6000000000000000,
+                          "params" : {
+                              "LAYERS" : "wms_ext:arcgis_raster",
+                              "TILED" : "True",
+                              "TRANSPARENT" : "False",
+                              "VERSION" : "1.3.0"
+                          }
+                      }
+                  ]
+              }
+          ]
+      }
+    });
+    var def = Customers.findOne( {_id:cust });
+    console.log("Create default Customer");
+  }
+
   // check if admin is admin of all customers ...
   var admin = Meteor.users.findOne({ isServerAdmin:true })
   if( admin ) {
@@ -60,111 +162,6 @@ Meteor.startup( function () {
       Meteor.users.update({_id:user._id},{ $set: {"profile.firstname": user.profile.name}});
       Meteor.users.update({_id:user._id},{ $unset: {"profile.name":false} } );
     });
-  });
-
-  onVersion( last, 0, 8, function() {
-    // convert name to firstname
-    var def = Customers.findOne();
-    if( def == null ) {
-      var dep = Random.id();
-      var departments = {};
-      departments[ dep ] = {
-        name: {
-          short:"BLN",
-          long:"Berlin"
-        },
-        roles: {
-          admin : {
-              "type" : 0,
-              "location" : {
-                  "type" : "Point",
-                  "coordinates" : [
-                      13,
-                      52
-                  ]
-              },
-              "inviteroles" : []
-          }
-        }
-      };
-      var cust = Customers.insert({
-        name: {
-          short:'ARC',
-          long:'Arc Greenlab'
-        },
-        enabled: true,
-        departments : departments,
-        mapconfig : {
-          "projection" : {
-            "name" : "EPSG:25833",
-            "code" : "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-            },
-            "layer" : [
-                {
-                    "name" : "Forstgrundkarte",
-                    "ollayers" : [
-                        {
-                            "server" : "Geoserver",
-                            "attribution" : "<a href=\"http://www.brandenburg-forst.de\">© LFB Forstgrundkarte | www.brandenburg-forst.de</a> ",
-                            "url" : "http://www.brandenburg-forst.de:8080/geoserver/wms_ext/wms",
-                            "opacity" : 1,
-                            "params" : {
-                                "LAYERS" : "wms_ext:arcgis_raster",
-                                "TILED" : "True",
-                                "TRANSPARENT" : "False",
-                                "VERSION" : "1.3.0"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name" : "Luftbild",
-                    "ollayers" : [
-                        {
-                            "server" : "Geoserver",
-                            "attribution" : "<a href=\"http://isk.geobasis-bb.de\">© LGB | www.geobasis-bb.de</a> ",
-                            "url" : "http://isk.geobasis-bb.de/mapproxy/dop20/service",
-                            "opacity" : 1,
-                            "params" : {
-                                "LAYERS" : "dop20c",
-                                "VERSION" : "1.1.1"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name" : "Hybrid",
-                    "ollayers" : [
-                        {
-                            "server" : "Geoserver",
-                            "attribution" : "<a href=\"http://isk.geobasis-bb.de\">© LGB | www.geobasis-bb.de</a> ",
-                            "url" : "http://isk.geobasis-bb.de/mapproxy/dop20/service",
-                            "opacity" : 1,
-                            "params" : {
-                                "LAYERS" : "dop20c",
-                                "VERSION" : "1.1.1"
-                            }
-                        },
-                        {
-                            "server" : "Geoserver",
-                            "attribution" : "<a href=\"http://www.brandenburg-forst.de\">© LFB Forstgrundkarte | www.brandenburg-forst.de</a> ",
-                            "url" : "http://www.brandenburg-forst.de:8080/geoserver/wms_ext/wms",
-                            "opacity" : 0.6000000000000000,
-                            "params" : {
-                                "LAYERS" : "wms_ext:arcgis_raster",
-                                "TILED" : "True",
-                                "TRANSPARENT" : "False",
-                                "VERSION" : "1.3.0"
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-      });
-      var def = Customers.findOne( {_id:cust });
-      console.log("Create default Customer");
-    }
   });
 
   onVersion( last, 0, 9, function() {

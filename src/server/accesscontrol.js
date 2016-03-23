@@ -56,6 +56,7 @@ propagateActions = function( mod , actions ) {
         }
         customer.departments[dep].roles.admin.modules[ mod ].actions = actions;
         Customers.update( {_id:customer._id} , customer );
+        
       }
     }
   });

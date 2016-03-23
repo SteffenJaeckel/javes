@@ -50,11 +50,33 @@ Meteor.methods({
     data = Validate( newconfig , DataModels['MapConfigmodel'] );
     Customers.update({_id:id},{$set:{ mapconfig: data }});
   },
+  deleteRole: function( roleid ) {
+    var me = Meteor.users.findOne({ _id: this.userId });
+    checkPermission( me, 'administration.deleteRoles' );
+    if( me.profile.currentpath.length > 1 ) {
+      var customer = me.profile.currentpath[0];
+      var department = me.profile.currentpath[1];
+
+      var cust = Customers.findOne({_id:customer});
+      if( cust && cust.departments[department] != null ) {
+        for( var role in cust.departments[department].roles ) {
+          cust.departments[department].roles[role].inviteroles = _.without(cust.departments[department].roles[role].inviteroles, roleid );
+        }
+        delete cust.departments[department].roles[roleid];
+        console.log( cust.departments[department].roles );
+        Customers.update({_id:customer } , cust);
+        var q = {};
+        q[ "customers."+customer+".departments."+department+".roles" ] = roleid;
+        console.log( q );
+        Meteor.users.update({}, {$pull:q}, {multi:true} );
+      }
+    }
+  },
   createRole: function( data ) {
     var me = Meteor.users.findOne({ _id: this.userId });
     checkPermission( me, 'administration.addRoles' );
     data = Validate( data , {
-        name:{type:'string',name:'Name', min:4,max:20},
+        name:{type:'string',name:'Name', min:4,max:64},
         permissions: {
           type:"map", name: "Module", max: 12, items: {
             type: "map", name: "Funktionen", max: 50, items : {
@@ -67,32 +89,40 @@ Meteor.methods({
     		}}
     });
 
-    console.log( data );
-
     if( me.profile.currentpath.length > 2 ) {
       var customer = Customers.findOne( { _id: me.profile.currentpath[0] });
       // merge inviteroles and modules ...
       var myrole = customer.departments[ me.profile.currentpath[1] ].roles[ me.profile.currentpath[2] ]
       data['modules'] = {};
 
-      for( var module in data.permissions ) {
-        for( var action in data.permissions[module] ) {
-          if( myrole.modules[ module ] && myrole.modules[ module ][action] ) {
-            data.modules[ module ][ action ] = myrole.modules[ module ][action];
+      for( var mod in data.permissions ) {
+        for( var action in data.permissions[mod] ) {
+          if( myrole.modules[ mod ] && myrole.modules[ mod ].actions[action] ) {
+            console.log("add permission ", mod, action );
+            if( data.modules[mod] == null ) {
+              data.modules[mod] = {actions:{} };
+            }
+            data.modules[ mod ].actions[ action ] = myrole.modules[ mod ].actions[action];
           }
         }
       }
-      data['inviteroles'] = _.uniq( data['inviteroles'], myrole.inviteroles );
+      data['inviteroles'] = _.intersection( data['inviteroles'], myrole.inviteroles );
       console.log( "Module",data );
       // add the new role ...
       if( customer.departments[ me.profile.currentpath[1] ].roles[ data.name ] == null ) {
-        customer.departments[ me.profile.currentpath[1] ].roles[ data.name ] =
-        {
-          inviteroles: data.inviteroles,
+        // add the new role to the inviteroles of the current role
+        customer.departments[ me.profile.currentpath[1] ].roles[ me.profile.currentpath[2] ].inviteroles = _.union( customer.departments[ me.profile.currentpath[1] ].roles[ me.profile.currentpath[2] ].inviteroles, [data.name] );
+        // create the new role
+        customer.departments[ me.profile.currentpath[1] ].roles[ data.name ] = {
           location: data.location,
-          modules: data.modules
-        }
+          inviteroles: data.inviteroles,
+          modules: data.modules,
+        };
         Customers.update({_id:customer._id}, customer);
+        // add the new role to the current user
+        var obj = {};
+        obj[ "customers."+me.profile.currentpath[0]+".departments."+me.profile.currentpath[1]+".roles" ] = data.name;
+        Meteor.users.update({_id:this.userId }, {'$push':obj} )
       }
     }
   }

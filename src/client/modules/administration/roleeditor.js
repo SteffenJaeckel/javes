@@ -39,6 +39,11 @@ Template.roleeditor.created = function () {
 Template.roleeditor.destroyed = function () {
   console.log("role editor destroyed");
   app.popTool()
+  var source = app.getLayerByName("Rollen").getSource();
+  var feat = source.getFeatureById("0");
+  if( feat ) {
+    source.removeFeature( feat );
+  }
   app.getLayerByName("Rollen").getSource().forEachFeature( function( feature )  {
     feature.set("disabled",null);
   })
@@ -90,7 +95,6 @@ Template.roleeditor.events({
         if( e ) {
           Session.set( "error", e);
         } else {
-          app.getLayerByName("Rollen").getSource().removeFeature( selectedFeature );
           editor.pop();
         }
   		})
@@ -111,8 +115,6 @@ Template.roleeditor.events({
       selectedFeature.set('color',undo.get('color'));
       selectedFeature.setGeometry( undo.getGeometry() );
       undo = null;
-    } else {
-      app.getLayerByName("Rollen").getSource().removeFeature( selectedFeature );
     }
     editor.pop();
   },

@@ -234,7 +234,6 @@ getStandsAlongPath = function( path, maxdist, stands ) {
 checkPermission = function( element  ) {
 	var user = Meteor.user();
 	var opt = element.split('.');
-	console.log( opt );
 	if( opt.length == 2 ) {
 		if( user.profile.currentpath.length < 2 ) {
 			return false;

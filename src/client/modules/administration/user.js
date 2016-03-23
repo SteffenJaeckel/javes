@@ -37,30 +37,21 @@ Template.user.helpers({
     return Meteor.users.find( selector , {limit:20});
   },
 	typeof: function ( user ) {
-    var type = 100;
-		for( var cid in user.customers ) {
-			for( var did in user.customers[cid].departments ) {
-				type = Math.min( type, user.customers[cid].departments[did].type);
-			}
-		}
-		return type+1;
+    var type = user.customers[app.getCustomer()].departments[app.getDepartment()].type;
+    if( type )
+      return type+1;      
+		return 0;
 	},
   rolesof : function ( user ) {
-		for( var cid in user.customers ) {
-			for( var did in user.customers[cid].departments ) {
-        if(user.customers[cid].departments[did].roles)
-				    return _.values(user.customers[cid].departments[did].roles);
-			}
-		}
+    var roles = user.customers[app.getCustomer()].departments[app.getDepartment()].roles;
+    if( roles )
+      return _.values( roles );
 		return [];
   },
   groupsof : function( user ) {
-		for( var cid in user.customers ) {
-			for( var did in user.customers[cid].departments ) {
-        if(user.customers[cid].departments[did].groups)
-				    return _.values(user.customers[cid].departments[did].groups);
-			}
-		}
+    var groups = user.customers[app.getCustomer()].departments[app.getDepartment()].groups;
+    if( groups )
+      return _.values( groups );
     return [];
   }
 })
