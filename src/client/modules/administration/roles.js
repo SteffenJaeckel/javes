@@ -12,6 +12,7 @@ function getSelectionTool() {
               }
             }
           })
+          app.setModulePath( ['administration','roles',Session.get('gis-selection')])
           access_layer.getSource().changed();
       }
       return true;
@@ -37,31 +38,40 @@ function updateMap() {
     access_layer.getSource().clear();
 
     Customers.find({_id:app.getCustomer()}).forEach( function ( customer ) {
+      myrole = app.getRole();
       for( depid in customer.departments ) {
         for( roleid in customer.departments[ depid ].roles ) {
-          role = customer.departments[ depid ].roles[roleid];
-          var report = new ol.Feature();
-          report.setGeometry( new ol.geom.Point( proj4('WGS84',mapconfig.projection.name,role.location.coordinates) ) );
-          report.setId(roleid);
-          report.set('type',1)
-          report.set('text', roleid );
-          report.set('color',0 );
-          report.set('route', roleid );
-          report.set('z-index', access_layer.getSource().getFeatures().length )
-          access_layer.getSource().addFeature( report );
+          if( _.indexOf( myrole.inviteroles, roleid ) != -1 ) {
+            role = customer.departments[ depid ].roles[roleid];
+            var report = new ol.Feature();
+            report.setGeometry( new ol.geom.Point( proj4('WGS84',mapconfig.projection.name,role.location.coordinates) ) );
+            report.setId(roleid);
+            report.set('type',1)
+            report.set('text', roleid );
+            report.set('color',0 );
+            report.set('route', roleid );
+            report.set('z-index', access_layer.getSource().getFeatures().length )
+            access_layer.getSource().addFeature( report );
+          }
         }
       }
     })
 
     console.log( "ext:",access_layer.getSource().getExtent() );
-    
+
     if( olmap.getSize() ) {
       var view = olmap.getView();
       var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
       var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
       olmap.beforeRender(pan, zoom)
-      view.setZoom( 16 );
-      view.setCenter( ol.extent.getCenter( access_layer.getSource().getExtent() ) )
+
+      if( access_layer.getSource().getFeatures().length > 0 ) {
+        view.setZoom( 16 );
+        view.setCenter( ol.extent.getCenter( access_layer.getSource().getExtent() ) )
+      } else {
+        view.setZoom( 13 );
+        //view.setCenter( ol.extent.getCenter( access_layer.getSource().getExtent() ) )
+      }
     }
   }
 }
@@ -74,6 +84,23 @@ Template.roles.helpers({
       return _.keys(customer.departments[ app.getDepartment() ].roles);
 
     return [];
+  },
+  selected: function () {
+    return getCurrentRole();
+  },
+  selectedmodules: function() {
+    var role = getCurrentRole();
+    var ret = [];
+    if( role ) {
+      for( var mod in role.modules ) {
+        var actions = [];
+        for( var act in role.modules[mod].actions ) {
+          actions.push( role.modules[mod].actions[act].name )
+        }
+        ret.push( {name:mod, actions: actions } )
+      }
+    }
+    return ret;
   }
 })
 
@@ -157,7 +184,20 @@ Template.roles.destroyed = function() {
 
 Template.roles.events({
   'click #add-role': function( e ) {
-    console.log("edite role ");
+    console.log("add role ");
     editor.push("roleeditor", { name:"" , type: 0, location: editor.getScreenCenterPoint() , permissions : {} ,inviteroles : [] } );
+  },
+  'click #edit-role': function( e ) {
+    console.log("edite role ");
+    var role = getCurrentRole();
+    for( var mod in role.modules ) {
+      for( var act in role.modules[mod].actions ) {
+        pathlib.set( role , "permissions."+mod+"."+act, true );
+      }
+    }
+    role['name'] = Session.get("gis-selection");
+    role['_id'] = Session.get("gis-selection");
+    console.log( role);
+    editor.push("roleeditor", role );
   }
 })

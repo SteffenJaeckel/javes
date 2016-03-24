@@ -25,7 +25,7 @@ window.mods['administration'] = { index:1, name: "Administration", icon:"fa-grou
 				];
 			} else {
 				ret = [];
-				
+
 				if( checkPermission("administration.listUsers") )
 					ret.push({name:'Benutzer',id:'user',icon:'fa-user'})
 
@@ -76,6 +76,16 @@ getAviableEditRoles = function() {
 
 }
 
-getCurrentEditRole = function() {
-
+getCurrentRole = function () {
+	var path = app.getModulPath();
+	if( path.length >= 2 && path[1] == 'roles' ) {
+		var cust = Customers.findOne( {_id: app.getCustomer() });
+		if( cust ) {
+			var dep = cust.departments[ app.getDepartment() ];
+			if( dep  && dep.roles ) {
+				return dep.roles[ path[2] ];
+			}
+		}
+	}
+	return null;
 }

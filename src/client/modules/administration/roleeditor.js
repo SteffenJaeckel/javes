@@ -23,12 +23,17 @@ Template.roleeditor.created = function () {
   var stand = new ol.Feature();
   var edit = editor.get();
 
+  if( edit._id == null ) {
     selectedFeature = new ol.Feature();
     selectedFeature.setGeometry( new ol.geom.Point( map.getView().getCenter() ) );
     selectedFeature.setId( '0' );
-    selectedFeature.set('name', edit.name )
-    selectedFeature.set('z-index', 1 )
+    selectedFeature.set('name', edit.name );
+    selectedFeature.set('z-index', 1 );
     app.getLayerByName("Rollen").getSource().addFeature( selectedFeature );
+  } else {
+    selectedFeature = app.getLayerByName("Rollen").getSource().getFeatureById( edit._id );
+    undo = selectedFeature.clone();
+  }
 
   //updateFeatureText();
   selection.push( selectedFeature );
@@ -62,8 +67,7 @@ Template.roleeditor.helpers({
   inviteroles: function() {
     var roles = [];
     var myrole = app.getRole();
-    console.log( "myrole",myrole );
-    return roles;
+    return roles.inviteroles;
   },
   permissions: function( ) {
     var myrole = app.getRole();
