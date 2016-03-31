@@ -234,6 +234,11 @@ getStandsAlongPath = function( path, maxdist, stands ) {
 checkPermission = function( element  ) {
 	var user = Meteor.user();
 	var opt = element.split('.');
+	if( element == "administration.createUser" ) {
+		var role = app.getRole();
+		if( role.inviteroles.length == 0 )
+			return false;
+	}
 	if( opt.length == 2 ) {
 		if( user.profile.currentpath.length < 2 ) {
 			return false;

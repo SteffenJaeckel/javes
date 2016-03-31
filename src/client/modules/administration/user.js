@@ -37,10 +37,15 @@ Template.user.helpers({
     return Meteor.users.find( selector , {limit:20});
   },
 	typeof: function ( user ) {
-    var type = user.customers[app.getCustomer()].departments[app.getDepartment()].type;
-    if( type )
-      return type+1;      
-		return 0;
+    var type = 3;
+    var customer = Customers.findOne( {_id:app.getCustomer()});
+    if( customer && customer.departments[app.getDepartment() ] ) {
+      for( var i = 0; i < user.customers[app.getCustomer()].departments[app.getDepartment()].roles.length;i++)  {
+        var roleid = user.customers[app.getCustomer()].departments[app.getDepartment()].roles[i];
+        var type = Math.min( type, customer.departments[app.getDepartment() ].roles[ roleid ].type);
+      }
+    }
+		return type;
 	},
   rolesof : function ( user ) {
     var roles = user.customers[app.getCustomer()].departments[app.getDepartment()].roles;

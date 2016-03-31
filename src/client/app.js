@@ -8,7 +8,12 @@ Template.app.created = function () {
   this.permissions = Meteor.subscribe("permissions");
 }
 
-Template.app.removed = function () {
+Template.app.rendered = function() {
+  console.log("Kill editor")
+  editor.pop();
+}
+
+Template.app.destroed = function () {
   this.customers.stop();
   this.permissions.stop();
 }

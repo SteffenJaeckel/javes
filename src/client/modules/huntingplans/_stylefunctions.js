@@ -25,7 +25,7 @@ function getColor( feature ) {
 
   if( disabled ) {
     img = 'img/disabled/'+(parseInt(feature.get('type'))+3)+'00.png'
-    color = [128,128,128, opacity ];
+    color = [128,128,128, 1 ];
     return {'img':img,'color':color,'opacity':opacity};
   }
 
@@ -46,7 +46,7 @@ function getColor( feature ) {
   }
 
   if( selected_route && (route != selected_route) && (feature.getId() != '0') ) {
-    opacity = 0.3;
+    opacity = 0.6;
   }
 
   if( feature.get("area") != null ) {
@@ -141,7 +141,7 @@ getDogStandStyle = function( feature, res ) {
     var item = getColor( feature )
     var u = Meteor.users.findOne({_id:hunter});
     var dc = item.color.concat([]);
-    dc[3] = 0.05;
+    dc[3] = 0.5;
 
     if( u && u.profile.dogs && u.profile.dogs.length > 0 ) {
       // hunter += " "+"Teckel"+" (kurz)";

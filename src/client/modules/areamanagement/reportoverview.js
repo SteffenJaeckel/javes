@@ -56,25 +56,25 @@ function addStats( reporttype, element ) {
 	var chart = new google.visualization.ColumnChart(document.getElementById(element));
 	chart.draw(data, options);*/
 }
-
-Template.reportoverview.formatColor = function( color ) {
-	return Colors[ color ];
-}
-
-Template.reportoverview.period = function() {
-	var period = getCurrentPeriod();
-	return period.start.getFullYear()+"/"+period.end.getFullYear();
-}
-Template.reportoverview.area = function() {
-	return Areas.findOne({_id:Meteor.user().profile.currentSelectedArea });
-}
-Template.reportoverview.reports = function() {
-	var period = getCurrentPeriod();
-	return Reports.find({ type:3/*, date :{ $gte: period.start, $lte: period.end }*/},{sort:sorting.db()});
-}
-Template.reportoverview.sortitems = function() {
-	return sorting.get();
-}
+Template.reportoverview.helpers( {
+	formatColor : function( color ) {
+		return Colors[ color ];
+	}
+	period : function() {
+		var period = getCurrentPeriod();
+		return period.start.getFullYear()+"/"+period.end.getFullYear();
+	}
+	area : function() {
+		return Areas.findOne({_id:Meteor.user().profile.currentSelectedArea });
+	}
+	reports : function() {
+		var period = getCurrentPeriod();
+		return Reports.find({ type:3/*, date :{ $gte: period.start, $lte: period.end }*/},{sort:sorting.db()});
+	}
+	sortitems : function() {
+		return sorting.get();
+	}
+});
 
 Template.reportoverview.created = function() {
 	sorting.init();
@@ -84,6 +84,11 @@ Template.reportoverview.created = function() {
 
 Template.reportoverview.destroyed = function() {
 	sorting.clear();
+}
+
+
+Template.reportoverview.rendered = function() {
+ alert("render");
 }
 
 
@@ -108,6 +113,3 @@ Template.reportoverview.events({
 		//alert('save excel');
 	}
 })
-Template.reportoverview.rendered = function() {
-	//addStats(3,'kill_stats')
-}

@@ -72,6 +72,41 @@ Meteor.methods({
       }
     }
   },
+  renameRole: function( oldname, newname ) {
+    var me = Meteor.users.findOne({ _id: this.userId });
+    checkPermission( me, 'administration.editRoles' );
+
+    if( me.profile.currentpath.length > 2 ) {
+      var customer = Customers.findOne( { _id: me.profile.currentpath[0] });
+      var departmentid = me.profile.currentpath[1];
+      if( customer.departments[ departmentid] == null)
+        throw new Meteor.Error(400, { id:key ,text:'Es keine Verwaltungseinheit '+deparmentid+' gefunden werden'});
+
+      // update users
+      customer.departments[ departmentid ].roles[ newname ] = customer.departments[ departmentid ].roles[ oldname ];
+      Customers.update({_id:customer._id},customer);
+
+      var q1 = {};
+      q1["customers."+me.profile.currentpath[0]+".departments."+me.profile.currentpath[1]+".roles"] = oldname;
+      var q2 = {};
+      q2["customers."+me.profile.currentpath[0]+".departments."+me.profile.currentpath[1]+".roles"] = newname;
+
+      Meteor.users.update({},{'$pull':q1},{multi:true});
+      Meteor.users.update({},{'$push':q2},{multi:true});
+    }
+  },
+  updateRole: function( data ) {
+    var me = Meteor.users.findOne({ _id: this.userId });
+    checkPermission( me, 'administration.editRoles' );
+
+    if( me.profile.currentpath.length > 2 ) {
+      var customer = Customers.findOne( { _id: me.profile.currentpath[0] });
+      var departmentid = me.profile.currentpath[1];
+      if( customer.departments[ departmentid] )
+        throw new Meteor.Error(400, { id:key ,text:'Es keine Verwaltungseinheit '+deparmentid+' gefunden werden'});
+
+      }
+  },
   createRole: function( data ) {
     var me = Meteor.users.findOne({ _id: this.userId });
     checkPermission( me, 'administration.addRoles' );
@@ -107,7 +142,6 @@ Meteor.methods({
         }
       }
       data['inviteroles'] = _.intersection( data['inviteroles'], myrole.inviteroles );
-      console.log( "Module",data );
       // add the new role ...
       if( customer.departments[ me.profile.currentpath[1] ].roles[ data.name ] == null ) {
         // add the new role to the inviteroles of the current role

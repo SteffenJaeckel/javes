@@ -23,19 +23,14 @@ Template.roleeditor.created = function () {
   var stand = new ol.Feature();
   var edit = editor.get();
 
-  if( edit._id == null ) {
     selectedFeature = new ol.Feature();
     selectedFeature.setGeometry( new ol.geom.Point( map.getView().getCenter() ) );
     selectedFeature.setId( '0' );
-    selectedFeature.set('name', edit.name );
-    selectedFeature.set('z-index', 1 );
+    selectedFeature.set('name', edit.name )
+    selectedFeature.set('z-index', 1 )
     app.getLayerByName("Rollen").getSource().addFeature( selectedFeature );
-  } else {
-    selectedFeature = app.getLayerByName("Rollen").getSource().getFeatureById( edit._id );
-    undo = selectedFeature.clone();
-  }
 
-  //updateFeatureText();
+  updateFeatureText();
   selection.push( selectedFeature );
 
   app.pushTool( getEditPointTool() )
@@ -44,11 +39,6 @@ Template.roleeditor.created = function () {
 Template.roleeditor.destroyed = function () {
   console.log("role editor destroyed");
   app.popTool()
-  var source = app.getLayerByName("Rollen").getSource();
-  var feat = source.getFeatureById("0");
-  if( feat ) {
-    source.removeFeature( feat );
-  }
   app.getLayerByName("Rollen").getSource().forEachFeature( function( feature )  {
     feature.set("disabled",null);
   })
@@ -67,7 +57,8 @@ Template.roleeditor.helpers({
   inviteroles: function() {
     var roles = [];
     var myrole = app.getRole();
-    return roles.inviteroles;
+    console.log( "myrole",myrole );
+    return roles;
   },
   permissions: function( ) {
     var myrole = app.getRole();
@@ -99,6 +90,7 @@ Template.roleeditor.events({
         if( e ) {
           Session.set( "error", e);
         } else {
+          app.getLayerByName("Rollen").getSource().removeFeature( selectedFeature );
           editor.pop();
         }
   		})
@@ -119,6 +111,8 @@ Template.roleeditor.events({
       selectedFeature.set('color',undo.get('color'));
       selectedFeature.setGeometry( undo.getGeometry() );
       undo = null;
+    } else {
+      app.getLayerByName("Rollen").getSource().removeFeature( selectedFeature );
     }
     editor.pop();
   },

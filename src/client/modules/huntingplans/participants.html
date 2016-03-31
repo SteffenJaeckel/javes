@@ -96,6 +96,7 @@
 
   <div id="toolbox" style="position:absolute;top:0px;left:0px;right:0px;height:58px;padding:14px;border-bottom: 2px solid #ccc;background-color:#eee;">
     <div>
+      {{#if checkPermission "huntingplans.changeParticipantsState"}}
       <div class="btn-group btn-group-justified selection-group" style="width:268px;float:left;">
         <div class="btn-group" role="group">
           <button class="btn btn-sm btn-default select-tool {{istoolselected 0}}" data="0">&nbsp;<i class="fa fa-question fa-fw"></i>&nbsp;</button>
@@ -113,10 +114,15 @@
           <button class="btn btn-sm btn-default select-tool {{istoolselected 4}}" data="4">&nbsp;<i class="fa fa-trash fa-fw"></i>&nbsp;</button>
         </div>
       </div>
+      {{/if}}
       <div style="position: absolute;left: 310px;top: 15px;text-overflow: ellipsis; overflow: hidden;white-space: nowrap;">
-        <button id="add-hunter" class="btn btn-sm btn-primary"><i class="fa fa-user-plus fa-fw"></i>&nbsp;Jäger hinzufügen</button>&nbsp;
-        <button id="send-requests" class="btn btn-sm btn-warning"><i class="fa fa-envelope fa-fw"></i>&nbsp;Interessenbekundungen verschicken</button>&nbsp;
-        <button id="send-invitations" class="btn btn-sm btn-warning"><i class="fa fa-envelope fa-fw"></i>&nbsp;Einladung verschicken</button>&nbsp;
+        {{#if checkPermission "administration.createUser" }}
+          <button id="add-hunter" class="btn btn-sm btn-primary"><i class="fa fa-user-plus fa-fw"></i>&nbsp;Jäger hinzufügen</button>&nbsp;
+        {{/if}}
+        {{#if checkPermission "huntingplans.inviteParticipants"}}
+          <button id="send-requests" class="btn btn-sm btn-warning"><i class="fa fa-envelope fa-fw"></i>&nbsp;Interessenbekundungen verschicken</button>&nbsp;
+          <button id="send-invitations" class="btn btn-sm btn-warning"><i class="fa fa-envelope fa-fw"></i>&nbsp;Einladung verschicken</button>&nbsp;
+        {{/if}}
       </div>
     </div>
   </div>
