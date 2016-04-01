@@ -96,6 +96,7 @@
 
   <div id="toolbox" style="position:absolute;top:0px;left:0px;right:0px;height:58px;padding:14px;border-bottom: 2px solid #ccc;background-color:#eee;">
     <div>
+      {{#if checkPermission "huntingplans.changeParticipantsState"}}
       <div class="btn-group btn-group-justified selection-group" style="width:268px;float:left;">
         <div class="btn-group" role="group">
           <button class="btn btn-sm btn-default select-tool {{istoolselected 0}}" data="0">&nbsp;<i class="fa fa-question fa-fw"></i>&nbsp;</button>
@@ -113,10 +114,15 @@
           <button class="btn btn-sm btn-default select-tool {{istoolselected 4}}" data="4">&nbsp;<i class="fa fa-trash fa-fw"></i>&nbsp;</button>
         </div>
       </div>
+      {{/if}}
       <div style="position: absolute;left: 310px;top: 15px;text-overflow: ellipsis; overflow: hidden;white-space: nowrap;">
-        <button id="add-hunter" class="btn btn-sm btn-primary"><i class="fa fa-user-plus fa-fw"></i>&nbsp;Jäger hinzufügen</button>&nbsp;
-        <button id="send-requests" class="btn btn-sm btn-warning"><i class="fa fa-envelope fa-fw"></i>&nbsp;Interessenbekundungen verschicken</button>&nbsp;
-        <button id="send-invitations" class="btn btn-sm btn-warning"><i class="fa fa-envelope fa-fw"></i>&nbsp;Einladung verschicken</button>&nbsp;
+        {{#if checkPermission "administration.createUser" }}
+          <button id="add-hunter" class="btn btn-sm btn-primary"><i class="fa fa-user-plus fa-fw"></i>&nbsp;Jäger hinzufügen</button>&nbsp;
+        {{/if}}
+        {{#if checkPermission "huntingplans.inviteParticipants"}}
+          <button id="send-requests" class="btn btn-sm btn-warning"><i class="fa fa-envelope fa-fw"></i>&nbsp;Interessenbekundungen verschicken</button>&nbsp;
+          <button id="send-invitations" class="btn btn-sm btn-warning"><i class="fa fa-envelope fa-fw"></i>&nbsp;Einladung verschicken</button>&nbsp;
+        {{/if}}
       </div>
     </div>
   </div>
@@ -177,6 +183,7 @@
             </div>
             <div style="position: absolute;top: 126px;left:0px;height: 40px;">
               {{#each plans}}
+                {{planheader this.id}}
                 <div class="plan-details feedback" style="position:absolute;left:{{this.offset}}px; width:{{this.width}}px; height:100%;" data-plan="{{this._id}}">
                   <i class="fa fa-user"></i>&nbsp;{{this.userstates.invited}}/{{this.userstates.confirmed}}<br/>
                   <i class="fa fa-paw"></i>&nbsp;{{this.dogstates.invited}}/{{this.dogstates.confirmed}}
@@ -194,7 +201,7 @@
       </div>
       <div id="workplane" style="position:absolute;top:166px;left:300px;right:0px;bottom:0px;overflow:scroll;">
         <div class="scroll-area">
-          {{#each plans}}
+          {{#each plansstates group}}
           <div style="position:absolute;left:{{this.offset}}px;top:0px;width:{{this.width}}px;float:left;">
             {{#each this.invitestates}}
               <div class="grid-{{this.class}} {{this.type}} feedback" data-user="{{this.id}}" data-plan="{{this.plan}}">

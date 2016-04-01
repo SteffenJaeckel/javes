@@ -20,7 +20,7 @@
 		{{/if}}
 		{{#if canInvite }}
 		<hr/>
-		<h4>Weitere Jäger Einladen</h4>
+		<h4>Für weitere Benutzer Freigeben</h4>
 			{{#if error}}
 				{{#if error.usernotfound}}
 				<div class="alert alert-warning">
@@ -64,7 +64,7 @@
 				{{/if}}
 			{{/if}}
 			<div class="form-group">
-				<label for="invite-email" class="control-label">Um einen Freund, Mitbesitzer oder Gast einzuladen, geben Sie bitte die EMail addresse ein.</label>
+				<label for="invite-email" class="control-label">Um das Revier für weitere Benutzer freizugeben, geben Sie bitte die EMail addresse des Benutzers ein.</label>
 				<input id="invite-email" class="form-control" placeholder="max.musterman@beispiel.de" type="text" style="width:100%"/>
 			</div>
 		{{/if}}
@@ -79,9 +79,9 @@
 		<div class="btn-group">
 			<button class="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{type}}&nbsp;<span class="caret"></span></button>
 			<ul class="dropdown-menu" aria-labelledby="edit">
-				<li><a class="set-owner" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Besitzer</a></li>
-				<li><a class="set-coowner" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Mitbesitzer</a></li>
-				<li><a class="set-guest" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Gast</a></li>
+				<li><a class="set-owner" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Verwalter</a></li>
+				<li><a class="set-coowner" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Vollzugriff</a></li>
+				<li><a class="set-guest" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Lesezugriff</a></li>
 				<li class="divider"></li>
 				<li><a class="remove-share" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Entfernen</a></li>
 			</ul>
@@ -91,8 +91,8 @@
 				<div class="btn-group">
 					<button class="btn btn-sm btn-default dropdown-toggle {{menuEnabled}}" type="button" data-toggle="dropdown">{{type}}&nbsp;<span class="caret"></span></button>
 					<ul class="dropdown-menu" aria-labelledby="edit">
-						<li><a class="set-coowner" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Mitbesitzer</a></li>
-						<li><a class="set-guest" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Gast</a></li>
+						<li><a class="set-coowner" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Vollzugriff</a></li>
+						<li><a class="set-guest" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Lesezugriff</a></li>
 						<li class="divider"></li>
 						<li><a class="remove-share" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Entfernen</a></li>
 					</ul>

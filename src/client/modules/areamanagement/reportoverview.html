@@ -13,7 +13,7 @@
 		<div id="kill_stats" style="position:relatvie; width:100%; float:left;">
 		</div>
 		<h4>Abschussberichte</h4>
-		<div><button id="save-execel" class="btn btn-primary" ><span class="glyphicon glyphicon-cloud-download"></span>&nbsp;&nbsp;Diese Liste als Excel-Datei Speichern</button></div>
+		<div><button id="save-execel" class="btn btn-primary" ><span class="fa fa-cloud-download"></span>&nbsp;&nbsp;Diese Liste als Excel-Datei Speichern</button></div>
 		<h6>Sortierung</h6>
 		<div>
 			{{#each sortitems}}
@@ -34,7 +34,7 @@
 			</thead>
 			<tbody>
 			{{#each reports}}
-			<tr class="{{this.conditioninfo.class}}">
+			<tr class="{{this.conditioninfo.class}} goto">
 				<td class="no-export">
 					<div class="thumbnail" style="position:relative;width:20px;height:20px;background-color:{{formatColor this.gametype}}; margin:0px;"></div>
 				</td>

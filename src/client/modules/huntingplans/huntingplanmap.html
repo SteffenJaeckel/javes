@@ -112,7 +112,7 @@
                     </thead>
                     <tbody>
                       <tr><td>Ansteller:</td><td>{{userById group.leader}}</td></tr>
-                      <tr><td>Technik:</td><td>{{group.vehicle}}</td></tr>
+                      <tr><td>Bemerkungen:</td><td>{{group.vehicle}}</td></tr>
                     </tbody>
                   </table>
                   <table class="table standlist" style="width:96%;font-size: 9pt;">
@@ -276,7 +276,7 @@
         {{else}}
           {{#if route}}
             <h4>Anstellgruppe {{route.group}}</h4>
-            <p>
+            <p class="infoblock">
               Ansteller dieser Gruppe ist <b>{{userById route.leader}}</b>.
               {{#if route.vehicle}}
                 Als Fahrzeug ist {{route.vehicle}} eingeplant.
@@ -296,13 +296,13 @@
                   text-align: left;
                 }
               </style>
-              <div style="border-radius:5px;border:1px solid #ccc; padding: 10px;margin-bottom:10px;">
+              <p class="infoblock">
                 <table width="100%">
                   <tr><td class="attribute">Anzahl der Stände</td><td class="value">{{route.stands.length}}</td><td class="unit"></td></tr>
                   <tr><td class="attribute">Länge der Anstellroute</td><td class="value">{{route.length}}</td><td class="unit">km</td></tr>
                   <tr><td class="attribute">Geschätzte Zeit zum Anstellen</td><td class="value">{{route.setuptime}}</td><td class="unit">min</td></tr>
                 </table>
-              </div>
+              </p>
               <div class="standlist">
                   {{#each route.stands}}
                     {{> standitem}}
@@ -311,8 +311,8 @@
             {{/if}}
             <p></p>
             {{#if can_edit_plan}}
-            <h4>Routenoptionen</h4>
-            <div class="well well-sm">
+            <div class="groupbox">
+              <span class="groupbox-label">Routenoptionen</span>
               <div class="form-group">
                 <button id="edit-route" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-pencil fa-fw"></i>&nbsp;Route bearbeiten</button>
               </div>
@@ -331,9 +331,9 @@
             </div>
             {{/if}}
           {{else}}
-            <h4>Planung</h4>
-            <div class="well well-sm">
-              <p>
+            <div class="groupbox">
+              <span class="groupbox-label">Planung</span>
+              <p class="infoblock">
                 Die Jagd ist am <b>{{formatDateDay plan.date}}</b> geplant. Jagdleiter ist <b>{{userById data.leader}}</b>{{#if plan.backup}}, als Stellvertreter wurde <b>{{userById plan.backup}}</b> eingesetzt.{{else}}.{{/if}}
                 {{#if equal plan.drives.length 1 }}
                   Es wird nur <b>1 Treiben</b> statt finden.
@@ -349,7 +349,7 @@
                   <button id="edit-plan" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-pencil fa-fw"></i>&nbsp;Jagdfläche anpassen</button>
                 </div>
                 <div class="form-group">
-                  <button id="share-plan" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-share fa-fw"></i>&nbsp;Mitarbeiter festlegen</button>
+                  <button id="share-plan" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-lock fa-fw"></i>&nbsp;Freigaben ...</button>
                 </div>
               {{/if}}
               {{#if can_add_drives}}
@@ -365,33 +365,40 @@
               <div class="form-group">
                 <button id="delete-plan" class="btn btn-sm btn-danger" style="width:100%; text-align:left;"><i class="fa fa-trash fa-fw"></i>&nbsp;Planung löschen</button>
               </div>
-              {{#if can_edit_plan}}
-                <h4>Anstellrouten</h4>
+            </div>
+            {{#if can_edit_plan}}
+              <div class="groupbox">
+                <span class="groupbox-label">Anstellrouten</span>
                 <div class="form-group">
                   <button id="new-route" class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-plus fa-fw"></i>&nbsp;Neue Anstellroute erstellen</button>
                 </div>
                 <div class="form-group">
                   <button id="arrange-hunter" class="btn btn-sm btn-default" style="width:100%; text-align:left;"><i class="fa fa-user fa-fw"></i>&nbsp;Schützen verteilen</button>
                 </div>
-              {{/if}}
-              <p>
-                Für weitere Optionen wählen Sie bitte eine Route aus.
-              </p>
-            </div>
+              </div>
+            {{/if}}
             {{#if can_edit_plan}}
-              <h4>Treibergruppen</h4>
-              <div class="well well-sm">
+              <div class="groupbox">
+                <span class="groupbox-label">Treibergruppen</span>
                 <div class="form-group">
                   <button id="new-driver-area" class="btn btn-sm btn-primary" style="width:100%; text-align:left;"><i class="fa fa-plus fa-fw"></i>&nbsp;Neue Treiber Gruppe</button>
                 </div>
               </div>
             {{/if}}
+            <div>
+              <p style="margin-top:6px;">
+                Für weitere Optionen wählen Sie bitte eine Route aus.
+              </p>
+            </div>
           {{/if}}
         {{/if}}
       </div>
     {{/if}}
   </div>
   {{#if dragitem }}
+    <div id="deleteme" style="position:absolute; left: 36px;bottom: 20px;width: 64px;height: 64px;font-size: 42px; background-color:#ddd;text-align:center;border-radius:5px;">
+      <i class="fa fa-trash-o"></i>
+    </div>
     {{> userdragitem }}
   {{/if}}
 </template>
@@ -430,7 +437,6 @@
     -moz-box-shadow: 10px 10px 24px -1px rgba(0,0,0,0.7);
     box-shadow: 10px 10px 24px -1px rgba(0,0,0,0.7);
     display:inline-block;background-color:#fff;border-radius:6px;border:2px solid #000;padding:10px;">
-    <h3>{{data.stand}}</h3>
     <h3>
       {{#if user.profile.isdoctor }}
         <i class="fa fa-user-md fa-fw"></i>

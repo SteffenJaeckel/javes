@@ -17,3 +17,5 @@ momentjs:moment
 reactive-var
 mrt:bootstrap3-wysihtml5
 standard-minifiers
+fourseven:scss
+arch:ace-editor

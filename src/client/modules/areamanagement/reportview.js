@@ -40,7 +40,7 @@ Template.reportview.events({
 		Session.set('reportdata',null);
 	},
 	'click #edit-report': function( e ) {
-		modals.push('editreport')
+		editor.push('reporteditor',{})
 	},
 	'click #delete-report': function( e ) {
 		if( confirm('Wollen Sie diesen Bericht wirklich löschen?') ) {

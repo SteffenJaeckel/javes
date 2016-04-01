@@ -55,12 +55,15 @@
   			</div>
   		{{/if}}
       <div class="form-group">
-        <label for="stand-desc" class="control-label">Datum und Uhrzeit</label>
+        <label for="stand-desc" class="control-label">Datum</label>
         <div class="input-group">
-          <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-          <input id="change-date" class="form-control datetime" placeholder="Datum z.B. 29.2.2012" type="text" style="width:50%" value="{{date}}"/>
-          <input id="change-time" class="form-control datetime" placeholder="Uhrzeit z.B. 22:30" type="text" style="width:50%" value="{{time}}"/>
-          <span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>
+          <input id="change-date" class="form-control datetime date" placeholder="Datum z.B. 29.2.2012" type="text" value="{{date}}"/>
+          <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
+        </div>
+        <label for="stand-desc" style="margin-top: 8px;" class="control-label">Uhrzeit</label>
+        <div class="input-group">
+          <input id="change-time" class="form-control datetime time" placeholder="Uhrzeit z.B. 22:30" type="text" value="{{time}}"/>
+          <span class="input-group-addon"><span class="fa fa-time"></span></span>
         </div>
       </div>
       {{#if is 3}}

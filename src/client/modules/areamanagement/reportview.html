@@ -1,22 +1,22 @@
 <template name="reportview">
-	<h4>
-	{{#if is 1}}Beobachter{{else}}Schütze{{/if}}
-	</h4>
-	<div class="well well-sm">
-		<div class="userimage" style="position:relative;width:64px;height:64px;background-color:#fff;float:left;margin-right:12px;background-image:url('/img/avatars/1.png')"></div>
-		<h5>{{fullname}}</h5>
-		<p>{{formatDate date}}, {{formatTime date}} Uhr</p>
-		<div style="clear:both;"></div>
+	<div class="groupbox">
+		<span class="groupbox-label">	{{#if is 1}}Beobachter{{else}}Schütze{{/if}}</span>
+		<div class="infoblock">
+			<div class="userimage" style="position:relative;width:64px;height:64px;background-color:#fff;float:left;margin-right:12px;background-image:url('/img/avatars/1.png')"></div>
+			<b>{{fullname}}</b>
+			<p>{{formatDate date}}, {{formatTime date}} Uhr</p>
+			<div style="clear:both;"></div>
+		</div>
 		{{#if canEdit}}
 			<div style="padding-top:10px;">
-				<button id="edit-report" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-edit"></span>&nbsp;Bearbeiten</button>&nbsp;
-				<button id="delete-report" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-trash"></span>&nbsp;Löschen</button>
+				<button id="edit-report" class="btn btn-sm btn-primary"><span class="fa fa-edit"></span>&nbsp;Bearbeiten</button>&nbsp;
+				<button id="delete-report" class="btn btn-sm btn-danger"><span class="fa fa-trash"></span>&nbsp;Löschen</button>
 			</div>
 		{{/if}}
 	</div>
 	{{#if data}}
-	<h4>Daten</h4>
-	<div class="well">
+	<div class="groupbox">
+		<span class="groupbox-label">Daten</span>
 		{{#each data}}
 		<div class="item" style="position:relative;width:50%;height:32px;float:left;">
 			<div style="position:absolute;left:6px;top:0px;height:100%;font-weight:bold;">{{this.name}}</div>
@@ -27,9 +27,9 @@
 	</div>
 	{{/if}}
 	{{#if remarks}}
-	<h4>Bemerkungen</h4>
-	<div class="well">
-		<p>{{remarks}}</p>		
+	<div class="groupbox">
+		<span class="groupbox-label">Bemerkungen</span>
+		<p class="infoblock">{{remarks}}</p>
 	</div>
 	{{/if}}
 	{{>comments}}

@@ -5,22 +5,25 @@ function getSelectionTool() {
           var route = null;
           Session.set('standdata',null);
           Session.set('reportdata',null);
+          Session.set('gis-selection', null );
           e.map.forEachFeatureAtPixel( e.pixel , function ( f , l ) {
             if( l ) {
               if( l.get('name') == 'Berichte' ) {
             		if( Session.get('reportdata') == null ) {
-            			selectReport(f.getId())
+            			AreaManagement_SelectReport(f.getId())
                   return false;
             		}
               }
               if( l.get('name') == 'Jagdliche Einrichtungen' ) {
             		if( Session.get('standdata') == null ) {
-                  selectStand( f.getId() );
+                  AreaManagement_SelectStand( f.getId() );
                   return false;
             		}
               }
             }
           })
+          huntingareastands_layer.getSource().changed();
+          huntingareareports_layer.getSource().changed();
       }
       return true;
     }
@@ -34,25 +37,45 @@ var huntingareastands_layer = {};
 var huntingareareports_layer = {};
 
 
-function selectStand( id ) {
+AreaManagement_SelectStand = function ( id, center, zoom ) {
+
   var stand = Stands.findOne({_id: id });
   if( stand ) {
     if( this.comments )
       this.comments.stop();
 
+    if( center ) {
+      var view = app.getMap().getView();
+      var pan = ol.animation.pan({duration: 500, source: view.getCenter()})
+      var zm = ol.animation.zoom( {duration: 500, resolution: view.getResolution()} )
+      app.getMap().beforeRender(pan,zm)
+      view.setCenter( proj4('WGS84',mapconfig.projection.name,stand.location.coordinates) )
+      if( zoom )
+        view.setZoom( zoom );
+    }
+
     this.comments = Meteor.subscribe("comments",id )
     Session.set('standdata',stand);
+    Session.set('gis-selection', id );
   }
 }
 
-function selectReport( id ) {
+AreaManagement_SelectReport = function( id, center ) {
   var report = Reports.findOne({_id: id });
   if( report ) {
     if( this.comments )
       this.comments.stop();
 
+    if( center ) {
+      var view = app.getMap().getView();
+      var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
+      app.getMap().beforeRender(pan)
+      view.setCenter( proj4('WGS84',mapconfig.projection.name,report.location.coordinates) )
+    }
+
     this.comments = Meteor.subscribe("comments",id )
     Session.set('reportdata',report);
+    Session.set('gis-selection', id );
   }
 }
 
@@ -74,6 +97,8 @@ function updateStands() {
         stand.setId(id);
         stand.set('type',fields.type)
         stand.set('name',fields.name)
+        stand.set('route',id);
+        stand.set('area', 1 );
         stand.set('color',0);
         stand.set('z-index', huntingareastands_layer.getSource().getFeatures().length )
         huntingareastands_layer.getSource().addFeature( stand );
@@ -120,6 +145,7 @@ function updateReports() {
             report.set('text', ((fields.gender==0) ? "M ":"W ")+fields.ageclass );
         }
         report.set('color',fields.gametype );
+        report.set('route', id );
         report.set('z-index', huntingareareports_layer.getSource().getFeatures().length )
         huntingareareports_layer.getSource().addFeature( report );
       },
@@ -254,6 +280,7 @@ Template.areamanagement_frame.created = function() {
        fitArea( area );
      }
   })
+  Session.set('selected-routestands',null)
 }
 
 Template.areamanagement_frame.rendered = function() {
@@ -291,6 +318,9 @@ Template.areamanagement_frame.destroyed = function() {
 
 
 Template.areamanagement_frame.helpers({
+  viewercount: function () {
+    return _.keys(getCurrentArea().viewer).length;
+  },
   areasize : function () {
     var area = getCurrentArea();
     if( area && area.geometry != null ) {
@@ -335,8 +365,21 @@ Template.areamanagement_frame.events({
   'click #adjust-area' : function() {
     editor.push("areaeditor",{},"");
   },
+  'click #edit-area' : function() {
+    var current = getCurrentArea();
+    modals.push("editarea",current,"");
+  },
   'click #area-overview' : function() {
     modals.push("areaoverview",{});
+  },
+  'click #delete-area' : function() {
+    if( confirm("Wollen sie wirklich den Pirschbezirk löschen ?" ) ) {
+      Meteor.call('deleteArea', getCurrentArea()._id , function( e ) {
+        if( e ) {
+          console.log( e );
+        }
+      })
+    }
   },
   'click #report-overview' : function() {
     modals.push("reportoverview",{});
@@ -346,15 +389,15 @@ Template.areamanagement_frame.events({
     editor.push("standeditor",{} );
   },
   'click #new-kill-report' : function() {
-    Session.set("reportdata", { type:3, hunttype:1, desc:"", date: new Date() });
+    Session.set("reportdata", { type:3, desc:"", gametype:1, hunttype:1, gender:0, ageclass:0, badgeid: 0, date: new Date() });
     editor.push("reporteditor",{} );
   },
   'click #new-view-report' : function() {
-    Session.set("reportdata", { type:1, desc:"", date: new Date() });
+    Session.set("reportdata", { type:1, desc:"", gametype:1, date: new Date() });
     editor.push("reporteditor",{} );
   },
   'click #new-miss-report' : function() {
-    Session.set("reportdata", { type:2, desc:"",gametype:1, date: new Date() });
+    Session.set("reportdata", { type:2, desc:"", gametype:1, date: new Date() });
     editor.push("reporteditor",{} );
   }
 })

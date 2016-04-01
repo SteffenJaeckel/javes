@@ -23,7 +23,7 @@ canAccess = function ( user, mod, action ) {
         if( role ) {
           if( role.modules && role.modules[mod] ) {
             if( role.modules[mod].actions && role.modules[mod].actions[ action ]) {
-              console.log("access granted action ["+ action+ "] on module ["+mod+"] from user ["+user.profile.lastname+", "+user.profile.firstname+"] authorized as ["+rol+"]");
+              console.log("access granted action ["+ action+ "] on module ["+mod+"] from user ["+user.profile.surname+", "+user.profile.firstname+"] authorized as ["+rol+"]");
               return true;
             }
           }
@@ -56,6 +56,7 @@ propagateActions = function( mod , actions ) {
         }
         customer.departments[dep].roles.admin.modules[ mod ].actions = actions;
         Customers.update( {_id:customer._id} , customer );
+        
       }
     }
   });

@@ -2,14 +2,35 @@
   Diese Funktion sollte von jeder Methode in Meteor.methods({}) benutzt werden
   um die Rechte eines Benutzers zu prüfen.
     z.B.
-      checkPermission( this.userId , "administration.newUser" )
+      checkPermission( meteoruser , "administration.newUser" )
   um festzustellen ob der angemeldete Benutzer neue Benutzer erstellen darf.
 */
-checkPermission = function( userid , element ) {
+checkPermission = function( user , element ) {
   var opt = element.split('.');
   console.log( opt );
+  if( user == null )
+    throw new Meteor.Error(400, "Invalid User!");
+
   if( opt.length == 2 ) {
-    throw new Meteor.Error(403, "You have no access to the module "+opt[0]+" and function "+opt[1]+"!");
+    if( user.profile.currentpath.length < 2 ) {
+      throw new Meteor.Error(400, "You can't access a module function before selecting customer, department and role!");
+    }
+    var customer = Customers.findOne({_id:user.profile.currentpath[0]});
+    if( customer == null )
+      throw new Meteor.Error(400, "Invalid customer selected!");
+
+    var department = customer.departments[ user.profile.currentpath[1] ];
+    if( department == null )
+      throw new Meteor.Error(400, "Invalid department selected!");
+
+    var role = department.roles[ user.profile.currentpath[2] ];
+    if( role == null )
+      throw new Meteor.Error(400, "Invalid role selected!");
+
+    if( role.modules[ opt[0] ] == null || role.modules[ opt[0] ].actions[ opt[1] ] == null )
+      throw new Meteor.Error(403, "You have no access to the module "+opt[0]+" and function "+opt[1]+"!");
+
+    return true;
   }
   throw new Meteor.Error(400, "The permission check has the wrong Format (module.function)!");
 }

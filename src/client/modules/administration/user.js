@@ -37,30 +37,26 @@ Template.user.helpers({
     return Meteor.users.find( selector , {limit:20});
   },
 	typeof: function ( user ) {
-    var type = 100;
-		for( var cid in user.customers ) {
-			for( var did in user.customers[cid].departments ) {
-				type = Math.min( type, user.customers[cid].departments[did].type);
-			}
-		}
-		return type+1;
+    var type = 3;
+    var customer = Customers.findOne( {_id:app.getCustomer()});
+    if( customer && customer.departments[app.getDepartment() ] ) {
+      for( var i = 0; i < user.customers[app.getCustomer()].departments[app.getDepartment()].roles.length;i++)  {
+        var roleid = user.customers[app.getCustomer()].departments[app.getDepartment()].roles[i];
+        var type = Math.min( type, customer.departments[app.getDepartment() ].roles[ roleid ].type);
+      }
+    }
+		return type;
 	},
   rolesof : function ( user ) {
-		for( var cid in user.customers ) {
-			for( var did in user.customers[cid].departments ) {
-        if(user.customers[cid].departments[did].roles)
-				    return _.values(user.customers[cid].departments[did].roles);
-			}
-		}
+    var roles = user.customers[app.getCustomer()].departments[app.getDepartment()].roles;
+    if( roles )
+      return _.values( roles );
 		return [];
   },
   groupsof : function( user ) {
-		for( var cid in user.customers ) {
-			for( var did in user.customers[cid].departments ) {
-        if(user.customers[cid].departments[did].groups)
-				    return _.values(user.customers[cid].departments[did].groups);
-			}
-		}
+    var groups = user.customers[app.getCustomer()].departments[app.getDepartment()].groups;
+    if( groups )
+      return _.values( groups );
     return [];
   }
 })

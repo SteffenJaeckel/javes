@@ -17,8 +17,9 @@
 
   </style>
   <div style="padding: 10px;background-color: #eee;height: 50px;">
-    <button id="add-user" class="btn btn-sm btn-default">Neuen Benutzer anlegen</button>
-    <button id="add-role" class="btn btn-sm btn-default">Neue Rolle anlegen</button>
+    {{#if checkPermission "administration.addUser"}}
+      <button id="add-user" class="btn btn-sm btn-primary">Neuen Benutzer anlegen ...</button>
+    {{/if}}
   </div>
   <div style="position:absolute;left:0%;right:0%;top:50px;bottom:0%;overflow-y:auto;border:1px solid #ccc;">
     <table width="100%" class="table">

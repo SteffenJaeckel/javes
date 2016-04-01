@@ -157,6 +157,8 @@ if (Meteor.isClient) {
 		return Session.get('error');
 	})
 
+	Template.registerHelper('checkPermission', checkPermission )
+
 	Template.index.helpers ( {
 		version : function() {
 			return version.major+"."+version.minor;

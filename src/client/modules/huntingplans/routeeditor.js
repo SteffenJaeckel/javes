@@ -100,11 +100,13 @@ function updateEditor() {
     break;
     case 'editpath':
       if( overlaylayer.getSource().getFeaturesCollection().getLength() == 0 ) {
-        var route = Session.get('selected-route');
+        var route = Session.get('gis-selection');
         if( route ) {
           undo = mapsources['routes'].getFeatureById( route );
-          overlaylayer.getSource().addFeature( undo.clone() );
+          selectedFeature = undo.clone();
+          selectedFeature.setId( route );
           mapsources['routes'].removeFeature( undo );
+          overlaylayer.getSource().addFeature( selectedFeature );
           app.popTool();
           app.pushTool( getEditPathTool() )
         } else {
@@ -117,7 +119,8 @@ function updateEditor() {
       }
     break;
     case 'selectstands':
-      var route = Session.get('selected-route');
+      var route = Session.get('gis-selection');
+      var temp = getCurrentDriveIndex()
       var drive = getCurrentDrive();
       if( drive ) {
         var stands = []
@@ -215,7 +218,7 @@ Template.routeeditor.helpers({
           var obj = {"id":id};
           obj["aviable"] = true;
           for( var rid in drive.routes ) {
-            if(! ( drive.routes[rid].group != id || rid == Session.get('selected-route') ) ) {
+            if(! ( drive.routes[rid].group != id || rid == Session.get('gis-selection') ) ) {
               obj["aviable"] = false;
             }
           }
@@ -255,7 +258,7 @@ Template.routeeditor.helpers({
       return editor.get();
     },
     routelength: function() {
-      var route = Session.get('selected-route');
+      var route = Session.get('gis-selection');
       if( route ) {
         var feature = mapsources['routes'].getFeatureById( route );
         if( feature ) {
@@ -265,7 +268,7 @@ Template.routeeditor.helpers({
       return 0;
     },
     setuptime : function () {
-      var route = Session.get('selected-route');
+      var route = Session.get('gis-selection');
       var stands = Session.get('selected-routestands');
       if( route ) {
         var feature = mapsources['routes'].getFeatureById( route );
@@ -283,7 +286,7 @@ Template.routeeditor.helpers({
         var plan = getCurrentPlan();
         var drive = getCurrentDriveIndex();
         if( plan && plan.drives && plan.drives[drive] ) {
-          var leader = plan.drives[drive].routes[ Session.get('selected-route') ].leader;
+          var leader = plan.drives[drive].routes[ Session.get('gis-selection') ].leader;
 
           for( var i=0;i < stands.length;i++ ) {
             var s = stands[i];
@@ -340,7 +343,7 @@ Template.routeeditor.events({
               console.log( e );
               Session.set( "error", e.reason );
             } else {
-              Session.set('selected-route', undo.getId() );
+              Session.set('gis-selection', undo.getId() );
               overlaylayer.getSource().getFeaturesCollection().clear();
               editor.pop();
               undo = null;
@@ -352,7 +355,7 @@ Template.routeeditor.events({
               console.log( e );
               Session.set( "error", e.reason );
             } else {
-              Session.set('selected-route', routeid );
+              Session.set('gis-selection', routeid );
               overlaylayer.getSource().getFeaturesCollection().clear();
               editor.setstate('selectstands')
               updateEditor();
@@ -368,7 +371,7 @@ Template.routeeditor.events({
       if( stands ) {
         var planid = getCurrentPlanId();
         var drive  = getCurrentDriveIndex();
-        var route  = Session.get('selected-route');
+        var route  = Session.get('gis-selection');
         var plan = Plans.findOne({_id:planid});
         if( plan && plan.drives[ drive ] ) {
           // remove stands

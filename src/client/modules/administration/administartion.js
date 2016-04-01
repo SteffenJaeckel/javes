@@ -24,10 +24,15 @@ window.mods['administration'] = { index:1, name: "Administration", icon:"fa-grou
 					{name:'Rollen',id:'roles',icon:'fa-credit-card'},
 				];
 			} else {
-				return [
-					{name:'Benutzer',id:'user',icon:'fa-user'},
-					{name:'Rollen',id:'roles',icon:'fa-credit-card'},
-				];
+				ret = [];
+
+				if( checkPermission("administration.listUsers") )
+					ret.push({name:'Benutzer',id:'user',icon:'fa-user'})
+
+				if( checkPermission("administration.listRoles") )
+					ret.push( 	{name:'Rollen',id:'roles',icon:'fa-credit-card'} );
+
+				return ret;
 			}
 		} else if( path.length == 1 ) {
 			if( path[0] == 'roles' ) {
@@ -57,7 +62,7 @@ Template.administration.helpers({
 		if( path.length >= 2 ) {
 			switch( path[1] ) {
 				case 'settings':
-					return 'customer';
+					return 'settings';
 				case 'user':
 					return 'user';
 				case 'roles':
@@ -71,6 +76,16 @@ getAviableEditRoles = function() {
 
 }
 
-getCurrentEditRole = function() {
-
+getCurrentRole = function () {
+	var path = app.getModulPath();
+	if( path.length >= 2 && path[1] == 'roles' ) {
+		var cust = Customers.findOne( {_id: app.getCustomer() });
+		if( cust ) {
+			var dep = cust.departments[ app.getDepartment() ];
+			if( dep  && dep.roles ) {
+				return dep.roles[ path[2] ];
+			}
+		}
+	}
+	return null;
 }

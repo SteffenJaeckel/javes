@@ -2,7 +2,7 @@ console.log("Add Areamanagement to modules");
 if( window.mods == null ) {
 	window.mods = {};
 }
-window.mods['areamanagement'] = { index:2,name: "Revierverwaltung", icon:"fa-compass", enabled:true, divider:true,
+window.mods['areamanagement'] = { index:2,name: "Pirschbezirke", icon:"fa-compass", enabled:true, divider:true,
 	defaultitem: function ( path ) {
 		return "dashboard";
 	},

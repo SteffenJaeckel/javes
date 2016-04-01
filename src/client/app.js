@@ -1,37 +1,6 @@
 mapconfig = {
   'projection' : { name:'EPSG:25833',code:'+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs' },
-  'layer' : [ {
-    name:'Forstgrundkarte',
-    ollayers : [{
-        server: 'Geoserver',
-        attribution:'<a href="http://www.brandenburg-forst.de">© LFB Forstgrundkarte | www.brandenburg-forst.de</a> ',
-        url:'http://www.brandenburg-forst.de:8080/geoserver/wms_ext/wms',
-        params:{'LAYERS': 'wms_ext:arcgis_raster','TILED':'True','TRANSPARENT':'False','VERSION':'1.3.0' },
-        opacity:1.0
-      }]
-    },{
-    name:'Luftbild',
-    ollayers : [{
-        server: 'Geoserver',
-        attribution:'<a href="http://isk.geobasis-bb.de">© LGB | www.geobasis-bb.de</a> ',
-        url:'http://isk.geobasis-bb.de/mapproxy/dop20/service',
-        params:{'LAYERS': 'dop20c', 'VERSION': '1.1.1'},
-        opacity:1.0
-    }]},{
-    name:'Hybrid',
-    ollayers : [{
-        server: 'Geoserver',
-        attribution:'<a href="http://isk.geobasis-bb.de">© LGB | www.geobasis-bb.de</a> ',url:'http://isk.geobasis-bb.de/mapproxy/dop20/service',
-        params:{'LAYERS': 'dop20c', 'VERSION': '1.1.1'},
-        opacity:1.0
-    },{
-        server: 'Geoserver',
-        attribution:'<a href="http://www.brandenburg-forst.de">© LFB Forstgrundkarte | www.brandenburg-forst.de</a> ',
-        url:'http://www.brandenburg-forst.de:8080/geoserver/wms_ext/wms',
-        params:{'LAYERS': 'wms_ext:arcgis_raster','TILED':'True','TRANSPARENT':'False','VERSION':'1.3.0' },
-        opacity:0.6
-    }]}
-  ]
+  'layer' : []
 };
 
 Template.app.created = function () {
@@ -39,7 +8,12 @@ Template.app.created = function () {
   this.permissions = Meteor.subscribe("permissions");
 }
 
-Template.app.removed = function () {
+Template.app.rendered = function() {
+  console.log("Kill editor")
+  editor.pop();
+}
+
+Template.app.destroed = function () {
   this.customers.stop();
   this.permissions.stop();
 }
@@ -58,7 +32,9 @@ function getSelectedItem( items , selection ) {
 
 getBaseLayer = function ( type ) {
   var layers = [];
-
+  if( mapconfig.layer.length  == 0 ) {
+    return layers;
+  }
   if( type == null || type > mapconfig.layer.length-1 ) {
     var selected = 2;
   } else {
@@ -104,6 +80,7 @@ app = {
 
   getMap: function() {
       if( app.olmap == null  ) {
+
         proj4.defs( mapconfig.projection.name ,mapconfig.projection.code );
         var layers = getBaseLayer();
 
@@ -221,9 +198,27 @@ app = {
     app.toolstack.push( app.current_tool );
     console.log("toostack:",app.toolstack)
   },
-  getMapConfig: function() {
+  updateMapConfig: function() {
     var auth = Meteor.user().profile.currentpath;
-    if( auth.length > 0 ) {
+    var path = app.getPath();
+    if( path.length >=1 ) {
+      var customer = Customers.findOne( {_id: path[0] });
+      if( customer ) {
+
+        if( ! _.isEqual(mapconfig, customer.mapconfig ) ) {
+          mapconfig = customer.mapconfig;
+          if(app.olmap ) {
+            var trg = app.olmap.getTarget();
+            // delete old map
+            delete app.olmap
+            // rebuild map
+            app.map = app.getMap();
+            app.map.setTarget( trg );
+          }
+          console.log("update mapconfig")
+
+        }
+      }
     }
   },
   getPath : function() {
@@ -232,6 +227,8 @@ app = {
   setPath : function( path ) {
     console.log( "set path " , path )
     Meteor.users.update({_id:Meteor.user()._id}, { $set: { 'profile.currentpath':path } });
+    // update mapconfig !!!
+    app.updateMapConfig();
   },
   getCustomer : function () {
     return app.getPath()[0];
@@ -487,5 +484,10 @@ Template.app.events({
   },
   'click #logout' : function () {
     Meteor.logout();
+  },
+  'click #back': function() {
+    var selitems = app.getPath();
+    selitems.pop();
+    app.setPath( selitems );
   }
 })

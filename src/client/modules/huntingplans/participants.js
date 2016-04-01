@@ -1,3 +1,5 @@
+var plan_cache = [];
+
 function getType( user ) {
   return user.customers[app.getCustomer()].departments[ app.getDepartment() ].type;
 }
@@ -86,12 +88,41 @@ function loadUser() {
   return _.sortBy(_.values(groups),'name');
 }
 
+function updatePlanCache() {
+
+  var o = 0;
+  var w = 60;
+  plan_cache = [];
+  Plans.find({}).forEach( function ( plan ) {
+    plan_cache.push( { id: plan._id, offset: o, width: w } );
+    o+=w;
+  });
+  Session.set("plans", plan_cache );
+  console.log("plancache updated", Session.get("plans"))
+
+  var cursor = Plans.find({});
+  cursor.observeChanges({
+    added:function( id, fields ) {
+      //updatePlanCache();
+    },
+    removed:function( id ) {
+      //updatePlanCache();
+    },
+    changed:function( id, fields ) {
+      /// update single plan
+
+    }
+  });
+}
+
 Template.participants.created = function() {
   Session.setDefault('group_filter','');
   Session.setDefault('hunter_filter','');
   Session.setDefault('dog-filter',0);
   Session.setDefault('type-filter',0);
   Session.setDefault('selected-tool',0);
+
+  updatePlanCache();
 }
 
 Template.participants.rendered = function() {
@@ -100,9 +131,13 @@ Template.participants.rendered = function() {
     $('#user div.scroll-y').css('top', p.top );
     $('#plans div.scroll-x').css('left', p.left );
   })
+  console.log("plan count ", Plans.find({}).count() )
+  updatePlanCache();
 }
 
 Template.participants.destroyed = function() {
+  plan_cache = [];
+  Session.set("plans",null);
 }
 
 Template.participants.helpers({
@@ -141,14 +176,19 @@ Template.participants.helpers({
   modal:function () {
   	return Session.get('modal')
   },
-  plans:function () {
-
+  plans : function() {
+    return Session.get('plans');
+  },
+  planheader: function ( id ) {
     var width = 60;
-    var group = loadUser();
     var plans = [];
     var offset = 0;
+    console.log("update header ",id);
 
-    Plans.find().forEach( function (plan) {
+/*
+    var plan = Plans.findOne( {_id: id } )
+
+    plan {
       var cur = {
         _id:plan._id,
         name:plan.name,
@@ -156,10 +196,51 @@ Template.participants.helpers({
         backup:'Andreas Lehn',
         date: plan.date,
         offset:offset,
+        width:width
+      };
+      offset += width;
+      plans.push(cur);
+    })*/
+    return plans;
+  },
+  planstats: function () {
+    var width = 60;
+    var plans = [];
+    var offset = 0;
+    Plans.find().forEach( function (plan) {
+      var userinvited = 0;
+      var dogsinvited = 0;
+      for( var uid in plan.invitestates ) {
+        userinvited++;
+        if( Meteor.users.findOne({_id:uid,"profile.dogs.type":1 })) {
+          dogsinvited++;
+        }
+      }
+      var cur = {
+        _id:plan._id,
+        offset:offset,
         width:width,
-        invitestates:[],
-        userstates: { invited:0,confirmed:0},
-        dogstates: {invited:0,confirmed:0}
+        userstates: { invited:0,confirmed:userinvited},
+        dogstates: {invited:0,confirmed:dogsinvited}
+      };
+      offset += width;
+      plans.push(cur);
+    })
+    return plans;
+  },
+  plansstates:function ( group ) {
+
+    // var group = loadUser();
+    var width = 60;
+    var plans = [];
+    var offset = 0;
+
+    Plans.find().forEach( function (plan) {
+      var cur = {
+        _id:plan._id,
+        offset:offset,
+        width:width,
+        invitestates:[]
       };
       for( var g=0;g< group.length;g++ ) {
         cur.invitestates.push( { id:group[g].id, state:'uninvited', class:'group',plan: plan._id })
@@ -167,7 +248,7 @@ Template.participants.helpers({
           var state = { id:group[g].user[u].id, class:'item', type: group[g].user[u].type ,plan: plan._id };
           if( plan.invitestates[ group[g].user[u].id ] ) {
             state[ plan.invitestates[ group[g].user[u].id ].state ] = true;
-            if( state.selected || state.invited || state.confirmed ) {
+            /*if( state.selected || state.invited || state.confirmed ) {
               cur.userstates.invited++;
               for( var d=0;d < group[g].user[u].dogs.length;d++) {
                 if( group[g].user[u].dogs[d].type == 0 ) {
@@ -184,7 +265,7 @@ Template.participants.helpers({
                   break;
                 }
               }
-            }
+            }*/
           } else {
             state['uninvited'] = true;
           }

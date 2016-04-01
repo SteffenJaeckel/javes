@@ -31,7 +31,7 @@ Meteor.publish("plan_stands", function ( planid, drive ) {
   	if( plan ) {
   		condition = {};
   		condition['location'] = { "$geoWithin": {"$geometry" : plan.drives[ drive ].shape }} ;
-  		condition['type'] = { $lt:3 };
+  		condition['type'] = { $lte:3 };
   		condition['deleted'] = false ;
   		return Stands.find( condition , { fields: {deleted:0} } );
   	}

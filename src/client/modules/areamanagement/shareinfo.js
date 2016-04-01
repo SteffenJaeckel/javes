@@ -3,6 +3,9 @@
 //  template: shareinfo
 //
 //**********************************************************************
+
+var sharetypes = ["Verwalter","Vollzugriff","Lesezugriff"];
+
 Template.shareuser.events({
 	'click .set-owner':function (e) {
 		if( confirm('Wollen Sie wirklich die Besitzrechte übertragen? Es kann immer nur einen Besitzer für das Revier geben.') ) {
@@ -29,59 +32,54 @@ Template.shareuser.events({
 	}
 })
 
-Template.shareinfo.sharedusers = function () {
-	var data = [];
-	var area = getCurrentArea();
-	var type = area.viewer[ Meteor.userId() ];
-	for( var id in area.viewer ) {
-		if( id != Meteor.userId() ) {
-			var user = Meteor.users.findOne( {_id:id } );
-			if( user ) {
-				data.push({
-					userid:user._id,
-					name:user.profile.name,
-					surname:user.profile.surname,
-					avatar: ( parseInt(user.profile.avatar) % Avatars.length ),
-					type: area.ownertypes[ area.viewer[id] ],
-					isOwner: (type == 0),
-					isCoOwner: (type == 1),
-					menuEnabled: ((area.viewer[id] > type) ? '':'disabled')
-				});
+Template.shareinfo.helpers({
+	sharedusers : function () {
+		var data = [];
+		var area = getCurrentArea();
+		var type = area.viewer[ Meteor.userId() ];
+		for( var id in area.viewer ) {
+			if( id != Meteor.userId() ) {
+				var user = Meteor.users.findOne( {_id:id } );
+				if( user ) {
+						data.push({
+						userid:user._id,
+						name:user.profile.name,
+						surname:user.profile.surname,
+						avatar: ( parseInt(user.profile.avatar) % Avatars.length ),
+						type: sharetypes[ area.viewer[id] ],
+						isOwner: (type == 0),
+						isCoOwner: (type == 1),
+						menuEnabled: ((area.viewer[id] > type) ? '':'disabled')
+					});
+				}
 			}
 		}
+		return data;
+	},
+	canInvite : function() {
+		var area = getCurrentArea();
+		return (area.viewer[ Meteor.userId() ] < 2);
+	},
+	error : function() {
+		return Session.get('error');
+	},
+	profile : function() {
+		return Meteor.user().profile;
+	},
+	avatar : function() {
+		return Avatars[ parseInt( Meteor.user().profile.avatar ) % Avatars.length ];
+	},
+	sharetype : function() {
+		var area = getCurrentArea();
+		if( area ) {
+			return sharetypes[ area.viewer[ Meteor.userId() ]];
+		}
+		return '';
+	},
+	sharetypes : function() {
+		return sharetypes;
 	}
-	return data;
-}
-
-Template.shareinfo.canInvite = function() {
-	var area = getCurrentArea();
-	return (area.viewer[ Meteor.userId() ] < 2);
-}
-
-
-Template.shareinfo.destroyed = function() {
-	Session.set('error',null);
-}
-
-Template.shareinfo.error = function() {
-	return Session.get('error');
-}
-
-Template.shareinfo.profile = function() {
-	return Meteor.user().profile;
-}
-
-Template.shareinfo.avatar = function() {
-	return Avatars[ parseInt( Meteor.user().profile.avatar ) % Avatars.length ];
-}
-
-Template.shareinfo.sharetype = function() {
-	var area = getCurrentArea();
-	if( area ) {
-		return area.ownertypes[ area.viewer[ Meteor.userId() ]];
-	}
-	return '';
-}
+});
 
 var usersubscription = null;
 
@@ -91,6 +89,7 @@ Template.shareinfo.created = function () {
 
 Template.shareinfo.destroyed = function () {
 	usersubscription.stop();
+	Session.set('error',null);
 }
 
 

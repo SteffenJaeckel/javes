@@ -1,0 +1,54 @@
+$text_normal: #333;
+$text_highlite: #337AB7;
+$selection_light:#337AB8;
+$info_background: #dddddd;
+$info_border: darker( $info_background, 50%);
+
+.groupbox .form-group:last-child {
+  margin-bottom: 0px;
+}
+
+.groupbox {
+  background-color: #eee;
+  position: relative;
+  width: 100%;
+  border: 1px solid $selection_light;
+  border-radius: 5px;
+  margin-top: 12px;
+  padding: 6px;
+  padding-top: 10px;
+}
+
+.groupbox-label {
+  position: absolute;
+  top: -9px;
+  left: 5px;
+  background-color: #eee;
+  padding: 6px;
+  padding-bottom: 0px;
+  padding-top: 0px;
+  color: $selection_light;
+  font-weight: bold;
+}
+
+.infoblock {
+  background-color: $info_background;
+  border: 2px solid $info_border;
+  border-radius: 3px;
+  margin-top: 6px;
+  padding: 6px;
+  padding-top: 6px
+}
+
+.commentbox {
+  background-color: $info_background;
+  border: 2px solid $info_border;
+  border-radius: 3px;
+  margin-top: 6px;
+  padding: 6px;
+  padding-top: 6px
+}
+
+#selection h4 {
+  color: $selection_light;
+}

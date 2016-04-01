@@ -111,7 +111,6 @@ var actions = {
 
   newArea: { name: 'Pirschbezirke erstellen', dependon:'viewAreas' },
   deleteArea: { name: 'Pirschbezirke löschen', dependon:'viewAreas' },
-
   updateArea: { name: 'Pirschbezirke bearbeiten', dependon:'viewAreas' },
 	shareArea: { name: 'Pirschbezirke teilen', dependon:'viewAreas' },
 
@@ -151,7 +150,6 @@ Meteor.methods({
 			shape: options.shape,
 			deleted:false,
 			created:new Date(),
-			ownertypes:['Besitzer','Mitbesitzer','Gast'],
 			viewer: obj
 		});
 		Meteor.users.update( {_id:this.userId},{$set:{'profile.currentSelectedArea':id}});
@@ -182,42 +180,6 @@ Meteor.methods({
 			throw new Meteor.Error(413, 'user_not_found');
 		}
 		return true;
-	},
-	sendInvitation:function( areaId, email, name, surname ) {
-		email = email.toLowerCase();
-		var sender = Meteor.users.findOne( { _id: this.userId });
-		var area = Areas.findOne( { _id: areaId, deleted:false } );
-		var newId = Accounts.createUser( { 'email': email , 'profile': { name:name, surname:surname, avatar:0,currentSelectedArea:areaId,currentMode:0, invitedBy : this.userId } } );
-		var obj = {};
-		obj['viewer.'+newId ] = area.viewer[this.userId]+1;
-		console.log("invite @ "+email)
-		Areas.update({'_id':areaId}, { '$set' : obj } );
-		Accounts.emailTemplates.siteName = "revier-plan.de";
-		Accounts.emailTemplates.from = sender.profile.name+" "+sender.profile.surname+"<"+sender.emails[0].address+">";
-		Accounts.emailTemplates.enrollAccount.subject = function (user) {
-			return "Hallo " + user.profile.name+" "+user.profile.surname;
-		};
-
-		Accounts.emailTemplates.enrollAccount.text = function (user, url) {
-			var sender = Meteor.users.findOne( { _id: user.profile.invitedBy });
-			var sendername = readableName( sender );
-			var revier = Areas.findOne({_id: user.profile.currentSelectedArea} );
-			return ""+_.escape(sendername)+" hat Sie eingeladen, mit Ihm gemeinsam das Revier "+_.escape(revier.name)+" auf der Website revier-plan.de zu teilen.⁄n"+
-			"Um der Einladung zu folgen benutzen Sie bitte den folgenden Link : "+url+"⁄n"+
-			"Wenn Sie "+_.escape(sendername)+" nicht kennen und auch sonst keine Beziehung zur Jagd haben, handelt es sich möglicherweise um einen Irrtum. Wir bitten Sie das zu Entschuldigen⁄n⁄n"+
-			"Das Revierplan Team freut sich bereits auf Sie.⁄n";
-		};
-
-		Accounts.emailTemplates.enrollAccount.html = function (user, url) {
-			var sender = Meteor.users.findOne( { _id: user.profile.invitedBy });
-			var sendername = readableName( sender );
-			var revier = Areas.findOne({_id: user.profile.currentSelectedArea} );
-			return "<p><b>"+_.escape(sendername)+"</b> hat Sie eingeladen, mit Ihm gemeinsam das Revier <b>"+_.escape(revier.name)+"</b> auf der Website revier-plan.de zu teilen.</p>"+
-			"<p>Um der Einladung zu folgen benutzen Sie bitte den folgenden Link : <a href="+url+">"+url+"</a>.</p>"+
-			"<p>Wenn Sie <b>"+_.escape(sendername)+"</b> nicht kennen und auch sonst keine Beziehung zur Jagd haben, handelt es sich möglicherweise um einen Irrtum. Wir bitten Sie das zu Entschuldigen</p>"+
-			"<p>Das Revierplan Team freut sich bereits auf Sie.</p>";
-		};
-		Accounts.sendEnrollmentEmail(newId);
 	},
 	loadEnrollInfo:function( token ) {
 		var user = Meteor.users.findOne({"services.password.reset.token": token});
@@ -276,19 +238,31 @@ Meteor.methods({
 		addAreaNofification(areaId, this.userId, { user_remove_user:true,'trigger':readableName(me),'user':readableName(user)});
 		addUserNotification(userId,{your_are_removed_from_area:true,'trigger':readableName(me),'area':area.name})
 	},
-	editArea:function( areaId, name, desc ) {
+	editArea:function( data ) {
+
 		var me = Meteor.users.findOne( { _id: this.userId });
-		var area = Areas.findOne({_id:areaId} );
+		checkPermission( me,"areamanagement.updateArea" );
+
+		data = Validate(data, {
+			_id : { type:'string', name:'Id'},
+			name : { type:'string', name:'Name', min: 1, max: 255 },
+			desc : { type:'string', name:'Beschreibung', min:0, max: 1024 }
+		});
+
+		var me = Meteor.users.findOne( { _id: this.userId });
+		var area = Areas.findOne({_id:data._id} );
 		if( area.viewer[this.userId] <= 1  ) {
 			var oldname = area.name;
-			Areas.update({_id:areaId },{$set:{name:name,desc:desc}} );
-			addAreaNofification(areaId, this.userId, { areadescription_changed:true,'trigger':readableName(me),'oldname':oldname,'newname':name } );
+			Areas.update({_id:data._id },{$set:{name:data.name,desc:data.desc}} );
+			addAreaNofification(data._id, this.userId, { areadescription_changed:true,'trigger':readableName(me),'oldname':oldname,'newname':data.name } );
 		}
 		return true;
 	},
 	updateAreaShape:function( areaId, shape ) {
-		var shape = Validate( shape, DataModels["Shapemodel"] );
 		var me = Meteor.users.findOne( { _id: this.userId });
+		checkPermission( me,"areamanagement.updateArea" );
+
+		var shape = Validate( shape, DataModels["Shapemodel"] );
 		var area = Areas.findOne({_id:areaId} );
 		if( area.viewer[this.userId] <= 1  ) {
 			Areas.update({_id:areaId },{$set:{geometry:shape}} );
@@ -296,25 +270,24 @@ Meteor.methods({
 		}
 		return true;
 	},
-	deleteArea:function( areaId, selectArea ) {
+	deleteArea:function( areaId ) {
 		var me = Meteor.users.findOne( { _id: this.userId });
+		checkPermission( me,"areamanagement.deleteArea" );
+
 		var area  = Areas.findOne({_id:areaId});
 		if( area && area.viewer[this.userId] != null ) {
 			if( _.keys(area.viewer).length == 1 ) {
-				Stands.remove({ area: areaId });
-				Reports.remove({ area: areaId });
-				Areas.remove({ _id:areaId });
+				Areas.update({ _id:areaId },{$set: {deleted:true}});
 			} else {
 				if( area.viewer[this.userId] == 0 ) {
 					throw new Error(403,"owners_cant_delete_areas_with_more_than_one_viewers");
 				} else {
 					var obj = {};
-					obj['viewer.'+this.userId ] = "";
+					obj['viewer.'+this.userId ] = true;
 					Areas.update({'_id':areaId}, { '$unset' : obj } );
 					addAreaNofification(areaId, this.userId, { leftarea:true,'trigger':readableName(me) } );
 				}
 			}
-			Meteor.users.update( {_id:this.userId},{$set:{'profile.currentSelectedArea':selectArea }});
 		}
 		return true;
 	},
