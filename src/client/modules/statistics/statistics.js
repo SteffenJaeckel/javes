@@ -1,7 +1,7 @@
 console.log("Add Statistics to modules");
 if( window.mods == null ) {
 	window.mods = {};
-}
+}/*
 window.mods['statistics'] = { index: 50, name: "Statistiken", icon:"fa-bar-chart", enabled:'disabled', divider:true,
 	defaultitem: function() {
 		return 'schedule';
@@ -19,7 +19,7 @@ window.mods['statistics'] = { index: 50, name: "Statistiken", icon:"fa-bar-chart
 		console.log( item )
 	}
 };
-
+*/
 console.log("Add cuttingplans to modules");
 window.mods['cuttingplans'] = { index: 5, name: "Einschlagsplanung", icon:"fa-tree", enabled:'disabled', divider:true,
 	defaultitem: function() {

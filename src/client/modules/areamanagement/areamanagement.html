@@ -1,7 +1,62 @@
 <template name="areamanagement">
-	{{#if showdashboard}}
-		{{> dashboard}}
-	{{else}}
-		{{> areamanagement_frame}}
-	{{/if}}
+	<style>
+
+	</style>
+	<div id="datenauswahl">
+		<div id="innere-auswahl">
+			<button class="btn btn-success new" style="width:100%">
+				<span><i class="fa fa-plus fa-fw"></i>&nbsp;Pirschbezirk erstellen</span>
+			</button>
+			{{#each areas}}
+				<div class="area selection-item {{getSelected _id}}" data="{{_id}}">
+					<div class="selection-header">
+						<span style="font-size:10pt;font-weight:bold;">{{name}}</span>
+						{{#if getSelected _id}}
+							<div style="position:absolute;right: 6px;top: 12px;"><i class="fa fa-bars fa-fw"></i></div>
+						{{/if}}
+					</div>
+					{{#if getSelected _id}}
+						<div class="open-selection">
+							<div class="groupbox">
+								<span class="groupbox-label">Jagdliche Einrichtungen</span>
+								<div class="toolstack-item">
+									<button class="btn btn-success btn-xs new" style="width:100%">
+										<span><i class="fa fa-plus fa-fw"></i>&nbsp;Neue jagdliche Einrichtung</span>
+									</button>
+								</div>
+							</div>
+							<div class="groupbox">
+								<span class="groupbox-label">Berichte</span>
+								<div class="toolstack-item">
+									<button class="btn btn-success btn-xs new" style="width:100%">
+										<span><i class="fa fa-plus fa-fw"></i>&nbsp;Neue Wildbeobachtung</span>
+									</button>
+								</div>
+								<div class="toolstack-item">
+									<button class="btn btn-success btn-xs new" style="width:100%">
+										<span><i class="fa fa-plus fa-fw"></i>&nbsp;Neuer Abschuss</span>
+									</button>
+								</div>
+								<div class="toolstack-item">
+									<button class="btn btn-success btn-xs new" style="width:100%">
+										<span><i class="fa fa-plus fa-fw"></i>&nbsp;Neue Nachsuche</span>
+									</button>
+								</div>
+							</div>
+						</div>
+					{{/if}}
+				</div>
+			{{/each}}
+		</div>
+		{{#if editor }}
+			<div style="position:absolute;top:0px;bottom:0px;left:0px;right:0px;background-color:#eee;opacity:0.5;"></div>
+		{{/if}}
+	</div>
+	<div id="datenbearbeitung">
+		{{#if mapEnabled}}
+			<div id="main">
+				{{> areamanagement_frame}}
+			</div>
+		{{/if}}
+	</div>
 </template>

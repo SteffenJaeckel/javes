@@ -1,51 +1,16 @@
-console.log("Add Areamanagement to modules");
-if( window.mods == null ) {
-	window.mods = {};
-}
-window.mods['areamanagement'] = { index:2,name: "Pirschbezirke", icon:"fa-compass", enabled:true, divider:true,
-	defaultitem: function ( path ) {
-		return "dashboard";
-	},
-	menuitems: function( path ) {
-		if( path.length == 0 ) {
-			var areas = []
-			Areas.find({},{ sort:{ 'name':1 }}).forEach( function ( area ) {
-				areas.push( { name:area.name, id:area._id, icon:'fa-tree' } )
-			})
-			if( areas.length > 0 ) {
-				areas.unshift( {divider:true} );
-			}
-			areas.unshift( {name:"Übersicht",id:"dashboard",icon:"fa-inbox"} );
-			return areas;
-		} else {
-			switch( path[0] ) {
-				case 'dashboard':
-					return null;
-				break;
-				default:
-					DataChangeHandler.call( path );
-				break;
-			}
-		}
-	}
-};
 
 Template.areamanagement.created = function () {
 	this.areas = Meteor.subscribe('areas')
 	this.notifications = Meteor.subscribe('notifications')
 }
 
+Template.areamanagement.rendered = function() {
+		console.log("create map")
+}
+
 Template.areamanagement.destroyed = function () {
 	this.areas.stop();
 	this.notifications.stop();
-}
-
-getCurrentArea = function( ) {
-	var path = app.getModulPath();
-	if( path.length >= 1 ){
-		return Areas.findOne({_id:path[1]});
-	}
-	return null;
 }
 
 Template.areamanagement.helpers({
@@ -62,12 +27,21 @@ Template.areamanagement.helpers({
 	areas: function () {
 		return Areas.find();
 	},
-	canEdit: function () {
-		var area = Areas.findOne({_id:Meteor.user().profile.currentSelectedArea });
-		if( area ) {
-			return area.viewer[ Meteor.userId() ] < 2;
-		}
-		return false;
+	getSelected: function( id ) {
+		return ( id == app.getPath()[4] ) ? 'selected':'';
+	},
+	mapEnabled: function() {
+		return (getCurrentArea() !=null)
+	}
+})
+
+Template.areamanagement.events({
+	'click .new': function(e) {
+		modals.push('newarea');
+	},
+	'click .area' : function(e) {
+		app.setSubPath(4,$(e.currentTarget).attr('data'))
+		fitArea( getCurrentArea() )
 	}
 })
 /*

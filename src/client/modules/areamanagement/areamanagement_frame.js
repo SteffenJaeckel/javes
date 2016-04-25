@@ -172,13 +172,14 @@ function updateReports() {
 }
 
 function updateMap() {
-
+	updateStands();
+	updateReports();
   var olmap = app.getMap();
   if( olmap ) {
     olmap.setTarget( document.getElementById('map') );
     var area = getCurrentArea();
+		huntingarea_layer.getSource().clear();
     if( area ) {
-      huntingarea_layer.getSource().clear();
       var cursor = Areas.find( {_id:area._id, geometry: {$exists:true} } );
       cursor.observeChanges({
         added:function( id, fields ) {
@@ -216,7 +217,7 @@ function updateMap() {
   }
 }
 
-function fitArea( area ) {
+fitArea = function( area ) {
   var map = app.getMap();
 
   if( this.allocations ) {
@@ -239,11 +240,16 @@ function fitArea( area ) {
       console.log( role );
     }
   }
+	updateMap();
 }
 
 Template.areamanagement_frame.created = function() {
+  Session.set('selected-routestands',null)
+}
 
-  var olmap = app.getMap();
+Template.areamanagement_frame.rendered = function() {
+
+	var olmap = app.getMap();
 
   huntingarea_layer = new ol.layer.Vector({
     source: new ol.source.Vector() ,
@@ -272,18 +278,6 @@ Template.areamanagement_frame.created = function() {
   huntingareareports_layer.set('name','Berichte');
   olmap.addLayer( huntingareareports_layer );
 
-  DataChangeHandler.add("areamap", function ( path ) {
-     console.log("call areamap Datachange handler ...");
-     updateMap();
-     var area = getCurrentArea();
-     if( area ) {
-       fitArea( area );
-     }
-  })
-  Session.set('selected-routestands',null)
-}
-
-Template.areamanagement_frame.rendered = function() {
   app.pushTool( getSelectionTool());
   var area = getCurrentArea();
   if( area ) {
@@ -299,7 +293,6 @@ Template.areamanagement_frame.destroyed = function() {
     olmap.removeLayer( huntingareareports_layer );
     olmap.removeLayer( huntingareastands_layer );
   }
-  DataChangeHandler.remove("areamap");
 
   if( this.stands ) {
     this.stands.stop();

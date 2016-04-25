@@ -2,6 +2,7 @@ var ONEDAY = 24*60*60*1000;
 var MONTHS = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
 
 Template.schedule.created = function (){
+	this.plans = Meteor.subscribe("huntingplans");
   var current = new Date();
   var year = current.getFullYear();
   if( current.getMonth() < 4 ) {
@@ -9,6 +10,10 @@ Template.schedule.created = function (){
   }
   Session.set('currentscheduleyear', year );
   Session.set('currentschedulemonth', current.getMonth() );
+}
+
+Template.schedule.destroyed = function() {
+	this.plans.stop();
 }
 
 Template.schedule.helpers( {
@@ -107,7 +112,7 @@ Template.schedule.events( {
     }
   },
   'dblclick .plan': function (e ) {
-    app.setModulePath( ['huntingplans', $(e.currentTarget).attr('data') ] )
+    app.setModulePath( ['huntingplanmap', $(e.currentTarget).attr('data') ] )
   },
   'click .newplan': function(e) {
     var date = new Date( parseInt($(e.currentTarget).attr('data')));

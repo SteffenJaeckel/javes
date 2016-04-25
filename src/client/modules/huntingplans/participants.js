@@ -116,6 +116,9 @@ function updatePlanCache() {
 }
 
 Template.participants.created = function() {
+	this.participants = Meteor.subscribe("participants");
+	this.plans = Meteor.subscribe("huntingplans");
+
   Session.setDefault('group_filter','');
   Session.setDefault('hunter_filter','');
   Session.setDefault('dog-filter',0);
@@ -138,6 +141,8 @@ Template.participants.rendered = function() {
 Template.participants.destroyed = function() {
   plan_cache = [];
   Session.set("plans",null);
+	this.participants.stop();
+	this.plans.stop();
 }
 
 Template.participants.helpers({
@@ -218,6 +223,9 @@ Template.participants.helpers({
       }
       var cur = {
         _id:plan._id,
+				name:plan.name,
+				leader: plan.leader,
+				date: plan.date,
         offset:offset,
         width:width,
         userstates: { invited:0,confirmed:userinvited},
@@ -357,7 +365,7 @@ Template.participants.events({
     modals.push('edithunter', data );
   },
   'dblclick .plan': function (e ) {
-    app.setModulePath( ['huntingplans', $(e.currentTarget).attr('data-plan') ] )
+    app.setModulePath( ['huntingplanmap', $(e.currentTarget).attr('data-plan') ] )
   },
   'click .select-tool':function(e) {
     Session.set('selected-tool', $(e.currentTarget).attr('data') )

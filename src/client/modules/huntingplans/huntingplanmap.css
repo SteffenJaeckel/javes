@@ -23,8 +23,8 @@
 #papercenter {position:relative; }
 
 #stats { position:absolute; top:0px; left:0px; right:300px; height:26px; padding:3px; background-color: #eee; }
-#editmode {position:absolute;top:0px;right:0px;width:300px;bottom:0px;padding:14px;background-color:#eee; overflow: auto;}
-#selection {position:absolute;top:0px;right:0px;width:300px;bottom:0px;padding:14px;background-color:#eee; overflow: auto;}
+#editmode {position:absolute;top:0px;right:0px;width:300px;bottom:0px;background-color:#eee; overflow-y: auto; overflow-x:hidden;}
+#selection {position:absolute;top:0px;right:0px;width:300px;bottom:0px;background-color:#eee; overflow-y: auto; overflow-x:hidden;}
 
 .participant-list { width: 100%; border: 1pt solid #888; margin-bottom: 5mm; page-break-inside: avoid; }
 .participant-list td { padding: 3pt; font-size: 10pt; }

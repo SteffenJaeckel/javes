@@ -1,67 +1,68 @@
 <template name="app">
-	<style>
-		#app {position:absolute; left:0px; right:0px; top:0px; bottom:0px; min-width:1024px;z-index:0;	}
-		#main { position:absolute; 		left:0px; right:0px; top:54px; bottom:0px; overflow:hidden; }
-		#toolbar {position:absolute; left: 0px; right:0px; top:0px; height:54px; padding:10px; background-color:#285780; }
-		div.logo { display:inline-block; position:relative; width:128px; height:42px; background-size:100% 100%; background-image:url('./img/logo_javes_weiss.png'); margin-right:10px; float:left; }
-		@media print {
-			#app { position: relative; width: width:100%; min-width:100%; max-width:100%;}
-			#main { position: relative; top: 0px;	width: 100%;}
-			#toolbar {display:none;}
-		}
-		.pathitem {
-			overflow: hidden;
-	    text-overflow: ellipsis;
-	    max-width: 100%;
-		}
-		.well {
-			border: 1px solid #428bca;
-		}
-	</style>
 	<div id="app">
-    <div id="main">
-      {{> Template.dynamic template=getmodul }}
-    </div>
-		<div id="toolbar">
-			<div class="btn-group toolgroup">
-				<button id="logout" class="btn btn-default"><i class="fa fa-power-off fa-fw"></i></button>
-				<button id="profile" class="btn btn-default">{{username}}</button>
-        {{#each path }}
-          <div class="btn-group" style="max-width:180px;">
-            <button class="btn btn-default dropdown-toggle pathitem" type="button" id="modul-subitem-selector" data-toggle="dropdown">
-							{{#if this.selected }}
-  							<i class="fa {{this.selected.icon}} fa-fw"></i>&nbsp; {{this.selected.name}}
-							{{else}}
-								<i class="fa fa-play fa-fw"></i>
-							{{/if}}
-  					</button>
-  					<ul class="dropdown-menu" aria-labelledby="modul-subitem-selector">
-              {{#each this.items}}
-								{{#unless this.invisible }}
-									{{#if this.divider }}
-	                  <li role="presentation" class="divider"></li>
-	                {{else}}
-	  						  	<li class="{{this.enabled}}"><a class="app-item {{this.enabled}}"  data-level="{{../level}}" data-index="{{../index}}" data-id="{{this.id}}" role="menuitem" tabindex="-1" href="#"><i class="fa {{this.icon}} fa-fw"></i>&nbsp; {{this.name}}</a></li>
-	              	{{/if}}
-								{{/unless}}
-							{{/each}}
-  					</ul>
-          </div>
-        {{/each}}
-      </div >
-			{{#if false}}
-			<div class="btn-group toolgroup" style="margin-left:10px;">
-				<button id="back" class="btn btn-default" type="button"><i class="fa fa-rotate-180 fa-share fa-fw"></i> Zurück</button>
-			</div>
-			{{/if}}
-			<div style="top:7px;right:74px; position:absolute;">
-				<div class="logo"></div>
-			</div>
-			{{#if editor}}
-				<div style="position: absolute;left: 0px;right: 0px;top: 0px;bottom: 0px;padding: 10px;background-color: #285780;">
-					<span style="font-size: 26px;  font-weight: bold;  color: #fff;  opacity: 0.5;">Bearbeitungsmodus</span>
+		<div id="leftframe" style="padding: 12px;">
+
+		</div>
+		<div id="topframe">
+				<div style="position:relative;top:0px;left:0px;">
+					<div style="position: absolute; top: 7px; left: -22px; font-size: 12pt;color: #fff;">
+						<span class="fa-stack fa-lg">
+							<i class="fa fa-circle fa-stack-2x" style="color: #337ab7;"></i>
+						  <i class="fa fa-arrow-circle-left fa-stack-1x" style="opacity: 0.5;"></i>
+						</span>
+					</div>
 				</div>
-			{{/if}}
+				{{#if editor}}
+					<div style="position: absolute;left: 12px;right: 0px;top: 0px;bottom: 0px;padding: 10px;background-color: #337AB8;">
+						<span style="font-size: 26px;  font-weight: bold;  color: #fff;  opacity: 0.5;">Bearbeitungsmodus</span>
+					</div>
+				{{else}}
+					<div id="module" style="position: absolute; left: 0px; right: 0px; padding: 12px;padding-left:24px;">
+						{{#each getmodules}}
+							{{#if equal this.items.length 1 }}
+								{{#each this.items}}
+									<button class="btn btn-default module" data="{{this.id}}">{{this.name}}</button>
+								{{/each}}
+							{{else}}
+								<div class="dropdown" style="display: inline;">
+									<button id="dLabel" class="btn btn-default" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		                  {{this.name}}
+		                  <span class="caret"></span>
+		              </button>
+									<ul class="dropdown-menu" aria-labelledby="dLabel">
+											{{#each this.items}}
+	                    	<li><a class="module" href="#" data="{{this.id}}">{{this.name}}</a></li>
+											{{/each}}
+	                </ul>
+								</div>
+							{{/if}}
+						{{/each}}
+						<div style="position:absolute; right: 12px;top: 12px;">
+							<div class="dropdown" style="display: inline;">
+								<button id="dLabel" class="btn btn-default" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	                  {{getcurrentrole}}
+	                  <span class="caret"></span>
+	              </button>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dLabel">
+									{{#each getroles}}
+										<li>
+											<a class="set-role" href="#" data="{{this.path}}">{{this.name}}</a>
+										</li>
+									{{/each}}
+                </ul>
+	            </div>
+							<button id="btn-settings" class="btn btn-default">
+								<i class="fa fa-cog fa-fw"></i>
+							</button>
+							<button id="btn-logout" class="btn btn-default">
+								<i class="fa fa-power-off fa-fw"></i>
+							</button>
+						</div>
+	        </div>
+				{{/if}}
+		</div>
+		<div id="content" class="page-container">
+			{{> Template.dynamic template=getmodul}}
 		</div>
 	</div>
   {{#if getmodal }}
