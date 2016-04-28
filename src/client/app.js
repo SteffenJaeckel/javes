@@ -1,7 +1,4 @@
-mapconfig = {
-  'projection' : { name:'EPSG:25833',code:'+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs' },
-  'layer' : []
-};
+mapconfig = {};
 
 Template.app.created = function () {
   this.customers = Meteor.subscribe("customers");
@@ -78,8 +75,24 @@ app = {
 
   toolstack : [],
 
+	getMapConfig: function() {
+		var auth = Meteor.user().profile.currentpath;
+    var path = app.getPath();
+    if( path.length >=1 ) {
+      var customer = Customers.findOne( {_id: path[0] });
+      if( customer ) {
+				return customer.mapconfig;
+			}
+		}
+		return {
+		  'projection' : { name:'EPSG:25833',code:'+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs' },
+		  'layer' : []
+		};
+	},
   getMap: function() {
       if( app.olmap == null  ) {
+
+				mapconfig = app.getMapConfig();
 
         proj4.defs( mapconfig.projection.name ,mapconfig.projection.code );
         var layers = getBaseLayer();
@@ -216,8 +229,8 @@ app = {
             app.map.setTarget( trg );
           }
           console.log("update mapconfig")
-
         }
+				Session.set('mapconfig',mapconfig)
       }
     }
   },
@@ -230,6 +243,21 @@ app = {
     // update mapconfig !!!
     app.updateMapConfig();
   },
+	setSubPath : function( index , item ) {
+		var id = item;
+		var selitems = app.getPath();
+		if( index < selitems.length) {
+			selitems[index] = id;
+			while( index < (selitems.length-1) ) {
+				selitems.pop();
+			}
+		} else {
+			while( selitems.length <= index ) {
+				selitems.push( id );
+			}
+		}
+		app.setPath( selitems );
+	},
   getCustomer : function () {
     return app.getPath()[0];
   },
@@ -286,164 +314,34 @@ $(window).on('keyup', function(e) {
 });
 
 Template.app.helpers({
-  path: function () {
-
-    if(  Meteor.user() == null )
-      return [];
-
-    var path = [];
-    var selitems = app.getPath();
-    var level = 0;
-
-    /* Customer selection */
-    var data = [];
-    var customers = Customers.find({}).fetch();
-    if( customers.length == 0 ) {
-      return [];
-    }
-    for( var i=0;i < customers.length;i++ ) {
-      data.push({index:i, id: customers[i]._id, name: customers[i].name.short, icon: 'fa-book',class:''} );
-    }
-    var selectedcustomer = getSelectedItem(data, selitems[0]);
-    if( data.length == 1 ) {
-      var selectedcustomer = data[0];
-      if( selitems[0] != selectedcustomer.id ) {
-        selitems[0] = selectedcustomer.id;
-        app.setPath( selitems );
-      }
-    } else {
-      var selectedcustomer = getSelectedItem(data, selitems[0]);
-      path.push( { level: level++, index:0, 'selected': selectedcustomer, 'items': data } );
-      if( selectedcustomer == null ) {
-        app.setPath( selitems );
-        return path;
-      }
-    }
-
-
-    /* Department selection */
-    data = [];
-    var customer = Customers.findOne({_id: selectedcustomer.id });
-    if( customer == null )
-      return [];
-
-    for( var department in customer.departments ) {
-      data.push({index:0, id: department , name: customer.departments[department].name.long, icon: 'fa-bookmark',class:''} );
-    }
-    if( data.length == 1 ) {
-      var selecteddepartment = data[0];
-      if( selitems[1] != selecteddepartment.id ) {
-        selitems[1] = selecteddepartment.id;
-        app.setPath( selitems );
-      }
-    } else {
-      var selecteddepartment = getSelectedItem(data, selitems[1] );
-      path.push( { level: level++, index:1, 'selected': selecteddepartment, 'items': data } );
-      if( selecteddepartment == null ) {
-        app.setPath( selitems );
-        return path;
-      }
-    }
-
-    /* Role selection */
-    if( Meteor.user().customers == null || 
-        Meteor.user().customers[selectedcustomer.id] == null || 
-        Meteor.user().customers[selectedcustomer.id].departments[selecteddepartment.id] == null )
-      return path;
-
-    var roles = Meteor.user().customers[selectedcustomer.id].departments[selecteddepartment.id].roles;
-    var data = [];
-    // console.log(roles);
-    for( var i=0;i < roles.length; i++ ) {
-      data.push({index:i, id: roles[i], name: roles[i], icon: 'fa-user',class:''} );
-    }
-    if( data.length == 1 ) {
-      var selectedrole = data[0];
-      if( selitems[2] != selectedrole.id ) {
-        selitems[2] = selectedrole.id;
-        app.setPath( selitems );
-      }
-    } else {
-      var selectedrole = getSelectedItem(data, selitems[2]);
-      path.push( { level: level++, index:2, 'selected': selectedrole, 'items': data } );
-      if( selectedrole == null ) {
-        app.setPath( selitems );
-        return path;
-      }
-    }
-
-    /* Module selection */
-    // console.log( "User is logged on as ", selectedrole.name );
-    if( customer.departments[ selecteddepartment.id ].roles[ selectedrole.name ] == null ) {
-      console.log("Achtung Role "+selectedrole.name+" ist kein gültiges Rollenprofil");
-      return path;
-    }
-    var aviablemodules = customer.departments[ selecteddepartment.id ].roles[ selectedrole.name ].modules;
-    data = [];
-    for( var m in window.mods ) {
-      if( m == 'profile' || aviablemodules[m] != null ) {
-        data.push( { index: (window.mods[m].index) ? window.mods[m].index : 1000, id:m , name: window.mods[m].name, icon: window.mods[m].icon, class: (window.mods[m].enabled ) ? '':'disabled' } )
-      }
-    }
-    if( data.length > 1 ) {
-      data = _.sortBy(data,'index');
-      for( var i=0;i < data.length;i++ ) {
-        if( window.mods[ data[i].id ].divider && i > 0 ) {
-          data.splice( i ,0, {divider:true} );
-          i++;
-        }
-      }
-    }
-    var selectedmodule = getSelectedItem(data, selitems[3]);
-    path.push( { level: level++, index:3, 'selected': selectedmodule, 'items': data } );
-    if( selectedmodule == null ) {
-      return path;
-    }
-
-    /* Submodule selection */
-    var modulpath = app.getModulPath();
-
-    var subsel = [];
-    for( var i=3;i < selitems.length;i++ ) {
-      if( window.mods[ selectedmodule.id ] && window.mods[ selectedmodule.id ].menuitems ) {
-        var items = window.mods[ selectedmodule.id ].menuitems( subsel );
-        if( items ) {
-          var selected = getSelectedItem( items, selitems[i+1] );
-          if( selected == null ) {
-            var def = window.mods[ selectedmodule.id ].defaultitem( subsel )
-            if( def ) {
-              var selected = getSelectedItem( items, def );
-              if( selected ) {
-                if( selitems.length == i+1 ) {
-                  selitems.push( def );
-                } else if(selitems.length >= i+2) {
-                  selitems[i+1] = def;
-                  for( var c=0;c <  (selitems.length -(i+2));c++ ) {
-                    selitems.pop();
-                  }
-                }
-                app.setPath( selitems );
-              }
-            } else {
-              selected = {id:'none',name:'',icon:'fa-play'};
-            }
-          }
-          var obj = { level: level++, index:(i+1), 'items':items , 'selected': selected };
-          if( selitems.length > (i+1) ) {
-            subsel.push( selitems[i+1] );
-          }
-          path.push( obj );
-        } else {
-          break;
-        }
-      } else {
-        break;
-      }
-    }
-    return path;
-  },
+	getcurrentrole: function() {
+		return Meteor.user().profile.currentpath[2];
+	},
+	getroles: function() {
+		var items = [];
+		var user = Meteor.user();
+		for( var custid in user.customers ) {
+			var customer  = user.customers[custid];
+			for( var depid in customer.departments ) {
+				var department = customer.departments[depid];
+				for( var role in department.roles) {
+					items.push({name:department.roles[role],path:""+custid+"/"+depid+"/"+department.roles[role]})
+				}
+			}
+		}
+		return items;
+	},
+	getmodules : function() {
+		var modules = [];
+		for( var module in window.mods ) {
+			var mod = window.mods[module]();
+			if( mod && mod.items.length > 0 )
+				modules.push( mod )
+		}
+		return _.sortBy( modules,'pos' );
+	},
   getmodul : function () {
-    return app.getModule();
+    return app.getPath()[3];
   },
   getmodal: function () {
     var m = Session.get('modal');
@@ -461,6 +359,15 @@ Template.app.helpers({
 })
 
 Template.app.events({
+	'click .module': function( e ) {
+		app.setSubPath(3,$(e.currentTarget).attr('data'))
+	},
+	'click .set-role': function( e ) {
+		var path = $(e.currentTarget).attr("data");
+		items = path.split('/');
+		app.setPath( items );
+		app.updateMapConfig();
+	},
   'click .app-item': function( e ) {
     var index = $(e.currentTarget).attr('data-index');
     var id = $(e.currentTarget).attr('data-id');
@@ -482,12 +389,7 @@ Template.app.events({
       }
     }
   },
-  'click #logout' : function () {
+  'click #btn-logout' : function () {
     Meteor.logout();
-  },
-  'click #back': function() {
-    var selitems = app.getPath();
-    selitems.pop();
-    app.setPath( selitems );
   }
 })

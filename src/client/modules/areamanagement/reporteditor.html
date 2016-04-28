@@ -38,7 +38,7 @@
       color: #66afe9;
     }
   </style>
-  <div style="position:relative;top:0px;left:0px;width:100%;height:100%;">
+  <div class="toolframe">
     <div style="position:absolute;top:0px;left:0px;right:0px;bottom:42px;overflow-y:auto;overflow-x:hidden;">
       {{#if error}}
   			<div class="alert alert-danger" style="position:relative;"> <b>Fehler</b>
@@ -63,7 +63,7 @@
         <label for="stand-desc" style="margin-top: 8px;" class="control-label">Uhrzeit</label>
         <div class="input-group">
           <input id="change-time" class="form-control datetime time" placeholder="Uhrzeit z.B. 22:30" type="text" value="{{time}}"/>
-          <span class="input-group-addon"><span class="fa fa-time"></span></span>
+          <span class="input-group-addon"><span class="fa fa-clock-o"></span></span>
         </div>
       </div>
       {{#if is 3}}

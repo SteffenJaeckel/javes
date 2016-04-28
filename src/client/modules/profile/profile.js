@@ -2,7 +2,7 @@ console.log("Add Profile to modules");
 if( window.mods == null ) {
 	window.mods = {};
 }
-
+/*
 window.mods['profile'] = { index: 99, name: "Profil", icon:"fa-user", enabled:true, divider:true,
 	defaultitem: function() {
 		return 'me';
@@ -16,7 +16,7 @@ window.mods['profile'] = { index: 99, name: "Profil", icon:"fa-user", enabled:tr
 		console.log( item )
 	}
 };
-
+*/
 Template.profile.helpers({
 	name : function () {
 		return Meteor.user().profile.firstname;

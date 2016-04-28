@@ -92,6 +92,9 @@
     #filter div {
       margin-bottom:5px;
     }
+		#workplane {
+			background-color:#fff;
+		}
   </style>
 
   <div id="toolbox" style="position:absolute;top:0px;left:0px;right:0px;height:58px;padding:14px;border-bottom: 2px solid #ccc;background-color:#eee;">
@@ -176,14 +179,13 @@
           <div class="scroll-x">
             <div style="position:absolute; bottom:0px;left:0px;transform: rotate(-90deg);-webkit-transform: rotate(-90deg);">
               <div style="position: absolute;top: 0px;left:-126px;width:126px;">
-                {{#each plans}}
+                {{#each planstats}}
                   <div class="plan feedback" style="height:{{this.width}}px;" data-plan="{{this._id}}"><b>{{this.name}}</b><br/><b>{{this.leader}}</b><p>{{formatDateDay this.date}}</p></div>
                 {{/each}}
               </div>
             </div>
             <div style="position: absolute;top: 126px;left:0px;height: 40px;">
-              {{#each plans}}
-                {{planheader this.id}}
+              {{#each planstats}}
                 <div class="plan-details feedback" style="position:absolute;left:{{this.offset}}px; width:{{this.width}}px; height:100%;" data-plan="{{this._id}}">
                   <i class="fa fa-user"></i>&nbsp;{{this.userstates.invited}}/{{this.userstates.confirmed}}<br/>
                   <i class="fa fa-paw"></i>&nbsp;{{this.dogstates.invited}}/{{this.dogstates.confirmed}}

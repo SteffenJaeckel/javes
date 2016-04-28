@@ -12,7 +12,7 @@ function getSelectionTool() {
               }
             }
           })
-          app.setModulePath( ['administration','roles',Session.get('gis-selection')])
+          app.setModulePath( ['roles',Session.get('gis-selection')])
           access_layer.getSource().changed();
       }
       return true;
@@ -85,8 +85,8 @@ Template.roles.helpers({
 
     return [];
   },
-  selected: function () {
-    return getCurrentRole();
+  getSelected: function ( role ) {
+    return (app.getPath()[4] == role) ? 'selected':'';
   },
   selectedmodules: function() {
     var role = getCurrentRole();
@@ -105,12 +105,14 @@ Template.roles.helpers({
 })
 
 Template.roles.events({
+	'click .role' : function( e ) {
+		var id = $(e.currentTarget).attr("data");
+		app.setSubPath(4,id)
+	}
 })
 
 Template.roles.created = function() {
-
-  this.rolecursor = Customers.find({_id:app.getCustomer()});
-
+	this.rolecursor = Customers.find({_id:app.getCustomer()});
   this.rolecursor.observeChanges({
     added:function( id, fields ) {
       updateMap();
@@ -122,6 +124,9 @@ Template.roles.created = function() {
       updateMap();
     }
   });
+}
+
+Template.roles.rendered = function() {
 
   var olmap = app.getMap();
   access_layer = new ol.layer.Vector({
@@ -168,17 +173,12 @@ Template.roles.created = function() {
   access_layer.set('name','Rollen');
   app.addLayer( access_layer );
   app.pushTool( getSelectionTool() );
-}
-
-Template.roles.rendered = function() {
   updateMap();
 }
 
 Template.roles.destroyed = function() {
+	console.log("roles destroyed");
   app.removeLayer( access_layer );
-  if( this.rolecursor )
-    this.rolecursor.stop();
-
   app.popTool()
 }
 

@@ -1,5 +1,6 @@
-function addStats( reporttype, element ) {
+function updateStats( ctx ) {
 
+	reporttype = 3;
 	var period = getCurrentPeriod();
 
 	var items = [];
@@ -32,45 +33,60 @@ function addStats( reporttype, element ) {
 		if( 0 <= ac && ac < 6 )
 			ak[ac][id]++;
 	})
-	/*var data = google.visualization.arrayToDataTable([
-		['Gruppe'].concat(items),
-		['Gesamt'].concat(all),
-		['Männlich'].concat(male),
-		['Weiblich'].concat(female),
-		['AK 0'].concat(ak[0]),
-		['AK 1'].concat(ak[1]),
-		['AK 2'].concat(ak[2]),
-		['AK 3'].concat(ak[3]),
-		['AK 4'].concat(ak[4]),
-		['AK 5'].concat(ak[5])
-	]);
 
-	var options = {
-		title: '',
-		colors: barcolors,
-		dataOpacity:0.8,
-		animation: {duration:2000,easing: 'out'},
-		hAxis: {title: 'Gruppe', titleTextStyle: {color: 'black'}}
-	};
+	var _datasets = [];
 
-	var chart = new google.visualization.ColumnChart(document.getElementById(element));
-	chart.draw(data, options);*/
+	for( var i =0;i < items.length;i++ ) {
+		_datasets.push({
+			label: items[i],
+			backgroundColor: barcolors[i] ,
+			hoverBackgroundColor: barcolors[i] ,
+			data: [ all[i],male[i],female[i],ak[0][i], ak[1][i], ak[2][i], ak[3][i], ak[4][i], ak[5][i] ]
+		})
+	}
+
+	var myChart = new Chart(ctx, {
+     type: 'bar',
+     data: {
+         labels: ["Gesamt", "M", "W", "AK0", "AK1", "AK2", "AK3", "AK4", "AK5"],
+         datasets: _datasets
+     },
+     options: {
+         scales: {
+             yAxes: [{
+                 ticks: {
+                     beginAtZero:true,
+										 stepSize:1
+                 }
+             }]
+         },
+				 onClick : function( e , x ) {
+					 var p = $(e.currentTarget).offset();
+					 for( var i in x ) {
+						 if( x[i].inRange( e.x-p.left, e.y-p.top ) ) {
+							 console.log( e , x[i]._model.datasetLabel );
+						 }
+					 }
+					 console.log("click")
+				 }
+     }
+ });
 }
 Template.reportoverview.helpers( {
 	formatColor : function( color ) {
 		return Colors[ color ];
-	}
+	},
 	period : function() {
 		var period = getCurrentPeriod();
 		return period.start.getFullYear()+"/"+period.end.getFullYear();
-	}
+	},
 	area : function() {
-		return Areas.findOne({_id:Meteor.user().profile.currentSelectedArea });
-	}
+		return getCurrentArea();
+	},
 	reports : function() {
 		var period = getCurrentPeriod();
 		return Reports.find({ type:3/*, date :{ $gte: period.start, $lte: period.end }*/},{sort:sorting.db()});
-	}
+	},
 	sortitems : function() {
 		return sorting.get();
 	}
@@ -88,7 +104,10 @@ Template.reportoverview.destroyed = function() {
 
 
 Template.reportoverview.rendered = function() {
- alert("render");
+
+ var ctx = $("#chart");
+ updateStats(ctx);
+
 }
 
 

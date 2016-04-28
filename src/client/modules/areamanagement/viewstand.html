@@ -84,7 +84,7 @@
 		</div>
 		{{#if canEdit}}
 			<div style="padding-top:10px;">
-				<button id="edit-stand" class="btn btn-sm btn-default"><i class="fa fa-edit"></i>&nbsp;Bearbeiten</button>&nbsp;
+				<button id="edit-stand" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i>&nbsp;Bearbeiten</button>&nbsp;
 				<button id="delete-stand" class="btn btn-sm btn-danger"><span class="fa fa-trash"></span>&nbsp;Löschen</button>
 			</div>
 		{{/if}}
@@ -149,8 +149,8 @@
 									<h5>Reservierung bestätigen</h5>
 									<p>Wollen sie diesen Stand vom <b>{{formatDate allocationstate.start}} {{formatTime allocationstate.start}}</b> bis zum <b>{{formatDate allocationstate.end}} {{formatTime allocationstate.end}}</b> (für <b>{{timeSpan allocationstate.start allocationstate.end}}</b>) reservieren? Klicken Sie erneut auf ein freies Feld um die Zeitspanne zu verändern.</p>
 									<p style="text-align:right;">
-										<button id="abort-allocation" class="btn btn-sm btn-warning">Abbrechen</button>
-										<button id="commit-allocation" class="btn btn-sm btn-warning">Eintragen</button>
+										<button id="abort-allocation" class="btn btn-sm btn-default">Abbrechen</button>
+										<button id="commit-allocation" class="btn btn-sm btn-primary">Eintragen</button>
 									</p>
 								{{/if}}
 							{{else}}

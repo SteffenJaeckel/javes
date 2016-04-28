@@ -1,15 +1,14 @@
 <template name="arrangehuntereditor">
   <style>
-    #editpanel { position:relative;top:0px;left:0px;width:100%;height:100%; }
     #filterview { position:absolute;height:116px;top:0px;left:0px;right:0px; }
     #hunterlist { overflow-y:auto;position:absolute;bottom:42px;top:146px;left:0px;right:0px;border: 1px solid #ccc; border-radius: 6px;background-color: #fff; }
   </style>
-  <div id="editpanel">
+  <div id="editpanel" class="toolframe">
     <div id="filterview">
       <div class="input-group input-group-sm" style='margin-bottom:6px;'>
         <span class="input-group-addon"><i class="fa fa-check-square-o fa-fw"></i></span>
         <div class="input-group-btn">
-          <button type="button" class="btn btn-sm btn-default dropdown-toggle" style="left:0px;width: 234px;text-align:left;overflow:hidden;text-overflow:ellipsis;" data-toggle="dropdown" aria-expanded="false">
+          <button type="button" class="btn btn-sm btn-default dropdown-toggle" style="left:0px;width: 239px;text-align:left;overflow:hidden;text-overflow:ellipsis;" data-toggle="dropdown" aria-expanded="false">
             {{selectedhunterfilter}}&nbsp;<span class="caret" style="position: absolute;top: 50%;margin-top:-2px;right: 15px;"></span>
           </button>
           <ul class="dropdown-menu" role="menu">
@@ -36,7 +35,7 @@
       <div class="input-group input-group-sm">
         <span class="input-group-addon"><i class="fa fa-paw fa-fw"></i></span>
         <div class="input-group-btn">
-          <button type="button" class="btn btn-sm btn-default dropdown-toggle" style="left:0px;width: 234px;text-align:left;overflow:hidden;text-overflow:ellipsis;" data-toggle="dropdown" aria-expanded="false">
+          <button type="button" class="btn btn-sm btn-default dropdown-toggle" style="left:0px;width: 239px;text-align:left;overflow:hidden;text-overflow:ellipsis;" data-toggle="dropdown" aria-expanded="false">
             {{selecteddogfilter}}&nbsp;<span class="caret" style="position: absolute;top: 50%;margin-top:-2px;right: 15px;"></span>
           </button>
           <ul class="dropdown-menu" role="menu">

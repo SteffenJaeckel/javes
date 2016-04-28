@@ -2,13 +2,18 @@ var ONEDAY = 24*60*60*1000;
 var MONTHS = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
 
 Template.schedule.created = function (){
+	this.plans = Meteor.subscribe("huntingplans");
   var current = new Date();
   var year = current.getFullYear();
-  if( current.getMonth() < 4 ) {
+  if( current.getMonth() < 3 ) {
     year--;
   }
   Session.set('currentscheduleyear', year );
   Session.set('currentschedulemonth', current.getMonth() );
+}
+
+Template.schedule.destroyed = function() {
+	this.plans.stop();
 }
 
 Template.schedule.helpers( {
@@ -112,6 +117,6 @@ Template.schedule.events( {
   'click .newplan': function(e) {
     var date = new Date( parseInt($(e.currentTarget).attr('data')));
     console.log( date )
-    modals.push('newplan',{date: date, name:''});
+    modals.push('newplan',{date: date, name:'',hunters:10, dogs:5 });
   }
 })

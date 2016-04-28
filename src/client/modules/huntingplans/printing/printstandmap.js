@@ -44,7 +44,7 @@ function createMap( stand, source_circles, source_stands ) {
   layer.push( new ol.layer.Vector({
     source: source_stands ,
     style: function ( f,r ) {
-      return getStandStyle( f, 1, false);
+      return getStandStyle( f, 1, false, true );
     }
   }));
 

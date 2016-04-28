@@ -14,8 +14,12 @@ function getEditPointTool() {
 
 
 Template.roleeditor.created = function () {
-  var map = app.getMap();
 
+}
+
+Template.roleeditor.rendered = function() {
+
+	var map = app.getMap();
   app.getLayerByName("Rollen").getSource().forEachFeature( function( feature )  {
     feature.set("disabled",1);
   })
@@ -42,9 +46,6 @@ Template.roleeditor.destroyed = function () {
   app.getLayerByName("Rollen").getSource().forEachFeature( function( feature )  {
     feature.set("disabled",null);
   })
-}
-
-Template.roleeditor.rendered = function() {
 }
 
 Template.roleeditor.helpers({

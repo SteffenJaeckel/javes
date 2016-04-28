@@ -1,7 +1,90 @@
 <template name="areamanagement">
-	{{#if showdashboard}}
-		{{> dashboard}}
-	{{else}}
-		{{> areamanagement_frame}}
-	{{/if}}
+	<style>
+
+	</style>
+	<div id="datenauswahl">
+		<div id="innere-auswahl">
+			{{#if editor }}
+				{{> Template.dynamic template=editortemplate }}
+			{{else}}
+				<button class="btn btn-success btn-xs new">
+					<span><i class="fa fa-plus fa-fw"></i>&nbsp;Pirschbezirk erstellen</span>
+				</button>
+				{{#each areas}}
+					{{#if getSelected _id}}
+						<div class="selection-item active">
+							<div class="selection-header">
+								<div  class="dropdown" style="width:100%;">
+								  <div class="dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+								    <div style="position:absolute;left:0px;right:18px;">{{name}}</div>
+										<div style="position:absolute;width:18px;right:0px;"><i class="fa fa-caret-down fa-fw"></i></div>
+								  </div>
+								  <ul class="dropdown-menu selected" style="width:100%;" aria-labelledby="dropdownMenu1">
+								    <li><a id="edit-area" href="#">Umbenennen ...</a></li>
+								    <li><a id="adjust-area" href="#">Fläche anpassen ...</a></li>
+								    <li><a id="share-area" href="#">Dateifreigabe ...</a></li>
+								    <li role="separator" class="divider"></li>
+								    <li><a id="delete-area" href="#">Löschen</a></li>
+								  </ul>
+								</div>
+							</div>
+							<div class="open-selection"></div>
+							<div class="group">
+								<span class="label">Jagdliche Einrichtungen</span>
+								<div class="toolstack-item">
+									<button id="new-stand" class="btn btn-success btn-xs" style="width:100%">
+										<span><i class="fa fa-plus fa-fw"></i>&nbsp;Neue jagdliche Einrichtung</span>
+									</button>
+								</div>
+								<div class="toolstack-item">
+									<button id="area-overview" class="btn btn-default btn-xs" style="width:100%">
+										<span><i class="fa fa-table fa-fw"></i>&nbsp;Übersicht Einrichtungen</span>
+									</button>
+								</div>
+							</div>
+							<div class="close-selection"></div>
+							<div class="open-selection"></div>
+							<div class="group">
+								<span class="label">Berichte</span>
+								<div class="toolstack-item">
+									<button id="new-view-report" class="btn btn-success btn-xs" style="width:100%">
+										<span><i class="fa fa-plus fa-fw"></i>&nbsp;Neue Wildbeobachtung</span>
+									</button>
+								</div>
+								<div class="toolstack-item">
+									<button id="new-kill-report" class="btn btn-success btn-xs" style="width:100%">
+										<span><i class="fa fa-plus fa-fw"></i>&nbsp;Neuer Abschuss</span>
+									</button>
+								</div>
+								<div class="toolstack-item">
+									<button id="new-miss-report" class="btn btn-success btn-xs" style="width:100%">
+										<span><i class="fa fa-plus fa-fw"></i>&nbsp;Neue Nachsuche</span>
+									</button>
+								</div>
+								<div class="toolstack-item">
+									<button id="report-overview" class="btn btn-default btn-xs" style="width:100%">
+										<span><i class="fa fa-table fa-fw"></i>&nbsp;Übersicht Berichte</span>
+									</button>
+								</div>
+							</div>
+							<div class="close-selection"></div>
+						</div>
+					{{else}}
+						<div class="area selection-item" data="{{_id}}">
+							<div class="selection-header">
+								<div>{{name}}</div>
+							</div>
+						</div>
+					{{/if}}
+				{{/each}}
+			{{/if}}
+		</div>
+	</div>
+	<div id="datenbearbeitung">
+		{{#if mapEnabled}}
+			<div id="main">
+				{{> areamanagement_frame}}
+			</div>
+		{{/if}}
+	</div>
 </template>

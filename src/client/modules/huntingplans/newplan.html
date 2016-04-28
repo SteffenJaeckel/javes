@@ -25,7 +25,7 @@
         </div>
     {{/if}}
     <div class="form-group">
-      <label for="date" class="control-label"><i class="fa fa-calendar fa-fw"></i>&nbsp; Geben Sie hier <i>Datum</i> für die geplante Jagd an.</label>
+      <label for="date" class="control-label">Geben Sie hier Datum für die geplante Jagd an.</label>
   		<div class="input-group datetimepicker">
         <input id="date" class="form-control input-sm datetime" placeholder="Datum z.B. 29.2.2012" type="text" value="{{formatDateDay data.date}}"/>
         <div class="input-group-btn">
@@ -34,7 +34,7 @@
       </div>
     </div>
     <div class="form-group">
-			<label for="template" class="control-label"><i class="fa fa-folder fa-fw"></i>&nbsp; Soll der Plan Daten aus einem früheren Plan übernehmen.</label>
+			<label for="template" class="control-label">Soll der Plan Daten aus einem früheren Plan übernehmen ?</label>
 			<select class="form-control">
         {{#each templates}}
           <option value="{{id}}" selected="{{selected}}"> {{name}} </option>
@@ -43,12 +43,22 @@
     </div>
 
     <div class="form-group">
-			<label for="name" class="control-label"><i class="fa fa-folder fa-fw"></i>&nbsp; Geben Sie hier den <i>Namen</i> für den neuen Plan an.</label>
-			<input id="name" class="form-control input-sm text" data="name" placeholder="z.B. Heidegarten - Nordteil" type="text" value="{{data.name}}"/>
+			<label for="name" class="control-label">Geben Sie hier den Namen für den neuen Plan an.</label>
+			<input id="name" class="form-control input-sm text" data="name" placeholder="Name" type="text" value="{{data.name}}"/>
     </div>
 
+		<div class="form-group">
+			<label for="desc" class="control-label">Geben Sie einen Jagdleiter an.</label>
+			<input id="leader" class="form-control input-sm text typeahead" data="leader" placeholder="Jagdleiter" type="text" value="{{data.leader}}"/>
+		</div>
+
+		<div class="form-group">
+			<label for="desc" class="control-label">Geben Sie einen Stellverteter für den Jagdleiter an.</label>
+			<input id="leaderupdate" class="form-control input-sm text typeahead" data="leaderupdate" placeholder="Stellvertretender Jagdleiter" type="text" value="{{data.leaderupdate}}"/>
+		</div>
+
     <div class="form-group">
-			<label for="amount" class="control-label"><i class="fa fa-folder fa-fw"></i>&nbsp; Geben Sie hier die Kontingente für Schützen und Hunde an.</label>
+			<label for="amount" class="control-label">Geben Sie hier die Kontingente für Schützen und Hunde an.</label>
       <table width="100%" id="amount">
         <tr>
           <td>
@@ -56,7 +66,7 @@
              <label class="sr-only" for="estimated-hunters">Anzahl an Schützen</label>
              <div class="input-group">
                <div class="input-group-addon"><i class="fa fa-user fa-fw"></i>&nbsp;Schützen</div>
-               <input type="text" class="form-control number-input" id="estimated-hunters" placeholder="0">
+               <input type="text" class="form-control number-input" id="estimated-hunters" placeholder="0" value="{{data.hunters}}"/>
              </div>
             </div>
           </td>
@@ -66,7 +76,7 @@
               <label class="sr-only" for="estimated-dogs">Anzahl an Stöberhunden</label>
               <div class="input-group">
                 <div class="input-group-addon"><i class="fa fa-paw fa-fw"></i>&nbsp;Stöberhunde</div>
-                <input type="text" class="form-control number-input" id="estimated-dogs" placeholder="0">
+                <input type="text" class="form-control number-input" id="estimated-dogs" placeholder="0" value="{{data.dogs}}"/>
               </div>
             </div>
           </td>
@@ -75,7 +85,7 @@
     </div>
 
     <div class="form-group">
-      <label for="desc" class="control-label"><i class="fa fa-tags fa-fw"></i>&nbsp; Geben Sie hier optional eine <i>Beschreibung</i> für die Jagd an.</label>
+      <label for="desc" class="control-label">Geben Sie hier optional eine Beschreibung für die Jagd an.</label>
       <textarea id="desc" class="form-control input-sm text" data="desc" placeholder="Beschreibung">{{data.desc}}</textarea>
     </div>
   </div>
