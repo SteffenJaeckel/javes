@@ -8,14 +8,14 @@ function createMap( route, source_route, source_stands ) {
   layer.push( new ol.layer.Vector({
     source: source_route ,
     style: function ( f,r ) {
-      return getHuntingAreaStyle( f, 1, false );
+      return getHuntingAreaStyle( f, 1, false, true );
     }
   }));
 
   layer.push( new ol.layer.Vector({
     source: source_stands ,
     style: function ( f,r ) {
-      return getStandStyle( f, 1, false);
+      return getStandStyle( f, 1, false, true );
     }
   }));
 

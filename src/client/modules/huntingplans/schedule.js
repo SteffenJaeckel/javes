@@ -5,7 +5,7 @@ Template.schedule.created = function (){
 	this.plans = Meteor.subscribe("huntingplans");
   var current = new Date();
   var year = current.getFullYear();
-  if( current.getMonth() < 4 ) {
+  if( current.getMonth() < 3 ) {
     year--;
   }
   Session.set('currentscheduleyear', year );
@@ -112,11 +112,11 @@ Template.schedule.events( {
     }
   },
   'dblclick .plan': function (e ) {
-    app.setModulePath( ['huntingplanmap', $(e.currentTarget).attr('data') ] )
+    app.setModulePath( ['huntingplans', $(e.currentTarget).attr('data') ] )
   },
   'click .newplan': function(e) {
     var date = new Date( parseInt($(e.currentTarget).attr('data')));
     console.log( date )
-    modals.push('newplan',{date: date, name:''});
+    modals.push('newplan',{date: date, name:'',hunters:10, dogs:5 });
   }
 })

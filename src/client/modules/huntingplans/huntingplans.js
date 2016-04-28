@@ -114,55 +114,15 @@ function getSelectionTool() {
   return select;
 }
 
-Template.huntingplanmap.rendered = function() {
-  Session.set('error',null);
-  if( this.stands ) {
-    this.stands.stop();
-  }
-  DataChangeHandler.add("mainmap", function ( path ) {
-    Session.set('gis-selection',null);
-    console.log("call add handler mainmap", path );
-    if( dontupdate == false ) {
-      if( path.length < 4 )
-        updateMapData();
-
-      var drive = getCurrentDrive();
-      if( drive && drive.shape ) {
-        if( path.length == 4 ) {
-          if( drive && drive.routes[ path[3] ] ) {
-            var geo = new ol.format.GeoJSON().readGeometry( drive.routes[ path[3] ].path , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
-            Session.set('gis-selection',path[3]);
-          }
-        } else {
-          var geo = new ol.format.GeoJSON().readGeometry( drive.shape , { dataProjection:'WGS84',featureProjection: mapconfig.projection.name });
-        }
-        var map = app.getMap();
-        if( map && geo) {
-          var view = app.getMap().getView();
-          var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
-          var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
-          map.beforeRender(pan, zoom)
-          view.fit( geo, map.getSize() );
-        }
-      }
-    }
-  })
-  for( var layer in maplayer ) {
-    app.addLayer( maplayer[layer] );
-  }
-  app.pushTool( getSelectionTool() );
-  updateMapData();
+Template.huntingplans.created = function() {
+	this.plans = Meteor.subscribe("huntingplans");
+	this.participants = Meteor.subscribe("participants");
+	Session.set('error',null);
 }
 
-Template.huntingplanmap.destroyed = function() {
-  if( this.stands ) {
-    this.stands.stop();
-  }
-  DataChangeHandler.remove("mainmap")
-  for( var layer in maplayer ) {
-    app.removeLayer( maplayer[layer] );
-  }
-  app.popTool();
+Template.huntingplans.destroyed = function() {
+	this.participants.stop();
+	this.plans.stop();
 }
 
 function updateStands() {
@@ -325,9 +285,9 @@ updateMapData = function () {
     var drive  = getCurrentDriveIndex();
 
     if( plan == null ) {
-      setTimeout( function( ) {
+      /*setTimeout( function( ) {
         updateMapData();
-      }, 2000)
+      }, 2000)*/
     } else {
       if( plan.drives.length < 1 || plan.drives[drive].shape == null ) {
         editor.push('huntingareaeditor',{ color:4 })
@@ -359,7 +319,7 @@ updateMapData = function () {
               }
             }
             var map = app.getMap();
-            if( map && geo) {
+            if( map && geo && map.getTarget() ) {
               var view = app.getMap().getView();
               var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
               var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
@@ -401,13 +361,34 @@ updateMapData = function () {
 }
 hoverstand = null;
 
-Template.huntingplanmap.helpers({
+Template.huntingplans.helpers({
+	mapEnabled: function() {
+		return (getCurrentDrive() !=null)
+	},
+	plans: function() {
+		return Plans.find({});
+	},
+	getSelected: function( _id ) {
+		return (getCurrentPlan() && _id == getCurrentPlan()._id) ? 'selected' : '';
+	},
   plan: function() {
     return getCurrentPlan();
   },
   route: function() {
     return getCurrentRoute();
   },
+	getSelectedDrive : function(index) {
+		return ("drive-"+index) == app.getPath()[5] ? 'selected':'';
+	},
+	routes: function() {
+		return _.keys( getCurrentDrive().routes );
+	},
+	getSelectedRoute : function(id) {
+		return getCurrentRouteId() == id ? 'selected':'';
+	},
+	routeInfo : function( id ) {
+		return getCurrentDrive().routes[id].group
+	},
   can_add_drives : function() {
     var plan = getCurrentPlan(true);
     if( plan && plan.drives.length < 4 ) {
@@ -615,8 +596,25 @@ Template.huntingplanmap.helpers({
   }
 })
 
-Template.huntingplanmap.events({
+Template.huntingplans.events({
 
+	'click .plan': function( e ) {
+		app.setSubPath(4, $(e.currentTarget).attr('data') )
+		//updateMapData();
+	},
+	'click .drive': function( e ) {
+		console.log("test");
+		app.setSubPath(5, 'drive-'+$(e.currentTarget).attr('data') );
+		updateMapData();
+	},
+	'click .route': function( e ) {
+		var path = app.getModulPath();
+		path[3] = $(e.currentTarget).attr('data');
+		app.setModulePath(path);
+		Session.set('gis-selection', path[3] );
+		source_routes.changed();
+		source_stands.changed();
+	},
   'click .standlink' : function ( e ) {
     var id = $(e.currentTarget).attr('data');
     gotoStand(id);
@@ -657,7 +655,7 @@ Template.huntingplanmap.events({
   'click #edit-shape': function( e ) {
     editor.push('huntingareaeditor', {color:4, width: 2} );
   },
-  'click #add-drive': function( e ) {
+  'click #new-drive': function( e ) {
     Meteor.call('addHuntingPlanDrive', getCurrentPlanId() , function ( e, r ) {
       if( e == null ) {
         app.setModulePath(['huntingplans', getCurrentPlanId(), 'drive-'+r]);
@@ -697,3 +695,27 @@ Template.userdragitem.helpers({
     return null;
   }
 })
+
+Template.huntingplankarte.rendered = function() {
+	if( this.stands ) {
+    this.stands.stop();
+  }
+
+	var olmap = app.getMap();
+
+  for( var layer in maplayer ) {
+    app.addLayer( maplayer[layer] );
+  }
+  app.pushTool( getSelectionTool() );
+  updateMapData();
+}
+
+Template.huntingplankarte.destroyed = function() {
+	if( this.stands ) {
+		this.stands.stop();
+	}
+	for( var layer in maplayer ) {
+		app.removeLayer( maplayer[layer] );
+	}
+	app.popTool();
+}

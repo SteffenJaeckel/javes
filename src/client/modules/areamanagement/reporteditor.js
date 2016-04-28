@@ -60,12 +60,24 @@ Template.reporteditor.rendered = function() {
       format: 'D.MM.YYYY',
       locale: 'de',
       maxDate: new Date(),
-      viewMode: 'days'
+      viewMode: 'days',
+			icons: {
+          time: "fa fa-clock-o",
+          date: "fa fa-calendar",
+          previous: "fa fa-arrow-left",
+          next: "fa fa-arrow-right"
+      }
   });
 
   $('.datetime.time').datetimepicker({
       locale: 'de',
       format: 'HH:mm',
+			icons: {
+          time: "fa fa-clock-o",
+          date: "fa fa-calendar",
+          up: "fa fa-arrow-up",
+          down: "fa fa-arrow-down"
+      }
   });
 }
 

@@ -10,7 +10,7 @@ window.mods['huntingplans'] = function ()  {
 
 	if( checkPermission("huntingplans.viewPlans") ) {
 		modul.items.push({name:"Kalender",id:'schedule'});
-		modul.items.push({name:"Einzelplanung",id:'huntingplanmap'});
+		modul.items.push({name:"Einzelplanung",id:'huntingplans'});
 	}
 
 	return modul;
@@ -74,6 +74,14 @@ getCurrentDriveIndex = function () {
 				return 0;
 			}
 		}
+	}
+	return 0;
+}
+
+getCurrentRouteId = function() {
+	var path = app.getModulPath();
+	if( path.length >= 4 ) {
+			return path[3];
 	}
 	return 0;
 }

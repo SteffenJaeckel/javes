@@ -228,8 +228,8 @@ Template.participants.helpers({
 				date: plan.date,
         offset:offset,
         width:width,
-        userstates: { invited:0,confirmed:userinvited},
-        dogstates: {invited:0,confirmed:dogsinvited}
+        userstates: { invited:plan.hunters,confirmed:userinvited},
+        dogstates: {invited:plan.dogs,confirmed:dogsinvited}
       };
       offset += width;
       plans.push(cur);
@@ -365,7 +365,7 @@ Template.participants.events({
     modals.push('edithunter', data );
   },
   'dblclick .plan': function (e ) {
-    app.setModulePath( ['huntingplanmap', $(e.currentTarget).attr('data-plan') ] )
+    app.setModulePath( ['huntingplans', $(e.currentTarget).attr('data-plan') ] )
   },
   'click .select-tool':function(e) {
     Session.set('selected-tool', $(e.currentTarget).attr('data') )

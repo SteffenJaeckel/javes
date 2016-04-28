@@ -180,7 +180,7 @@ function updateMap() {
     var area = getCurrentArea();
 		huntingarea_layer.getSource().clear();
     if( area ) {
-      var cursor = Areas.find( {_id:area._id, geometry: {$exists:true} } );
+      var cursor = Areas.find( { _id:area._id, geometry: {$exists:true} } );
       cursor.observeChanges({
         added:function( id, fields ) {
           var geo = new ol.format.GeoJSON().readGeometry( fields.geometry , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
@@ -218,6 +218,11 @@ function updateMap() {
 }
 
 fitArea = function( area ) {
+
+	Session.set('gis-selection',null)
+	Session.set('standdata',null)
+	Session.set('reportdata',null)
+
   var map = app.getMap();
 
   if( this.allocations ) {
@@ -244,7 +249,6 @@ fitArea = function( area ) {
 }
 
 Template.areamanagement_frame.created = function() {
-  Session.set('selected-routestands',null)
 }
 
 Template.areamanagement_frame.rendered = function() {

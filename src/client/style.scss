@@ -1,17 +1,17 @@
 $text_normal: #333;
 $text_highlite: #337AB7;
 $unselected_bg: #bbb;
-$unselected_fg: #888;
+$unselected_fg: #666;
 $unselected_bd: #aaa;
-$selected_bg:#337AB8;
-$selected_fg:#fff;
-$selected_bd: #337AB8;
+$selected_bg:#fff;/*#337AB8;*/
+$selected_fg:#337AB8;/*#fff;*/
+$selected_bd: #66afe9;
 $selection_light:#337AB8;
 $info_background: #dddddd;
 $info_border: darker( $info_background, 50%);
 
 $topframe : 56px;
-$leftframe : 240px;
+$leftframe : 300px;
 
 /* Farben */
 $window_background: #eee;
@@ -160,6 +160,11 @@ div.logo {
     border-right: 1px solid $selection_light;
 }
 
+#innere-auswahl .btn {
+	width:100%;
+	text-align:left;
+}
+
 #innere-toolbox {
 		position:relative;
 		width:100%;
@@ -179,6 +184,10 @@ div.logo {
 
 .groupbox .form-group:last-child {
   margin-bottom: 0px;
+}
+
+div.modal-body {
+	background-color: #eee;
 }
 
 .groupbox {
@@ -213,6 +222,10 @@ div.logo {
   padding-top: 6px
 }
 
+.infoblock:last-child {
+	margin-bottom:0px;
+}
+
 .commentbox {
   background-color: $info_background;
   border: 2px solid $info_border;
@@ -244,41 +257,100 @@ div.logo {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	background-color: $unselected_bg;
-	border: 2px solid $unselected_bd;
+	/*border: 2px solid $unselected_bd;*/
 	color: $unselected_fg;
 	text-align: left;
 	border-radius: 4px;
 	margin-top:6px;
+	overflow: visible;
 }
 
-.selection-item.selected {
-	background-color: $selected_bg;
-	border: 2px solid $selected_bd;
+.selection-item.active {
+	border: 0px;
+	background-color: $window_background;
+	/*border: 2px solid $selected_bd;*/
 	color: $selected_fg;
 }
 
-.selection-item .selection-header {
-	background-color:$unselected_bg;
+.selection-item > .selection-header {
+	border-radius: 4px;
+	padding: 4px;
+	outline: 0;
 	color:$unselected_fg;
-	padding: 10px;
+	border: 2px solid $unselected_bd;
+	background-color:$unselected_bg;
 }
 
-.selection-item.selected .selection-header {
-	background-color:$selected_bg;
+.selection-item > .selection-header:hover {
 	color:$selected_fg;
-	padding: 10px;
+	background-color:$selected_bg;
+	border: 2px solid $selected_bd;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 12px rgba(102, 175, 233, 0.6);
+	box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 12px rgba(102, 175, 233, 0.6);
 }
 
-.selection-item .open-selection {
+.selection-item.active > .selection-header {
+	color:$selected_fg;
+	background-color:$selected_bg;
+	border: 2px solid $selected_bd;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 12px rgba(102, 175, 233, 0.6);
+	box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 12px rgba(102, 175, 233, 0.6);
+}
+
+.selection-item .selection-header .dropdown {
+	top: -12px;
+}
+
+.selection-item > .open-selection {
 	position: relative;
-	background-color:#fff;
+    height: 14px;
+    width: 100%;
+    background-color: #eee;
+    color: #000;
+    top: 12px;
+    border-top: 2px solid $selected_fg;
+    border-left: 2px solid $selected_fg;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+.selection-item > .close-selection {
+	position: relative;
+	height:10px;
+	width:100%;
+	background-color:$window_background;
 	color:#000;
-	border-top: 1px solid #333;
+	top:0px;
+	border-left: 2px solid $selected_fg;
+	border-bottom: 2px solid $selected_fg;
 	border-bottom-left-radius: 4px;
 	border-bottom-right-radius: 4px;
-	border-top-left-radius: 0px;
-	border-top-right-radius: 0px;
-	padding: 10px;
+}
+
+.selection-item > .group {
+  background-color: $window_background;
+  position: relative;
+  width: 100%;
+  margin-top: 12px;
+	padding-left: 6px;
+	border-left: 2px solid $selected_fg;
+}
+
+.selection-item > .group > .form-group:last-child {
+	margin-bottom: 0px;
+}
+
+.selection-item > .group > .label {
+  position: absolute;
+  top: -18px;
+  left: 5px;
+  background-color: $window_background;
+  padding: 6px;
+  padding-bottom: 0px;
+  padding-top: 0px;
+  color: $selection_light;
+  font-weight: bold;
+	font-size:8pt;
 }
 
 .selection-item .selection-header:hover {
@@ -287,7 +359,7 @@ div.logo {
 }
 
 .toolstack-item {
-	margin-top:2px;
+	margin-top:6px;
 }
 
 .toolstack-item .btn {

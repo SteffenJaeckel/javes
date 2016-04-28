@@ -1,33 +1,72 @@
 <!-- Sucht nach einem exsitierenden user, wenn keiner gefunden wurde wird das template "creatuser" erzeugt. -->
 <template name="adduser">
+	<style>
+		label {
+			margin-top:4px;
+		}
+	</style>
   <div class="modal-header">
     <button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h4 class="modal-title">{{title}}</h4>
   </div>
   <div class="modal-body">
-    <div class="form-group">
-      <label for="email" class="control-label">Geben Sie hier die Email Adresse des neuen Benutzers an.</label>
-      <input id="email" type="email" class="form-control" value="">
-    </div>
-    <div class="form-group" >
-      <label for="names" class="control-label">Geben Sie hier Vor- und Nachnamen des neuen Benutzers an.</label>
-      <div id="names" class="input-group" style="width:100%;">
-        <input id="firstname" type="text" class="form-control" value="" style="width:40%;"/>
-        <input id="surname" type="text" class="form-control" value="" style="width:60%;"/>
-      </div>
-    </div>
-    <div class="form-group" >
-      <label for="role" class="control-label">Geben Sie hier den Typ des neuen Benutzers an.</label>
-      <select id="role" class="form-control">
-        {{#each roles}}
-          <option value="{{this}}">{{this}}</option>
-        {{/each}}
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="groups" class="control-label">Geben Sie hier optional Namen für Gruppen an, in den sich der Benutzer befinden soll. Wenn der Benutzer in mehreren Gruppen sein soll, trennen sie die Gruppen durch ein Komma.</label>
-      <input id="groups" type="text" class="form-control" value=""/>
-    </div>
+		<div class="groupbox">
+			<span class="groupbox-label">Account</span>
+			<div class="row">
+			  <div class="col-md-4">
+		      <label for="role" class="control-label">Nutzergruppe</label>
+		      <select id="role" class="form-control">
+		        {{#each roles}}
+		          <option value="{{this}}">{{this}}</option>
+		        {{/each}}
+		      </select>
+				</div>
+			  <div class="col-md-8">
+		      <label for="email" class="control-label">Email Adresse (ohne E Mail keine anmeldung möglich)</label>
+		      <input id="email" type="email" class="form-control" value="">
+				</div>
+	    </div>
+		</div>
+		<div class="groupbox">
+			<span class="groupbox-label">Adresse</span>
+			<div class="row">
+			  <div class="col-md-5">
+					<label for="firstname" class="control-label">Vorname</label>
+					<input id="firstname" type="text" class="form-control" value=""/>
+				</div>
+			  <div class="col-md-7">
+					<label for="surname" class="control-label">Nachname</label>
+					<input id="surname" type="text" class="form-control" value=""/>
+				</div>
+			</div>
+			<div class="row">
+			  <div class="col-md-10">
+					<label for="street" class="control-label">Straße</label>
+					<input id="street" type="text" class="form-control" value=""/>
+				</div>
+			  <div class="col-md-2">
+					<label for="nummer" class="control-label">Hausnummer</label>
+					<input id="nummer" type="text" class="form-control" value=""/>
+				</div>
+			</div>
+			<div class="row">
+			  <div class="col-md-9">
+					<label for="city" class="control-label">Stadt</label>
+					<input id="city" type="text" class="form-control" value=""/>
+				</div>
+			  <div class="col-md-3">
+					<label for="zip" class="control-label">Postleitzahl</label>
+					<input id="zip" type="text" class="form-control" value=""/>
+				</div>
+			</div>
+		</div>
+		<div class="groupbox">
+			<span class="groupbox-label">Gruppen</span>
+	    <div class="form-group">
+	      <label for="groups" class="control-label">Geben Sie hier optional Namen für Gruppen an, in den sich der Benutzer befinden soll. Wenn der Benutzer in mehreren Gruppen sein soll, trennen sie die Gruppen durch ein Komma.</label>
+	      <input id="groups" type="text" class="form-control" value=""/>
+	    </div>
+		</div>
   </div>
   <div class="modal-footer">
     <button id="abort" class="btn btn-default"><i class="fa fa-remove fa-fw"></i>&nbsp;Abbrechen</button>

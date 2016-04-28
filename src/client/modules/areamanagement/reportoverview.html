@@ -10,8 +10,7 @@
 	</div>
 	<div class="modal-body">
 		<h4>Statistik</h4>
-		<div id="kill_stats" style="position:relatvie; width:100%; float:left;">
-		</div>
+		<canvas id="chart" width="400" height="150" style="width:100%; background-color: #fff; border-radius: 6px;"></canvas>
 		<h4>Abschussberichte</h4>
 		<div><button id="save-execel" class="btn btn-primary" ><span class="fa fa-cloud-download"></span>&nbsp;&nbsp;Diese Liste als Excel-Datei Speichern</button></div>
 		<h6>Sortierung</h6>
@@ -20,7 +19,7 @@
 				{{> sortitem}}
 			{{/each}}
 		</div>
-		<table id="dataset" class="table table-hover">
+		<table id="dataset" class="table table-hover" style="width:100%; background-color: #fff; border-radius: 6px;">
 			<thead>
 				<tr>
 					<td class="no-export"></td>

@@ -14,18 +14,8 @@ Template.areamanagement.destroyed = function () {
 }
 
 Template.areamanagement.helpers({
-	showdashboard: function () {
-		return app.getModulPath()[1] == "dashboard";
-	},
-	selectedAreaName: function() {
-		var area = Areas.findOne( { _id:Meteor.user().profile.currentSelectedArea } );
-		if( area ) {
-			return area.name;
-		}
-		return "Revier auswählen";
-	},
 	areas: function () {
-		return Areas.find();
+		return Areas.find({},{ sort : { 'name':1 } });
 	},
 	getSelected: function( id ) {
 		return ( id == app.getPath()[4] ) ? 'selected':'';
@@ -42,7 +32,52 @@ Template.areamanagement.events({
 	'click .area' : function(e) {
 		app.setSubPath(4,$(e.currentTarget).attr('data'))
 		fitArea( getCurrentArea() )
-	}
+	},
+	'click #area-share' : function() {
+    Session.set('modal', { shareinfo: true } );
+  },
+  'click #adjust-area' : function() {
+    editor.push("areaeditor",{},"");
+  },
+  'click #edit-area' : function() {
+    var current = getCurrentArea();
+    modals.push("editarea",current,"");
+  },
+  'click #area-overview' : function() {
+    modals.push("areaoverview",{});
+  },
+  'click #delete-area' : function() {
+    if( confirm("Wollen sie wirklich den Pirschbezirk löschen ?" ) ) {
+      Meteor.call('deleteArea', getCurrentArea()._id , function( e ) {
+        if( e ) {
+          console.log( e );
+        }
+      })
+    }
+  },
+  'click #report-overview' : function() {
+    modals.push("reportoverview",{});
+  },
+  'click #new-stand' : function() {
+		Session.set('gis-selection',null);
+    Session.set("standdata", { type:1, desc:"", name: "1" });
+    editor.push("standeditor",{} );
+  },
+  'click #new-kill-report' : function() {
+		Session.set('gis-selection',null);
+    Session.set("reportdata", { type:3, desc:"", gametype:1, hunttype:1, gender:0, ageclass:0, badgeid: 0, date: new Date() });
+    editor.push("reporteditor",{} );
+  },
+  'click #new-view-report' : function() {
+		Session.set('gis-selection',null);
+    Session.set("reportdata", { type:1, desc:"", gametype:1, date: new Date() });
+    editor.push("reporteditor",{} );
+  },
+  'click #new-miss-report' : function() {
+		Session.set('gis-selection',null);
+    Session.set("reportdata", { type:2, desc:"", gametype:1, date: new Date() });
+    editor.push("reporteditor",{} );
+  }
 })
 /*
 Template.areamanagement.events({

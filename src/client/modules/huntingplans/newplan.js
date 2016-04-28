@@ -4,7 +4,17 @@ Template.newplan.created = function() {
 }
 
 Template.newplan.rendered = function() {
-  this.$('.datetimepicker').datetimepicker({locale: 'de', format:"dddd, D. M. YYYY"} );
+	$('.datetime').datetimepicker({
+			locale: 'de',
+			format:"dddd, D. M. YYYY",
+			viewMode: 'days',
+			icons: {
+					time: "fa fa-clock-o",
+					date: "fa fa-calendar",
+					previous: "fa fa-arrow-left",
+					next: "fa fa-arrow-right"
+			}
+	});
 }
 
 Template.newplan.events({

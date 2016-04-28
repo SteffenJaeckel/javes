@@ -19,7 +19,7 @@ function flatPoints( data, flat ) {
   return flat;
 }
 
-function getColor( feature ) {
+function getColor( feature , print ) {
 
   var disabled = feature.get('disabled');
 
@@ -28,6 +28,17 @@ function getColor( feature ) {
     color = [128,128,128, 1 ];
     return {'img':img,'color':color,'opacity':opacity};
   }
+
+	if( print ) {
+		img = 'img/disabled/'+(parseInt(feature.get('type'))+3)+'00.png'
+    color = [128,128,128, 1 ];
+		if( feature.get('color') != null ) {
+			var c = parseInt(feature.get('color'));
+			img = 'img/marker/'+(parseInt(feature.get('type'))+3)+'0'+c+'.png'
+			color = ol.color.asArray( Colors[ c ] );
+		}
+    return {'img':img,'color':color,'opacity':1.0};
+	}
 
   var selected_route = Session.get('gis-selection');
   var route = feature.get('route');
@@ -45,7 +56,7 @@ function getColor( feature ) {
     }
   }
 
-  if( selected_route && (route != selected_route) && (feature.getId() != '0') ) {
+  if( selected_route && (route != selected_route) && (feature.getId() != '0' ) ) {
     opacity = 0.6;
   }
 
@@ -182,9 +193,9 @@ getDogStandStyle = function( feature, res ) {
   return styles;
 }
 
-getStandStyle = function( feature , res, selected ) {
+getStandStyle = function( feature , res, selected, print  ) {
 
-  var item = getColor( feature )
+  var item = getColor( feature , print )
 
   var styles = [];
 
@@ -311,7 +322,7 @@ getStandStyle = function( feature , res, selected ) {
   return styles;
 }
 
-getHuntingAreaStyle = function( feature , res, selected ) {
+getHuntingAreaStyle = function( feature , res, selected, print ) {
 
   var route = Session.get('gis-selection');
   var color;
@@ -333,7 +344,7 @@ getHuntingAreaStyle = function( feature , res, selected ) {
     width = Math.max( 4-res, 1 );
   }
 
-  if( route && route != feature.getId() && feature.getGeometry().getType() != 'Polygon') {
+  if( route && route != feature.getId() && feature.getGeometry().getType() != 'Polygon' && print == null ) {
     color[3] = 0.3;
   } else {
     color[3] = 1;
