@@ -8,7 +8,7 @@ var sharetypes = ["Verwalter","Vollzugriff","Lesezugriff"];
 
 Template.shareuser.events({
 	'click .set-owner':function (e) {
-		if( confirm('Wollen Sie wirklich die Besitzrechte übertragen? Es kann immer nur einen Besitzer für das Revier geben.') ) {
+		if( confirm('Wollen Sie wirklich die Verwalterrechte übertragen? Es kann immer nur einen Verwalter pro Pirschbezirk geben.') ) {
 			Meteor.call('updateShareWith',getCurrentArea()._id, $(e.currentTarget).attr('data'), 0, function(e) {
 				console.log( e );
 				Deps.flush();
@@ -99,8 +99,6 @@ Template.shareinfo.events({
 	},
 	'click #send-invite-email': function (e) {
 		var addr = $(e.currentTarget).attr('data').toLowerCase()
-		var name = $('#invite-name').val();
-		var surname = $('#invite-surname').val();
 		var area = getCurrentArea();
 		if( name && name != '' && surname && surname != '' && area ) {
 			Meteor.call('sendInvitation',  area._id , addr, name, surname, function(e) {

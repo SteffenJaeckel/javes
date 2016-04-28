@@ -10,67 +10,99 @@
     <h4 class="modal-title">{{title}}</h4>
   </div>
   <div class="modal-body">
+		{{#if error}}
+			<div class="alert alert-danger" style="position:relative;"> <b>Fehler</b>	{{error}}	</div>
+		{{/if}}
 		<div class="groupbox">
 			<span class="groupbox-label">Account</span>
 			<div class="row">
 			  <div class="col-md-4">
 		      <label for="role" class="control-label">Nutzergruppe</label>
-		      <select id="role" class="form-control">
+		      <select id="role" class="form-control input-sm">
 		        {{#each roles}}
 		          <option value="{{this}}">{{this}}</option>
 		        {{/each}}
 		      </select>
 				</div>
 			  <div class="col-md-8">
-		      <label for="email" class="control-label">Email Adresse (ohne E Mail keine anmeldung möglich)</label>
-		      <input id="email" type="email" class="form-control" value="">
+		      <label for="email" class="control-label">E-Mail Adresse (ohne E-Mail keine Anmeldung möglich)</label>
+		      <input id="email" type="email" class="form-control input-sm" value="">
+				</div>
+	    </div>
+		</div>
+		<div class="groupbox">
+			<span class="groupbox-label">Telefon</span>
+			<div class="row">
+				<div class="col-md-6">
+		      <label for="phone" class="control-label">Festnetz</label>
+		      <input id="phone" type="email" class="form-control input-sm" value="">
+				</div>
+			  <div class="col-md-6">
+		      <label for="cellphone" class="control-label">Mobil</label>
+		      <input id="cellphone" type="email" class="form-control input-sm" value="">
 				</div>
 	    </div>
 		</div>
 		<div class="groupbox">
 			<span class="groupbox-label">Adresse</span>
 			<div class="row">
-			  <div class="col-md-5">
-					<label for="firstname" class="control-label">Vorname</label>
-					<input id="firstname" type="text" class="form-control" value=""/>
+				<div class="col-md-2">
+					<label for="gender" class="control-label">Anrede</label>
+					<select id="gender" class="form-control input-sm">
+		          <option value="0">Herr</option>
+							<option value="1">Frau</option>
+		      </select>
 				</div>
-			  <div class="col-md-7">
+			  <div class="col-md-4">
+					<label for="firstname" class="control-label">Vorname</label>
+					<input id="firstname" type="text" class="form-control input-sm" value=""/>
+				</div>
+			  <div class="col-md-6">
 					<label for="surname" class="control-label">Nachname</label>
-					<input id="surname" type="text" class="form-control" value=""/>
+					<input id="surname" type="text" class="form-control input-sm" value=""/>
 				</div>
 			</div>
 			<div class="row">
 			  <div class="col-md-10">
 					<label for="street" class="control-label">Straße</label>
-					<input id="street" type="text" class="form-control" value=""/>
+					<input id="street" type="text" class="form-control input-sm" value=""/>
 				</div>
 			  <div class="col-md-2">
 					<label for="nummer" class="control-label">Hausnummer</label>
-					<input id="nummer" type="text" class="form-control" value=""/>
+					<input id="nummer" type="text" class="form-control input-sm" value=""/>
 				</div>
 			</div>
 			<div class="row">
+				<div class="col-md-3">
+					<label for="zip" class="control-label">Postleitzahl</label>
+					<input id="zip" type="text" class="form-control input-sm" value=""/>
+				</div>
 			  <div class="col-md-9">
 					<label for="city" class="control-label">Stadt</label>
-					<input id="city" type="text" class="form-control" value=""/>
-				</div>
-			  <div class="col-md-3">
-					<label for="zip" class="control-label">Postleitzahl</label>
-					<input id="zip" type="text" class="form-control" value=""/>
+					<input id="city" type="text" class="form-control input-sm" value=""/>
 				</div>
 			</div>
+		</div>
+		<div class="groupbox">
+			<span class="groupbox-label">Hunde</span>
+	    <div class="form-group">
+	      <label for="groups" class="control-label">Geben Sie hier optional Namen für Gruppen an, in den sich der Benutzer befinden soll. Wenn der Benutzer in mehreren Gruppen sein soll, trennen sie die Gruppen durch ein Komma.</label>
+	      <input id="groups" type="text" class="form-control input-sm" value=""/>
+	    </div>
 		</div>
 		<div class="groupbox">
 			<span class="groupbox-label">Gruppen</span>
 	    <div class="form-group">
 	      <label for="groups" class="control-label">Geben Sie hier optional Namen für Gruppen an, in den sich der Benutzer befinden soll. Wenn der Benutzer in mehreren Gruppen sein soll, trennen sie die Gruppen durch ein Komma.</label>
-	      <input id="groups" type="text" class="form-control" value=""/>
+	      <input id="groups" type="text" class="form-control input-sm" value=""/>
 	    </div>
 		</div>
   </div>
   <div class="modal-footer">
     <button id="abort" class="btn btn-default"><i class="fa fa-remove fa-fw"></i>&nbsp;Abbrechen</button>
-    <button id="continue" data-loading-text="<i class='fa fa-spinner fa-pulse'></i> Suche ..." class="btn btn-primary"><i class="fa fa-arrow-right fa-fw"></i>&nbsp;Weiter</button>  </div>
+		<button id="save" class="btn btn-primary"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp;Speichern</button>
+    <button id="save-exit" class="btn btn-primary"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp;Speichern &amp; Schliessen</button>
+	</div>
 </template>
 
 <template name="createuser">

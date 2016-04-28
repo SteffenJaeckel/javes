@@ -1,13 +1,13 @@
 <template name="shareinfo">
 	<div class="modal-header">
 		<button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h4 class="modal-title">Revier teilen</h4>
+		<h4 class="modal-title">Pirschbezirk Freigaben</h4>
 	</div>
 	<div class="modal-body">
 		<h4>Mein Status</h4>
 		<div class="well well-sm">
 			<div class="userimage" style="position:relative;width:64px;height:64px;background-color:#fff;float:left;margin-right:12px;background-image:url('/img/avatars/{{avatar}}')"></div>
-			<h5>{{profile.name}} {{profile.surname}}</h5>
+			<h5>{{profile.firstname}} {{profile.surname}}</h5>
 			<button class="btn btn-sm btn-default disabled" type="button">{{sharetype}}</button>
 			<div style="clear:both;"></div>
 		</div>
@@ -24,48 +24,23 @@
 			{{#if error}}
 				{{#if error.usernotfound}}
 				<div class="alert alert-warning">
-					<b>Achtung !</b> Der Benutzer konnte nicht gefunden werden. Möchten Sie an '{{error.email}}' eine Einladung schicken? Überprüfen Sie gegebenfalls noch einmal die Adresse.<br/>
+					<b>Achtung !</b> Der Benutzer konnte nicht gefunden werden. Möchten Sie einen neuen Benutzer erstellen? Überprüfen Sie gegebenenfalls noch einmal die Adresse.<br/>
 					<hr/>
-					<div class="form-group">
-						<label for="invite-name" class="control-label">Vorname</label>
-						<input id="invite-name" class="form-control" placeholder="Vorname" type="text" style="width:100%"/>
-					</div>
-					<div class="form-group">
-						<label for="invite-surname" class="control-label">Nachname</label>
-						<input id="invite-surname" class="form-control" placeholder="Nachname" type="text" style="width:100%"/>
-					</div>
 					<div align="right">
-						<button id="abort-send-invite-email" class="btn btn-sm btn-warning">Abbrechen</button>
-						<button id="send-invite-email" class="btn btn-sm btn-warning" data="{{error.email}}">Einladung schicken</button>
-					</div>
-				</div>
-				{{/if}}
-				{{#if error.invitefail}}
-				<div class="alert alert-danger">
-					<b>Fehler !</b> Sie müssen die Felder Vorname und Nachname ausfüllen.<br/>
-					<hr/>
-					<div class="form-group">
-						<label for="invite-name" class="control-label">Vorname</label>
-						<input id="invite-name" class="form-control" placeholder="Vorname" type="text" style="width:100%" value="{{name}}"/>
-					</div>
-					<div class="form-group">
-						<label for="invite-surname" class="control-label">Nachname</label>
-						<input id="invite-surname" class="form-control" placeholder="Nachname" type="text" style="width:100%" value="{{surname}}"/>
-					</div>
-					<div align="right">
-						<button id="send-invite-email" class="btn btn-sm btn-warning" data="{{error.email}}">Email schicken</button>
+						<button id="abort-send-invite-email" class="btn btn-sm btn-default">Abbrechen</button>
+						<button id="send-invite-email" class="btn btn-sm btn-success" data="{{error.email}}">Benutzer anlegen</button>
 					</div>
 				</div>
 				{{/if}}
 				{{#if error.emailsend}}
 				<div class="alert alert-success">
-					<b>Erfolg !</b> Es wurde eine Einladung an '{{error.email}}' verschickt. Sobald {{error.email}} ein Passwort festgelegt hat kann er auf Ihr Revier zugreifen.
+					<b>Erfolg !</b> Der Benutzer wurde erstellt und es wurde eine E-Mail an '{{error.email}}' verschickt. Sobald {{error.email}} ein Passwort festgelegt hat kann er/sie auf den Pirschbezirk zugreifen.
 				</div>
 				{{/if}}
 			{{/if}}
 			<div class="form-group">
-				<label for="invite-email" class="control-label">Um das Revier für weitere Benutzer freizugeben, geben Sie bitte die EMail addresse des Benutzers ein.</label>
-				<input id="invite-email" class="form-control" placeholder="max.musterman@beispiel.de" type="text" style="width:100%"/>
+				<label for="invite-email" class="control-label">Um daen Pirschbezirk für weitere Benutzer freizugeben, geben Sie bitte die E-Mail Addresse des Benutzers ein.</label>
+				<input id="invite-email" class="form-control" placeholder="E Mail" type="text" style="width:100%"/>
 			</div>
 		{{/if}}
 	</div>
@@ -74,7 +49,7 @@
 <template name="shareuser">
 	<div class="well well-sm">
 		<div class="userimage" style="position:relative;width:64px;height:64px;background-color:#fff;float:left;margin-right:12px;background-image:url('/img/avatars/{{avatar}}.png')"></div>
-		<h5>{{name}} {{surname}}</h5>
+		<h5>{{firstname}} {{surname}}</h5>
 		{{#if isOwner }}
 		<div class="btn-group">
 			<button class="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{type}}&nbsp;<span class="caret"></span></button>

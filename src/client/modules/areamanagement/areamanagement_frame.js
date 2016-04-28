@@ -229,9 +229,13 @@ fitArea = function( area ) {
     this.allocations.stop();
   }
   this.allocations = Meteor.subscribe("allocations", area._id );
+  
+  updateMap();
 
   if( area.geometry != null ) {
     var geo = new ol.format.GeoJSON().readGeometry( area.geometry , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
+  } else {
+    editor.push("areaeditor",{},"");
   }
   if( map && map.getSize() ) {
     var view = app.getMap().getView();
@@ -245,7 +249,7 @@ fitArea = function( area ) {
       console.log( role );
     }
   }
-	updateMap();
+
 }
 
 Template.areamanagement_frame.created = function() {

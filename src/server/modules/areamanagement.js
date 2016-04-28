@@ -153,7 +153,7 @@ Meteor.methods({
 			viewer: obj
 		});
 		Meteor.users.update( {_id:this.userId},{$set:{'profile.currentSelectedArea':id}});
-		return true;
+		return id;
 	},
 	shareWith:function( areaId, email ) {
 		email = email.toLowerCase();

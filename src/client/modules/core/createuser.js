@@ -1,4 +1,11 @@
+Template.adduser.created = function() {
+  Session.set('error',null)
+}
+
 Template.adduser.helpers({
+  error : function () {
+    return Session.get('error')
+  },
   title: function() {
     if( modals.get().title ) {
       return modals.get().title;
@@ -20,8 +27,7 @@ Template.adduser.events({
   'click #abort': function() {
     modals.pop();
   },
-  'click #continue': function() {
-
+  'click #save-exit' : function() {
     var data = {
       email: $('#email').val(),
       firstname: $('#firstname').val(),
@@ -29,13 +35,34 @@ Template.adduser.events({
       role:$('#role').val(),
       groups:$('#groups').val()
     };
-
+    Session.set('error',null);
     Meteor.call("findCreateUser", data, function (e,id) {
         if( e != null ) {
           console.log(e);
+          Session.set('error',e.reason.text);
+          $('#'+e.reason.id).focus();
         } else {
-          console.log("user found ",id);
           modals.pop();
+        }
+    })
+  },
+  'click #save': function() {
+    var data = {
+      email: $('#email').val(),
+      firstname: $('#firstname').val(),
+      surname: $('#surname').val(),
+      role:$('#role').val(),
+      groups:$('#groups').val()
+    };
+    Session.set('error',null);
+    Meteor.call("findCreateUser", data, function (e,id) {
+        if( e != null ) {
+          console.log(e);
+          Session.set('error',e.reason.text);
+          $('#'+e.reason.id).focus();
+        } else {
+          // TODO: clear all fields
+          $('#role').focus();
         }
     })
     //modals.pop();

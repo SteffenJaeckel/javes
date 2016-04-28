@@ -33,8 +33,8 @@ Template.areamanagement.events({
 		app.setSubPath(4,$(e.currentTarget).attr('data'))
 		fitArea( getCurrentArea() )
 	},
-	'click #area-share' : function() {
-    Session.set('modal', { shareinfo: true } );
+	'click #share-area' : function() {
+		modals.push("shareinfo",{});
   },
   'click #adjust-area' : function() {
     editor.push("areaeditor",{},"");
