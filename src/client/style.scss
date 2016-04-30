@@ -194,7 +194,7 @@ div.modal-body {
   background-color: #eee;
   position: relative;
   width: 100%;
-  border: 1px solid $selection_light;
+  border: 1px solid #aaa;/*$selection_light;*/;
   border-radius: 5px;
   margin-top: 12px;
   padding: 6px;
@@ -209,7 +209,7 @@ div.modal-body {
   padding: 6px;
   padding-bottom: 0px;
   padding-top: 0px;
-  color: $selection_light;
+  color: #888;/*$selection_light;*/
   font-weight: bold;
 }
 

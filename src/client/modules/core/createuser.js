@@ -2,6 +2,21 @@ Template.adduser.created = function() {
   Session.set('error',null)
 }
 
+Template.adduser.rendered = function() {
+	$('#role').focus();
+}
+
+function clearError() {
+	Session.set('error',null)
+	$('.has-error').removeClass('has-error');
+}
+
+function applyError( e ) {
+	Session.set('error',e.reason.text);
+	$('#'+e.reason.id).parent().addClass('has-error');
+	$('#'+e.reason.id).focus();
+}
+
 Template.adduser.helpers({
   error : function () {
     return Session.get('error')
@@ -35,12 +50,10 @@ Template.adduser.events({
       role:$('#role').val(),
       groups:$('#groups').val()
     };
-    Session.set('error',null);
+    clearError();
     Meteor.call("findCreateUser", data, function (e,id) {
         if( e != null ) {
-          console.log(e);
-          Session.set('error',e.reason.text);
-          $('#'+e.reason.id).focus();
+					applyError(e);
         } else {
           modals.pop();
         }
@@ -54,14 +67,13 @@ Template.adduser.events({
       role:$('#role').val(),
       groups:$('#groups').val()
     };
-    Session.set('error',null);
+    clearError();
     Meteor.call("findCreateUser", data, function (e,id) {
         if( e != null ) {
-          console.log(e);
-          Session.set('error',e.reason.text);
-          $('#'+e.reason.id).focus();
+          applyError(e);
         } else {
           // TODO: clear all fields
+					$('input').val('');
           $('#role').focus();
         }
     })

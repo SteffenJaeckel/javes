@@ -234,7 +234,7 @@ getStandsAlongPath = function( path, maxdist, stands ) {
 checkPermission = function( element  ) {
 	var user = Meteor.user();
 	var opt = element.split('.');
-	if( element == "administration.createUser" ) {
+	if( element == "administration.addUser" ) {
 		var role = app.getRole();
 		if( role.inviteroles.length == 0 )
 			return false;
