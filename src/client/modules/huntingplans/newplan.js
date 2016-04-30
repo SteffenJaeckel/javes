@@ -1,6 +1,7 @@
 /**/
 Template.newplan.created = function() {
   Session.set('error',null);
+
 }
 
 Template.newplan.rendered = function() {
@@ -15,6 +16,21 @@ Template.newplan.rendered = function() {
 					next: "fa fa-arrow-right"
 			}
 	});
+	
+	$('.typeahead')
+
+	$('#name').focus();
+}
+
+function clearError() {
+	Session.set('error',null)
+	$('.has-error').removeClass('has-error');
+}
+
+function applyError( e ) {
+	Session.set('error',e.reason.text);
+	$('#'+e.reason.id).parent().addClass('has-error');
+	$('#'+e.reason.id).focus();
 }
 
 Template.newplan.events({
@@ -22,12 +38,12 @@ Template.newplan.events({
     modals.set( $(e.currentTarget).attr('data'), $(e.currentTarget).val() )
   },
   'click #save': function( e ) {
-    Session.set( "error", null );
+    clearError();
     var btn = $(e.currentTarget);
     btn.button('loading');
     Meteor.call('newHuntingPlan', modals.get(), function ( e ) {
       if( e ) {
-        Session.set( "error", e.reason );
+        applyError( e );
       } else {
         modals.pop();
       }

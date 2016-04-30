@@ -1,103 +1,5 @@
 <template name="participants">
-  <style>
-
-    span.group-label {
-      display: inline;
-      border: 1px solid #888;
-      background-color: #eee;
-      padding-left:5px;
-      padding-right:5px;
-      padding-top:2px;
-      padding-bottom:2px;
-      border-radius: 4px;
-      margin-left:4px;
-      margin-top:24px;
-    }
-
-    .grid-group {
-      background-color:#eee;
-      position:relative;
-      width:100%;
-      height:27px;
-      border-bottom: 1px solid #ccc;
-      border-right: 1px solid #ccc;
-      text-align: center;
-      padding: 4px;
-    }
-    .grid-group.hover {
-      color: #fff;
-      background-color:#666;
-    }
-    .grid-item {
-      position:relative;
-      width:100%;
-      height:28px;
-      border-bottom: 1px solid #ccc;
-      border-right: 1px solid #ccc;
-      text-align: center;
-      padding: 4px;
-    }
-
-    .plan {
-      white-space: nowrap;
-      text-overflow:ellipsis;
-      overflow: hidden;
-      position:relative;
-      width:126px;
-      padding:4px;
-      border-bottom: 1px solid #ccc;
-      border-left: 1px solid #ccc;
-    }
-    .plan.hover {
-      color: #fff;
-      background-color:#888;
-    }
-    .plan p {
-      font-size:8pt;
-    }
-    .plan-details {
-      text-align:center;
-      padding:4px;
-      border-bottom: 1px solid #ccc;
-      border-right: 1px solid #ccc;
-      font-size:8pt;
-      font-weight:bold;
-    }
-    .plan-details.hover {
-      color: #fff;
-      background-color:#888;
-    }
-
-
-    .scroll-y {
-      position:relative;
-    }
-    .scroll-x {
-      position:relative;
-    }
-
-    #filter {
-      border-right: 2px solid #ccc;
-      border-bottom: 2px solid #ccc;
-    }
-    #user {
-      border-right: 2px solid #ccc;
-    }
-    #plans {
-      border-bottom: 2px solid #ccc;
-    }
-    #filter {
-      padding: 15px;
-    }
-    #filter div {
-      margin-bottom:5px;
-    }
-		#workplane {
-			background-color:#fff;
-		}
-  </style>
-
-  <div id="toolbox" style="position:absolute;top:0px;left:0px;right:0px;height:58px;padding:14px;border-bottom: 2px solid #ccc;background-color:#eee;">
+  <div id="toolbox">
     <div>
       {{#if checkPermission "huntingplans.changeParticipantsState"}}
       <div class="btn-group btn-group-justified selection-group" style="width:268px;float:left;">
@@ -119,8 +21,8 @@
       </div>
       {{/if}}
       <div style="position: absolute;left: 310px;top: 15px;text-overflow: ellipsis; overflow: hidden;white-space: nowrap;">
-        {{#if checkPermission "administration.createUser" }}
-          <button id="add-hunter" class="btn btn-sm btn-primary"><i class="fa fa-user-plus fa-fw"></i>&nbsp;Jäger hinzufügen</button>&nbsp;
+        {{#if checkPermission "administration.addUser" }}
+          <button id="add-hunter" class="btn btn-sm btn-success"><i class="fa fa-user-plus fa-fw"></i>&nbsp;Jäger hinzufügen</button>&nbsp;
         {{/if}}
         {{#if checkPermission "huntingplans.inviteParticipants"}}
           <button id="send-requests" class="btn btn-sm btn-warning"><i class="fa fa-envelope fa-fw"></i>&nbsp;Interessenbekundungen verschicken</button>&nbsp;
