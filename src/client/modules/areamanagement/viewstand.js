@@ -43,6 +43,9 @@ Template.viewstand.canEdit = function () {
 Template.viewstand.allocation = function() {
 
 	var sid = Session.get('standdata')._id;
+	var stand = Stands.findOne({_id:sid});
+	if( stand.allocations == null )
+		stand.allocations = [];
 
 	var aday = 24*60*60*1000;
 	var now = new Date();
@@ -53,9 +56,9 @@ Template.viewstand.allocation = function() {
 	yesterday.setMilliseconds(0);
 
 	var tomorrow = new Date(now.getTime() + aday);
-	var reservations = [
+	/*var reservations = [
 		{_id:'3xb4iJxdNR3Z9mmxu',stand:'hPFzPyzYTqJq2L2y5',user:{id:'3xb4iJxdNR3Z9mmxu',name:'Steffen',surname:'Jäckel'},from:now, to: tomorrow }
-	];
+	];*/
 
 	var wds  = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
 
@@ -69,6 +72,8 @@ Template.viewstand.allocation = function() {
 	} else if( Session.get('allocationinfo') ) {
 		var selected = Session.get('allocationinfo')._id;
 	}
+
+
 
 	for( var d=0;d < 5;d++) {
 		var hours = [];
@@ -88,7 +93,8 @@ Template.viewstand.allocation = function() {
 		for( var i=0;i < 24;i++ ) {
 
 			var cl = '';
-			Allocations.find({ stand:sid, to :{ $gt:yesterday }}).forEach( function (obj ) {
+			for(var aid in stand.allocations ) {
+				var obj = stand.allocations[ aid ];
 				if( isBetween( obj.from,obj.to, timecode ) ) {
 					if( obj.user.id == Meteor.userId() ) {
 						cl = 'reserved';
@@ -105,9 +111,9 @@ Template.viewstand.allocation = function() {
 					}
 
 					hours.push({ 'class':cl, data: obj._id });
-					return false;
+					break;
 				}
-			})
+			};
 
 			if( cl == '' ) {
 				cl = 'free';
@@ -192,7 +198,9 @@ Template.viewstand.events({
 		}
 	},
 	'click .notaviable' : function ( e ) {
-		var alloc = Allocations.findOne({_id:$(e.currentTarget).attr('data')});
+		var sid = Session.get('standdata')._id;
+		var stand = Stands.findOne({_id:sid});
+		var alloc = _.findWhere( stand.allocations, { _id: $(e.currentTarget).attr('data') } );
 		Session.set('allocationinfo',alloc);
 		Session.set('editallocation',null);
 		Session.set('allocationstate',null )
@@ -201,7 +209,10 @@ Template.viewstand.events({
 		Session.set('allocationinfo',null);
 	},
 	'click .reserved' : function ( e ) {
-		var alloc = Allocations.findOne({_id:$(e.currentTarget).attr('data')});
+		var sid = Session.get('standdata')._id;
+		var stand = Stands.findOne({_id:sid});
+		var alloc = _.findWhere( stand.allocations, { _id: $(e.currentTarget).attr('data') } );
+
 		Session.set('editallocation',alloc);
 		Session.set('allocationinfo',null);
 		Session.set('allocationstate',null )

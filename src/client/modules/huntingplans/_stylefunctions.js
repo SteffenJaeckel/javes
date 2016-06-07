@@ -63,12 +63,18 @@ function getColor( feature , print ) {
   if( feature.get("area") != null ) {
     if( feature.get('color') != null ) {
       var c = parseInt(feature.get('color'));
-      var alloc = Allocations.findOne( { stand : feature.getId() , from : { $gte: new Date() }} )
-      if( alloc )  {
-        if( alloc.user.id == Meteor.user()._id ) {
-          c = 5;
-        } else {
-          c = 1;
+
+      var stand = Stands.findOne( { _id : feature.getId() } );
+      var now = new Date();
+      if( stand.allocations != null ) {
+        for( var aid in stand.allocations ) {
+          if( stand.allocations[aid].from > now ) {
+            if( stand.allocations[aid].user.id == Meteor.user()._id ) {
+              c = 5;
+            } else {
+              c = 1;
+            }
+          } 
         }
       }
       img = 'img/marker/'+(parseInt(feature.get('type'))+3)+'0'+c+'.png'
