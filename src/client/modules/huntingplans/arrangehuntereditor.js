@@ -85,35 +85,35 @@ Template.arrangehuntereditor.helpers({
                 switch( dogfilter ) {
                   case 1:
                     for( var d=0;d < user.profile.dogs.length;d++ ) {
-                      if( user.profile.dogs[d].type == 0 ) {
+                      if( user.profile.dogs[d].type < 3 ) {
                         add = true;
                       }
                     }
                   break;
                   case 2:
                     for( var d=0;d < user.profile.dogs.length;d++ ) {
-                      if( user.profile.dogs[d].type == 0 && user.profile.dogs[d].range == 0) {
+                      if( user.profile.dogs[d].type == 0) {
                         add = true;
                       }
                     }
                   break;
                   case 3:
                     for( var d=0;d < user.profile.dogs.length;d++ ) {
-                      if( user.profile.dogs[d].type == 0 && user.profile.dogs[d].range == 1) {
+                      if( user.profile.dogs[d].type == 1) {
                         add = true;
                       }
                     }
                   break;
                   case 4:
                     for( var d=0;d < user.profile.dogs.length;d++ ) {
-                      if( user.profile.dogs[d].type == 0 && user.profile.dogs[d].range == 2 ) {
+                      if( user.profile.dogs[d].type == 2 ) {
                         add = true;
                       }
                     }
                   break;
                   case 5:
                     for( var d=0;d < user.profile.dogs.length;d++ ) {
-                      if( user.profile.dogs[d].type == 1 ) {
+                      if( user.profile.dogs[d].type == 3 ) {
                         add = true;
                       }
                     }

@@ -389,9 +389,9 @@ Meteor.methods({
 		}
 
 		if( report.type == 3 && report.hunttype == 3 ) {
-			report['reporter'] = { id:this.userId ,name:report.firstname ,surname:report.surname };
+			report['reporter'] = { id:this.userId ,name:report.firstname ,surname:report.surname, img: 1 };
 		} else {
-			report['reporter'] = { id:this.userId ,name:me.profile.firstname ,surname:me.profile.surname };
+			report['reporter'] = { id:this.userId ,name:me.profile.firstname ,surname:me.profile.surname, img: me.profile.avatar };
 		}
 		Reports.insert( report );
 		switch(report.type ) {
@@ -413,9 +413,9 @@ Meteor.methods({
 		}
 		console.log( report );
 		if( report.type == 3 && report.hunttype == 3 ) {
-			report['reporter'] = { id:this.userId ,name:report.name ,surname:report.surname };
+			report['reporter'] = { id:this.userId ,name:report.name ,surname:report.surname, img: 1 };
 		} else {
-			report['reporter'] = { id:this.userId ,name:me.profile.name ,surname:me.profile.surname };
+			report['reporter'] = { id:this.userId ,name:me.profile.name ,surname:me.profile.surname, img: me.profile.avatar };
 		}
 		Reports.update({_id:report._id},report);
 	},

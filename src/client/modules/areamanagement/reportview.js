@@ -15,6 +15,10 @@ Template.reportview.data = function () {
 	return null;
 }
 
+Template.reportview.avatar = function() {
+	return Avatars[ parseInt( Session.get('reportdata').reporter.img ) % Avatars.length ];
+}
+
 Template.reportview.fullname = function() {
 	return Session.get('reportdata').reporter.name+" "+Session.get('reportdata').reporter.surname;
 }

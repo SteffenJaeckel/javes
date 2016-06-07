@@ -15,9 +15,10 @@ Template.newplan.rendered = function() {
 					previous: "fa fa-arrow-left",
 					next: "fa fa-arrow-right"
 			}
+	}).on('dp.change', function( e,i  ) {
+		modals.set("date",e.date.toDate() )
+		console.log( e.date.toDate() )
 	});
-	
-	$('.typeahead')
 
 	$('#name').focus();
 }
@@ -35,16 +36,21 @@ function applyError( e ) {
 
 Template.newplan.events({
   'keyup .text' : function ( e ) {
-    modals.set( $(e.currentTarget).attr('data'), $(e.currentTarget).val() )
+    modals.set( $(e.currentTarget).attr('data'), $(e.currentTarget).val() );
+  },
+  'keyup .number' : function ( e ) {
+    modals.set( $(e.currentTarget).attr('data'), parseInt($(e.currentTarget).val()) );
   },
   'click #save': function( e ) {
     clearError();
     var btn = $(e.currentTarget);
     btn.button('loading');
-    Meteor.call('newHuntingPlan', modals.get(), function ( e ) {
+		app.setModulePath(["huntingplans"]);
+    Meteor.call('newHuntingPlan', modals.get(), function ( e, id ) {
       if( e ) {
         applyError( e );
       } else {
+				app.setModulePath(["huntingplans",id,"drive-0"]);
         modals.pop();
       }
       setTimeout( function() {
@@ -68,7 +74,7 @@ Template.newplan.helpers({
     var data=[];
     data.push( { id:'new', name:'Keine Vorlage verwenden', date:new Date(), selected:"selected" } );
     Plans.find({}).forEach( function ( plan ) {
-      data.push( {id:plan._id, name:plan.name, date:plan.date } );
+      data.push( {id:plan._id, name:plan.name, date:plan.date, leader: plan.leader, backup: plan.backup } );
     });
     return data;
   },

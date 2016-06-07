@@ -1,0 +1,1409 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"Get",
+				"getDepartment"
+			],
+			[
+				"get",
+				"getCustomer"
+			],
+			[
+				"dog",
+				"dogtypes"
+			],
+			[
+				"opt",
+				"option	Tag"
+			],
+			[
+				"pro",
+				"project"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "{\n	\"shell_cmd\": \"make\"\n}\n",
+			"settings":
+			{
+				"buffer_size": 25,
+				"line_ending": "Windows",
+				"name": "untitled.sublime-build"
+			}
+		},
+		{
+			"contents": "CREATE TABLE \"JV_STANDS\" ( \n  ID		   VARCHAR2(38),\n  NAME         VARCHAR2(42),\n  TYPE         NUMBER(1,0),\n  POSITION     SDO_GEOMETRY\n);\n\nINSERT INTO \"JV_STANDS\" (ID,NAME,TYPE,POSITION) Values ('1','Stand 1',1, SDO_UTIL.FROM_WKTGEOMETRY('POINT(1 3)') );\nINSERT INTO \"JV_STANDS\" (ID,NAME,TYPE,POSITION) Values ('2','Stand 1',1, SDO_UTIL.FROM_WKTGEOMETRY('POINT(3 4)') );\n\nSELECT SDO_UTIL.TO_WKTGEOMETRY(POSITION) FROM \"JV_STANDS\" \n\nDBU_NATURERBEFLAECHE_ID WO_USERNAME\n",
+			"settings":
+			{
+				"buffer_size": 469,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "-- Create a table for cola (soft drink) markets in a\n-- given geography (such as city or state).\n-- Each row will be an area of interest for a specific\n-- cola (for example, where the cola is most preferred\n-- by residents, where the manufacturer believes the\n-- cola has growth potential, and so on).\n-- (For restrictions on spatial table and column names, see \n-- Section 2.6.1 and Section 2.6.2.)\n\nCREATE TABLE cola_markets (\n  mkt_id NUMBER PRIMARY KEY,\n  name VARCHAR2(32),\n  shape SDO_GEOMETRY);\n\n-- The next INSERT statement creates an area of interest for \n-- Cola A. This area happens to be a rectangle.\n-- The area could represent any user-defined criterion: for\n-- example, where Cola A is the preferred drink, where\n-- Cola A is under competitive pressure, where Cola A\n-- has strong growth potential, and so on.\n \nINSERT INTO cola_markets VALUES(\n  1,\n  'cola_a',\n  SDO_GEOMETRY(\n    2003,  -- two-dimensional polygon\n    NULL,\n    NULL,\n    SDO_ELEM_INFO_ARRAY(1,1003,3), -- one rectangle (1003 = exterior)\n    SDO_ORDINATE_ARRAY(1,1, 5,7) -- only 2 points needed to\n          -- define rectangle (lower left and upper right) with\n          -- Cartesian-coordinate data\n  )\n);\n\n-- The next two INSERT statements create areas of interest for \n-- Cola B and Cola C. These areas are simple polygons (but not\n-- rectangles).\n\nINSERT INTO cola_markets VALUES(\n  2,\n  'cola_b',\n  SDO_GEOMETRY(\n    2003,  -- two-dimensional polygon\n    NULL,\n    NULL,\n    SDO_ELEM_INFO_ARRAY(1,1003,1), -- one polygon (exterior polygon ring)\n    SDO_ORDINATE_ARRAY(5,1, 8,1, 8,6, 5,7, 5,1)\n  )\n);\n\nINSERT INTO cola_markets VALUES(\n  3,\n  'cola_c',\n  SDO_GEOMETRY(\n    2003,  -- two-dimensional polygon\n    NULL,\n    NULL,\n    SDO_ELEM_INFO_ARRAY(1,1003,1), -- one polygon (exterior polygon ring)\n    SDO_ORDINATE_ARRAY(3,3, 6,3, 6,5, 4,5, 3,3)\n  )\n);\n\n-- Now insert an area of interest for Cola D. This is a\n-- circle with a radius of 2. It is completely outside the\n-- first three areas of interest.\n\nINSERT INTO cola_markets VALUES(\n  4,\n  'cola_d',\n  SDO_GEOMETRY(\n    2003,  -- two-dimensional polygon\n    NULL,\n    NULL,\n    SDO_ELEM_INFO_ARRAY(1,1003,4), -- one circle\n    SDO_ORDINATE_ARRAY(8,7, 10,9, 8,11)\n  )\n);\n\n---------------------------------------------------------------------------\n-- UPDATE METADATA VIEW --\n---------------------------------------------------------------------------\n-- Update the USER_SDO_GEOM_METADATA view. This is required\n-- before the Spatial index can be created. Do this only once for each\n-- layer (that is, table-column combination; here: COLA_MARKETS and SHAPE).\n\nINSERT INTO user_sdo_geom_metadata\n    (TABLE_NAME,\n     COLUMN_NAME,\n     DIMINFO,\n     SRID)\n  VALUES (\n  'cola_markets',\n  'shape',\n  SDO_DIM_ARRAY(   -- 20X20 grid\n    SDO_DIM_ELEMENT('X', 0, 20, 0.005),\n    SDO_DIM_ELEMENT('Y', 0, 20, 0.005)\n     ),\n  NULL   -- SRID\n);\n\n-------------------------------------------------------------------\n-- CREATE THE SPATIAL INDEX --\n-------------------------------------------------------------------\nCREATE INDEX cola_spatial_idx\n   ON cola_markets(shape)\n   INDEXTYPE IS MDSYS.SPATIAL_INDEX;\n-- Preceding statement created an R-tree index.\n\n-------------------------------------------------------------------\n-- PERFORM SOME SPATIAL QUERIES --\n-------------------------------------------------------------------\n-- Return the topological intersection of two geometries.\nSELECT SDO_GEOM.SDO_INTERSECTION(c_a.shape, c_c.shape, 0.005)\n   FROM cola_markets c_a, cola_markets c_c \n   WHERE c_a.name = 'cola_a' AND c_c.name = 'cola_c';\n\n-- Do two geometries have any spatial relationship?\nSELECT SDO_GEOM.RELATE(c_b.shape, 'anyinteract', c_d.shape, 0.005)\n  FROM cola_markets c_b, cola_markets c_d\n  WHERE c_b.name = 'cola_b' AND c_d.name = 'cola_d';\n\n-- Return the areas of all cola markets.\nSELECT name, SDO_GEOM.SDO_AREA(shape, 0.005) FROM cola_markets;\n\n-- Return the area of just cola_a.\nSELECT c.name, SDO_GEOM.SDO_AREA(c.shape, 0.005) FROM cola_markets c \n   WHERE c.name = 'cola_a';\n\n-- Return the distance between two geometries.\nSELECT SDO_GEOM.SDO_DISTANCE(c_b.shape, c_d.shape, 0.005)\n   FROM cola_markets c_b, cola_markets c_d\n   WHERE c_b.name = 'cola_b' AND c_d.name = 'cola_d';\n\n-- Is a geometry valid?\nSELECT c.name, SDO_GEOM.VALIDATE_GEOMETRY_WITH_CONTEXT(c.shape, 0.005)\n   FROM cola_markets c WHERE c.name = 'cola_c';\n\n-- Is a layer valid? (First, create the results table.)\nCREATE TABLE val_results (sdo_rowid ROWID, result VARCHAR2(2000));\nCALL SDO_GEOM.VALIDATE_LAYER_WITH_CONTEXT('COLA_MARKETS', 'SHAPE', \n  'VAL_RESULTS', 2);\nSELECT * from val_results;",
+			"settings":
+			{
+				"buffer_size": 4617,
+				"line_ending": "Windows",
+				"name": "-- Create a table for cola (soft drink) markets in"
+			}
+		},
+		{
+			"contents": "<html>\n	<head>\n		<script type=\"text/javascript\">\n\n			var url = \"http://namis.dbu.de/WebOffice/\";\n			var username = \"$username$\";\n			var project = \"\";\n			var key = \"\";\n			var value = \"\";\n			webofficeframe = null;\n\n			function init() {\n				webofficeframe = window.open( url+\"synserver?username=\"+username+\"&password=\"+username+\"&project=\"+project+\"\",\"_blank\",\"\",true);\n				\n				console.log( webofficeframe.scriptAPI )\n			}\n\n			function openMap() {\n				console.log(\"openmap\");				\n			}\n\n			function Increment() {\n				console.log(\"increment\");\n				webofficeframe = webofficeframe.open( url+\"externalcall.jsp?username=\"+username+\"&password=\"+username+\"&project=\"+project+\"&query=biotopesn&keyname=\"+key+\"&keyvalue=\"+value+\"\",\"_self\",\"\",true);\n			}\n		</script>\n	</head>\n	<body onload=\"init()\">\n		<button onclick=\"openMap()\">LoadMap</button>\n		<button onclick=\"Increment()\">Increment</button>\n	</body>\n</html>",
+			"file": "/C/Users/sjaeckel/Desktop/test.html",
+			"file_size": 933,
+			"file_write_time": 131073657680154134,
+			"settings":
+			{
+				"buffer_size": 902,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/participants.js",
+			"settings":
+			{
+				"buffer_size": 15056,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/userlistitem.js",
+			"settings":
+			{
+				"buffer_size": 428,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "server/modules/areamanagement.js",
+			"settings":
+			{
+				"buffer_size": 15987,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/areamanagement/reportview.js",
+			"settings":
+			{
+				"buffer_size": 1785,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/areamanagement/reportview.html",
+			"settings":
+			{
+				"buffer_size": 1406,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "Searching 41 files for \"Schweiß\"\n\nC:\\Users\\sjaeckel\\Documents\\javes\\src\\client\\modules\\huntingplans\\newdog.html:\n   17          </div>\n   18          <div class=\"btn-group\">\n   19:           <button type=\"button\" class=\"btn btn-sm btn-default dogtype {{selectedTypeClass 1}}\" data=\"1\">Schweißhund</button>\n   20          </div>\n   21        </div>\n\nC:\\Users\\sjaeckel\\Documents\\javes\\src\\client\\modules\\huntingplans\\participants.html:\n  284      {{> dogtype }}\n  285      {{#if this.type }}\n  286:       Schweißhund\n  287      {{else}}\n  288        Stöberhund\n\n2 matches across 2 files\n\n\nSearching 96 files for \"img/avatars/\"\n\nC:\\Users\\sjaeckel\\Documents\\javes\\src\\client\\modules\\areamanagement\\comments.html:\n   25  					</div>\n   26  					{{/if}}\n   27: 					<div class=\"userimage\" style=\"position:relative; width:64px; height:64px; background-color:#fff; float:left; margin-right:12px; background-image:url('/img/avatars/{{ formatImage img}}')\"></div>\n   28  					<p><b>{{user.name}} {{user.surname}}</b><br/>schrieb am {{formatDate date}} um {{formatTime date}} Uhr</p>\n   29  					<div>\n\nC:\\Users\\sjaeckel\\Documents\\javes\\src\\client\\modules\\areamanagement\\reportview.js:\n   17  \n   18  Template.reportview.image = function() {\n   19: 	return \"url('/img/avatars/\"+Session.get('reportdata').reporter.img+\".png')\";;\n   20  }\n   21  \n\nC:\\Users\\sjaeckel\\Documents\\javes\\src\\client\\modules\\areamanagement\\shareinfo.html:\n    7  		<h4>Mein Status</h4>\n    8  		<div class=\"well well-sm\">\n    9: 			<div class=\"userimage\" style=\"position:relative;width:64px;height:64px;background-color:#fff;float:left;margin-right:12px;background-image:url('/img/avatars/{{avatar}}')\"></div>\n   10  			<h5>{{profile.firstname}} {{profile.surname}}</h5>\n   11  			<button class=\"btn btn-sm btn-default disabled\" type=\"button\">{{sharetype}}</button>\n   ..\n   49  <template name=\"shareuser\">\n   50  	<div class=\"well well-sm\">\n   51: 		<div class=\"userimage\" style=\"position:relative;width:64px;height:64px;background-color:#fff;float:left;margin-right:12px;background-image:url('/img/avatars/{{avatar}}.png')\"></div>\n   52  		<h5>{{firstname}} {{surname}}</h5>\n   53  		{{#if isOwner }}\n\nC:\\Users\\sjaeckel\\Documents\\javes\\src\\client\\modules\\profile\\profile.html:\n   39          <div class=\"well\" style=\"padding-right:0px;padding-bottom:6px;\">\n   40            <div id=\"profile-avatar\" style=\"position:relative;width:100%;\">\n   41:             <div class=\"selectable userimage {{selectedAvatar 0}}\" data=\"0\" style=\"margin-bottom:12px;background-image:url(/img/avatars/1.png);\"></div>\n   42:             <div class=\"selectable userimage {{selectedAvatar 1}}\" data=\"1\" style=\"margin-bottom:12px;background-image:url(/img/avatars/2.png);\"></div>\n   43:             <div class=\"selectable userimage {{selectedAvatar 2}}\" data=\"2\" style=\"margin-bottom:12px;background-image:url(/img/avatars/3.png);\"></div>\n   44:             <div class=\"selectable userimage {{selectedAvatar 3}}\" data=\"3\" style=\"margin-bottom:12px;background-image:url(/img/avatars/4.png);\"></div>\n   45:             <div class=\"selectable userimage {{selectedAvatar 4}}\" data=\"4\" style=\"margin-bottom:12px;background-image:url(/img/avatars/5.png);\"></div>\n   46:             <div class=\"selectable userimage {{selectedAvatar 5}}\" data=\"5\" style=\"margin-bottom:12px;background-image:url(/img/avatars/6.png);\"></div>\n   47:             <div class=\"selectable userimage {{selectedAvatar 6}}\" data=\"6\" style=\"margin-bottom:12px;background-image:url(/img/avatars/7.png);\"></div>\n   48:             <div class=\"selectable userimage {{selectedAvatar 7}}\" data=\"7\" style=\"margin-bottom:12px;background-image:url(/img/avatars/8.png);\"></div>\n   49              <div style=\"clear:both;\"></div>\n   50            </div>\n\n12 matches across 4 files\n",
+			"settings":
+			{
+				"buffer_size": 3777,
+				"line_ending": "Windows",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "client/modules/areamanagement/shareinfo.js",
+			"settings":
+			{
+				"buffer_size": 4025,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/areamanagement/shareinfo.html",
+			"settings":
+			{
+				"buffer_size": 3890,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/arrangehuntereditor.js",
+			"settings":
+			{
+				"buffer_size": 11320,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/arrangehuntereditor.html",
+			"settings":
+			{
+				"buffer_size": 3638,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/huntingareaeditor.html",
+			"settings":
+			{
+				"buffer_size": 2105,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/huntingplans.html",
+			"settings":
+			{
+				"buffer_size": 33620,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/newdog.html",
+			"settings":
+			{
+				"buffer_size": 2847,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/userlistitem.html",
+			"settings":
+			{
+				"buffer_size": 2076,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/participants.html",
+			"settings":
+			{
+				"buffer_size": 13356,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/newdog.js",
+			"settings":
+			{
+				"buffer_size": 1508,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/core/createuser.js",
+			"settings":
+			{
+				"buffer_size": 2781,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "\n#ignore thumbnails created by windows\nThumbs.db\n#Ignore files build by Visual Studio\n*.obj\n*.user\n*.aps\n*.pch\n*.vspscc\n*_i.c\n*_p.c\n*.ncb\n*.suo\n*.tlh\n*.bak\n*.cache\n*.ilk\n*.log\n*.sbr\n",
+			"file": "/C/Users/sjaeckel/Documents/gitignore_global.txt",
+			"file_size": 201,
+			"file_write_time": 131079505237026546,
+			"settings":
+			{
+				"buffer_size": 182,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Daten/gl-interface/.gitignore",
+			"settings":
+			{
+				"buffer_size": 65,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/sjaeckel/Desktop/vertraege.json",
+			"settings":
+			{
+				"buffer_size": 1365,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "{\n	\"auswahltypen\": [\n		{\"id\":1, \"name\": \"Forstverwaltung\"},\n		{\"id\":2, \"name\": \"Gemarkung\"},\n		{\"id\":3, \"name\": \"Waldbesitzer\"},\n		{\"id\":4, \"name\": \"GIS\"}\n	],\n	\"pfad\": []\n	\"auswahltyp\" : \"\",\n	\"teilfaechen\" : {\n\n	}\n}",
+			"settings":
+			{
+				"buffer_size": 215,
+				"line_ending": "Windows",
+				"name": "{"
+			}
+		},
+		{
+			"file": "/C/Users/sjaeckel/Desktop/temop.html",
+			"settings":
+			{
+				"buffer_size": 116090,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/nginx/conf/nginx.conf",
+			"settings":
+			{
+				"buffer_size": 1551,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "<service>\n  <id>nginx</id>\n  <name>nginx</name>\n  <description>nginx</description>\n  <executable>c:\\nginx\\nginx.exe</executable>\n  <logpath>c:\\nginx\\</logpath>\n  <logmode>roll</logmode>\n  <depend></depend>\n  <startargument>-p</startargument>\n  <startargument>c:\\nginx</startargument>\n\n  <stopexecutable>c:\\nginx\\nginx.exe</stopexecutable>\n  <stopargument>-s</stopargument>\n  <stopargument>stop</stopargument>\n</service>",
+			"file": "/C/Users/sjaeckel/Desktop/nginxservice.xml",
+			"file_size": 433,
+			"file_write_time": 131087286542928528,
+			"settings":
+			{
+				"buffer_size": 419,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/sjaeckel/AppData/Roaming/Sublime Text 3/Packages/User/html.sublime-build",
+			"settings":
+			{
+				"buffer_size": 181,
+				"line_ending": "Windows",
+				"name": "untitled.sublime-build"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 173.0,
+		"last_filter": "tabs",
+		"selected_items":
+		[
+			[
+				"tabs",
+				"Indentation: Convert to Tabs"
+			],
+			[
+				"tog",
+				"View: Toggle Tabs"
+			],
+			[
+				"ta",
+				"View: Toggle Tabs"
+			]
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/sjaeckel/Documents/javes/src/client",
+		"/C/Users/sjaeckel/Documents/javes/src/client/lib",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/areamanagement",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/core",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans",
+		"/C/Users/sjaeckel/Documents/javes/src/server",
+		"/C/Users/sjaeckel/Documents/javes/src/server/modules"
+	],
+	"file_history":
+	[
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/core/createuser.html",
+		"/C/Users/sjaeckel/Documents/javes/src/server/modules/core.js",
+		"/C/Users/sjaeckel/Documents/javes/src/client/helper.js",
+		"/C/Users/sjaeckel/Desktop/export.sql",
+		"/C/Users/sjaeckel/Downloads/wms",
+		"/C/Program Files/Sublime Text 3/Packages/Makefile.sublime-package",
+		"/C/Users/sjaeckel/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/sjaeckel/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/sjaeckel/AppData/Roaming/Sublime Text 3/Packages/User/SQL.sublime-settings",
+		"/C/Users/sjaeckel/Desktop/desktop/02052016_desktop/Icon-Blatt.svg",
+		"/C/Users/sjaeckel/Documents/javes/src/.meteor/.id"
+	],
+	"find":
+	{
+		"height": 36.0
+	},
+	"find_in_files":
+	{
+		"height": 96.0,
+		"where_history":
+		[
+			"C:\\Users\\sjaeckel\\Documents\\javes\\src\\client\\modules",
+			"C:\\Users\\sjaeckel\\Documents\\javes\\src\\client\\modules\\huntingplans"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"img/avatars/",
+			"newre",
+			"dogitem",
+			"Schweiß",
+			"dogfilter",
+			"exsits",
+			"hasScentHound",
+			"CreateUser",
+			"createUser",
+			"CreateUser",
+			"createUser",
+			"modals.set",
+			"important",
+			"java",
+			"parseInt"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 25,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								25,
+								25
+							]
+						],
+						"settings":
+						{
+							"default_dir": "C:\\Users\\sjaeckel\\AppData\\Roaming\\Sublime Text 3\\Packages\\User",
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 28,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 469,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								431,
+								431
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/SQL/SQL.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 26,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4617,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4030,
+								4030
+							]
+						],
+						"settings":
+						{
+							"auto_name": "-- Create a table for cola (soft drink) markets in",
+							"syntax": "Packages/SQL/SQL.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 25,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/C/Users/sjaeckel/Desktop/test.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 902,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								166,
+								166
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "client/modules/huntingplans/participants.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15056,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								13988,
+								13988
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 7642.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "client/modules/huntingplans/userlistitem.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 428,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								428,
+								428
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "server/modules/areamanagement.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15987,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								13838,
+								13838
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 8140.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "client/modules/areamanagement/reportview.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1785,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								649,
+								649
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "client/modules/areamanagement/reportview.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1406,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								340,
+								340
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 514.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3777,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										285,
+										292
+									],
+									[
+										503,
+										510
+									],
+									[
+										911,
+										923
+									],
+									[
+										1253,
+										1265
+									],
+									[
+										1640,
+										1652
+									],
+									[
+										2059,
+										2071
+									],
+									[
+										2534,
+										2546
+									],
+									[
+										2693,
+										2705
+									],
+									[
+										2852,
+										2864
+									],
+									[
+										3011,
+										3023
+									],
+									[
+										3170,
+										3182
+									],
+									[
+										3329,
+										3341
+									],
+									[
+										3488,
+										3500
+									],
+									[
+										3647,
+										3659
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								587,
+								587
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 2,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ 	].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 540.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "client/modules/areamanagement/shareinfo.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4025,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2027,
+								2095
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": -0.0,
+						"translation.y": 780.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "client/modules/areamanagement/shareinfo.html",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 3890,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2238,
+								2289
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 607.0,
+						"translation.y": 720.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "client/modules/huntingplans/arrangehuntereditor.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11320,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2887,
+								2887
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1582.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "client/modules/huntingplans/arrangehuntereditor.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3638,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2938,
+								2938
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 470.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "client/modules/huntingplans/huntingareaeditor.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2105,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "client/modules/huntingplans/huntingplans.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 33620,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5981,
+								5981
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 378.0,
+						"translation.y": 2009.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "client/modules/huntingplans/newdog.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2847,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "client/modules/huntingplans/userlistitem.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2076,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1895,
+								1895
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 780.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "client/modules/huntingplans/participants.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13356,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8134,
+								8134
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2500.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "client/modules/huntingplans/newdog.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1508,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								518,
+								518
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "client/modules/core/createuser.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2781,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1165,
+								1165
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1210.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "/C/Users/sjaeckel/Documents/gitignore_global.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 182,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								143,
+								143
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 24,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "/C/Daten/gl-interface/.gitignore",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 65,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								65,
+								60
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "/C/Users/sjaeckel/Desktop/vertraege.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1365,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								805,
+								805
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 60.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 215,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								213,
+								213
+							]
+						],
+						"settings":
+						{
+							"auto_name": "{",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 25,
+					"file": "/C/Users/sjaeckel/Desktop/temop.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 116090,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								115711,
+								115711
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 23,
+					"type": "text"
+				},
+				{
+					"buffer": 26,
+					"file": "/C/nginx/conf/nginx.conf",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1551,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								816,
+								816
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 60.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+					"type": "text"
+				},
+				{
+					"buffer": 27,
+					"file": "/C/Users/sjaeckel/Desktop/nginxservice.xml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 419,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								419,
+								419
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/XML/XML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "/C/Users/sjaeckel/AppData/Roaming/Sublime Text 3/Packages/User/html.sublime-build",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 181,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								178,
+								178
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 27,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 26.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 130.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/User/html.sublime-build",
+	"project": "sublime_project.sublime-project",
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				".meteor\\.id"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"last_filter": "setPa",
+		"selected_items":
+		[
+			[
+				"setPa",
+				"setPath"
+			]
+		],
+		"width": 456.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 305.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

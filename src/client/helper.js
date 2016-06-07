@@ -236,7 +236,7 @@ checkPermission = function( element  ) {
 	var opt = element.split('.');
 	if( element == "administration.addUser" ) {
 		var role = app.getRole();
-		if( role.inviteroles.length == 0 )
+		if( role == null || role.inviteroles == null || role.inviteroles.length == 0 )
 			return false;
 	}
 	if( opt.length == 2 ) {

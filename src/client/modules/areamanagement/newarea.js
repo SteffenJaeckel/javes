@@ -24,13 +24,13 @@ Template.newarea.events({
 		setObj('newarea','desc',$('#area-desc').val());
 	},
 	'click #save': function( e ) {
+		app.setModulePath(["areamanagement"])
 		Meteor.call('newArea',{name:Session.get('newarea').name,desc:Session.get('newarea').desc } , function ( e , id ) {
 			if( e ) {
 				console.log(e)
 			} else {
-				app.setSubPath(3,"areamanagement");
-				app.setSubPath(4,id);
-				modals.pop();				
+				app.setModulePath(["areamanagement",id]);
+				modals.pop();
 			}
 		})
 	}

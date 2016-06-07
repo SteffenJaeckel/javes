@@ -4,6 +4,13 @@
 		label {
 			margin-top:4px;
 		}
+
+		tr.dogs td {
+			padding-left: 16px !important;
+			font-size: 12px;
+			vertical-align: middle !important;
+		}
+
 	</style>
   <div class="modal-header">
     <button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -23,11 +30,11 @@
 		          <option value="{{this}}">{{this}}</option>
 		        {{/each}}
 		      </select>
-				</div>
-			  <div class="col-md-8">
+			</div>
+			<div class="col-md-8">
 		      <label for="email" class="control-label">E-Mail Adresse (ohne E-Mail keine Anmeldung möglich)</label>
 		      <input id="email" type="email" class="form-control input-sm" value="">
-				</div>
+			</div>
 	    </div>
 			<div class="row">
 			  <div class="col-md-6">
@@ -104,8 +111,34 @@
 		<div class="groupbox">
 			<span class="groupbox-label">Hunde</span>
 	    <div class="form-group">
-	      <label for="groups" class="control-label">Geben Sie hier optional Namen für Gruppen an, in den sich der Benutzer befinden soll. Wenn der Benutzer in mehreren Gruppen sein soll, trennen sie die Gruppen durch ein Komma.</label>
-	      <input id="groups" type="text" class="form-control input-sm" value=""/>
+	    	<div style="border-radius: 3px;background-color: #fff;margin: 3px;border: 1px solid #ccc;">	    		
+		    	<table class="table table-condensed" style="width:100%;margin-bottom:2px">
+		    		<thead style="background-color:#eee;font-weight:bold;">
+		    			<tr class="dogs"><td>Name</td><td>Rasse</td><td>Merkmal</td><td></td></tr>
+		    		</thead>
+		    		<tbody>
+		    			{{#each dogs}}
+		    				<tr class="dogs"><td>{{this.name}}</td><td>{{this.race}}</td><td>{{dogtype this.type }}</td><td style="text-align:right;"><button class="btn btn-sm btn-danger delete-dog" data="{{@index}}"><i class="fa fa-close"></i></button></td></tr>
+		    			{{else}}
+		    				<tr class="dogs"><td colspan="4" style="text-align:center;color:#888;">Keine Hunde vorhanden</td></tr>
+			    		{{/each}}
+			    		<tr>
+				    		<td><input class="form-control input-sm" id="dog-name" type="text" placeholder="Name"/></td>
+				    		<td><input class="form-control input-sm" id="dog-race" type="text" placeholder="Rasse"/></td>
+				    		<td>
+					    		<select class="form-control input-sm"  id="dog-type">
+					    			{{#each dogtypes }}
+					    				<option value="{{@index}}">{{this}}</option>
+					    			{{/each}}
+					    		</select>
+				    		</td>
+			    			<td style="text-align:right;">
+			    				<button class="btn btn-sm btn-success add-dog"><i class="fa fa-plus"></i></button>
+			    			</td>
+			    		</tr>
+		    		</tbody>
+		    	</table>
+		    </div>	    	
 	    </div>
 		</div>
 		<div class="groupbox">
@@ -114,7 +147,7 @@
 	      <label for="groups" class="control-label">Geben Sie hier optional Namen für Gruppen an, in den sich der Benutzer befinden soll. Wenn der Benutzer in mehreren Gruppen sein soll, trennen sie die Gruppen durch ein Komma.</label>
 	      <input id="groups" type="text" class="form-control input-sm" value=""/>
 	    </div>
-		</div>
+	</div>
   </div>
   <div class="modal-footer">
     <button id="abort" class="btn btn-default"><i class="fa fa-remove fa-fw"></i>&nbsp;Abbrechen</button>

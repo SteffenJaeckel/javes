@@ -229,14 +229,13 @@ fitArea = function( area ) {
     this.allocations.stop();
   }
   this.allocations = Meteor.subscribe("allocations", area._id );
-  
+
   updateMap();
 
   if( area.geometry != null ) {
     var geo = new ol.format.GeoJSON().readGeometry( area.geometry , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
-  } else {
-    editor.push("areaeditor",{},"");
   }
+
   if( map && map.getSize() ) {
     var view = app.getMap().getView();
     var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
@@ -246,7 +245,11 @@ fitArea = function( area ) {
       view.fit( geo , map.getSize()  );
     } else {
       var role = app.getRole();
-      console.log( role );
+			var geo = new ol.format.GeoJSON().readGeometry( role.location , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
+			view.fit( geo , map.getSize()  );
+			view.setZoom( 16 );
+			console.log( role );
+			editor.push("areaeditor",{},"");
     }
   }
 

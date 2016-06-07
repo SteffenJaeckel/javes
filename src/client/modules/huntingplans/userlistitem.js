@@ -14,7 +14,7 @@ Template.userlistitem.helpers({
 Template.dogtype.helpers({
   hastrackingdog : function ( e , t ) {
     for( var i=0;i < e.length;i++ ) {
-      if( e[i].type === 0 && e[i].range === t )
+      if( e[i].type === t )
       return true;
     }
     return false;

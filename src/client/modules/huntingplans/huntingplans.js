@@ -290,6 +290,17 @@ updateMapData = function () {
       }, 2000)*/
     } else {
       if( plan.drives.length < 1 || plan.drives[drive].shape == null ) {
+				var map = app.getMap();
+				if( map && map.getTarget() ) {
+					var view = app.getMap().getView();
+					var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
+					var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
+					map.beforeRender(pan, zoom)
+					var role = app.getRole();
+					var geo = new ol.format.GeoJSON().readGeometry( role.location , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
+					view.fit( geo , map.getSize()  );
+					view.setZoom( 16 );
+				}
         editor.push('huntingareaeditor',{ color:4 })
       } else {
         console.log("update map:", plan._id, drive );
@@ -319,14 +330,20 @@ updateMapData = function () {
               }
             }
             var map = app.getMap();
-            if( map && geo && map.getTarget() ) {
+            if( map && map.getTarget() ) {
               var view = app.getMap().getView();
               var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
               var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
               map.beforeRender(pan, zoom)
-              view.fit( geo, map.getSize() );
+							if( geo ) {
+								view.fit( geo, map.getSize() );
+							} else {
+								var role = app.getRole();
+								var geo = new ol.format.GeoJSON().readGeometry( role.location , { dataProjection:'WGS84', featureProjection: mapconfig.projection.name });
+								view.fit( geo , map.getSize()  );
+								view.setZoom( 16 );
+							}
             }
-
           },
           removed:function( id ) {
             source_huntingareas.clear();
@@ -597,7 +614,9 @@ Template.huntingplans.helpers({
 })
 
 Template.huntingplans.events({
-
+	'click #new-plan': function () {
+		modals.push('newplan',{date: new Date(), name:'',hunters:10, dogs:5 });
+	},
 	'click .plan': function( e ) {
 		app.setSubPath(4, $(e.currentTarget).attr('data') )
 		//updateMapData();
@@ -652,7 +671,7 @@ Template.huntingplans.events({
   'click #edit-plan':function( e ) {
     editor.push('huntingareaeditor', {color:4, width: 2} );
   },
-  'click #edit-shape': function( e ) {
+  'click #edit-drive': function( e ) {
     editor.push('huntingareaeditor', {color:4, width: 2} );
   },
   'click #new-drive': function( e ) {

@@ -219,8 +219,10 @@ Meteor.methods({
 	newHuntingPlan : function (options) {
     /// todo validate pemissions ...
     var data = Validate( options, {
-      name:{name:'Name',type:'string',min:4, max:128},
+      name:{name:'Name',type:'string',min:2, max:128},
       desc:{name:'Beschreibung',type:'string',max:256,optional:true},
+      leader:{name:'Jagdleiter',type:'string',min:2, max:256,optional:true},
+      backup:{name:'Stellvertreter',type:'string',min:2, max:256,optional:true},
       date:{name:'Datum',type:'date',min:new Date() },
 			hunters:{name:'Schützen',type:'number' },
 			dogs:{name:'Stöberhunde',type:'number' },

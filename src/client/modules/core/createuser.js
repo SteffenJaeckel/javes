@@ -1,5 +1,9 @@
 Template.adduser.created = function() {
   Session.set('error',null)
+  var data = modals.get();
+  if( ! _.isArray(data.dogs ) ) {
+    modals.set('dogs',[]);
+  }
 }
 
 Template.adduser.rendered = function() {
@@ -17,6 +21,9 @@ function applyError( e ) {
 	$('#'+e.reason.id).focus();
 }
 
+
+var dogtypes = ["Stöberhund - Kurz", "Stöberhund - Mittel","Stöberhund - Weit", "Schweisshund"];
+
 Template.adduser.helpers({
   error : function () {
     return Session.get('error')
@@ -29,6 +36,15 @@ Template.adduser.helpers({
       return "Neuen Benutzer anlegen";
     }
   },
+  dogs : function() {
+    return modals.get().dogs;//[ {name:"Waldi",race:"Teckel",desc:"Schweishund"}, {name:"Aron",race:"Deutsch Kurzhaar",desc:"Stöberhund - (Weit)"} ];
+  },
+  dogtype : function( i ) {
+    return dogtypes[ parseInt(i) ];
+  },
+  dogtypes : function() {
+    return dogtypes;
+  },
   roles: function () {
     console.log(app.getRole());
     return app.getRole().inviteroles;
@@ -36,6 +52,17 @@ Template.adduser.helpers({
 });
 
 Template.adduser.events({
+  'click .add-dog' : function() {
+    var data = modals.get();
+    data.dogs.push( {name:$('#dog-name').val(), race:$('#dog-race').val(), type: parseInt( $('#dog-type').val() ) } );
+    modals.set("dogs", data.dogs );
+  },
+  'click .delete-dog' : function( e ) {
+    var index = parseInt($(e.currentTarget).attr('data'));
+    var data = modals.get();
+    data.dogs.splice(index,1);
+    modals.set("dogs", data.dogs );
+  },
   'click .close': function() {
     modals.pop();
   },
@@ -43,12 +70,14 @@ Template.adduser.events({
     modals.pop();
   },
   'click #save-exit' : function() {
+
     var data = {
       email: $('#email').val(),
       firstname: $('#firstname').val(),
       surname: $('#surname').val(),
       role:$('#role').val(),
-      groups:$('#groups').val()
+      groups:$('#groups').val(),
+      dogs: modals.get().dogs
     };
     clearError();
     Meteor.call("findCreateUser", data, function (e,id) {
@@ -65,7 +94,8 @@ Template.adduser.events({
       firstname: $('#firstname').val(),
       surname: $('#surname').val(),
       role:$('#role').val(),
-      groups:$('#groups').val()
+      groups:$('#groups').val(),
+      dogs: modals.get().dogs
     };
     clearError();
     Meteor.call("findCreateUser", data, function (e,id) {
@@ -74,6 +104,7 @@ Template.adduser.events({
         } else {
           // TODO: clear all fields
 					$('input').val('');
+          modals.set("dogs",[])
           $('#role').focus();
         }
     })

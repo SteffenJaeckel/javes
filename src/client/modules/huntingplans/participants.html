@@ -186,43 +186,48 @@
         <h3><i class="fa fa-folder fa-fw"></i>&nbsp; Planung - {{ plan.name }}</h3>
         <p>{{ plan.name }}</p>
         <h4>Jagdleiter</h4>
+        <p>{{plan.leader}}</p>
         <h4>Stellvertreter</h4>
+        <p>{{plan.backup}}</p>
         <h4>Teilnehmer</h4>
         <p>
           <table width="100%" class="inviteoverview">
             <tr>
-              <td>
-                <i class="fa fa-user fa-fw"></i>
+              <td>                
               </td>
               {{#each plan.invites.hunter }}
-                <td align="center" class="{{this.class}}">{{this.invited}}/{{this.confirmed}}</td>
+                <td align="center" class="{{this.class}}"><i class="fa fa-question fa-fw"></i>/<i class="fa fa-close fa-fw"></i>/<i class="fa fa-check fa-fw"></i></td>
               {{/each}}
-              <td align="center" class="{{this.class}}">{{plan.contingent.stands}}</td>
             </tr>
             <tr>
-              <td>
-                <span class="fa-stack" style="font-size:6pt;vertical-align: text-bottom;">
-                  <i class="fa fa-square-o fa-stack-2x" style="font-weight:bold"></i>
-                  <i class="fa fa-paw fa-stack-1x"></i>
-                </span>
+              <td style="text-align:left;">
+                Schützen
               </td>
-              {{#each plan.invites.trackingdogs }}
-                <td align="center" class="{{this.class}}">{{this.invited}}/{{this.confirmed}}</td>
+              {{#each plan.invites.hunter }}
+                <td align="center" class="{{this.class}}">{{this.invited}}&nbsp;/&nbsp;{{this.refused}}&nbsp;/&nbsp;{{this.confirmed}}</td>
               {{/each}}
-              <td align="center" class="{{this.class}}">{{plan.contingent.stands}}</td>
             </tr>
-            <tr>
-              <td>
-                <span class="fa-stack" style="font-size:6pt;vertical-align: text-bottom;">
-                <i class="fa fa-circle-o fa-stack-2x"></i>
-                <i class="fa fa-paw fa-stack-1x"></i>
-              </span>
-              </td>
-              {{#each plan.invites.scenthound }}
-                <td align="center" class="{{this.class}}">{{this.invited}}/{{this.confirmed}}</td>
-              {{/each}}
-              <td align="center" class="{{this.class}}">{{plan.contingent.stands}}</td>
-            </tr>
+            {{#each plan.invites.dogs }}
+              <tr>
+                <td style="text-align:left;">
+                  {{#if equal @index 0}}
+                    SH Kurz
+                  {{/if}}
+                  {{#if equal @index 1}}
+                    SH Mittel
+                  {{/if}}
+                  {{#if equal @index 2}}
+                    SH Weit
+                  {{/if}}
+                  {{#if equal @index 3}}
+                    Schweißhunde
+                  {{/if}}
+                </td>
+                {{#each this }}
+                  <td align="center" class="{{this.class}}">{{this.invited}}&nbsp;/&nbsp;{{this.refused}}&nbsp;/&nbsp;{{this.confirmed}}</td>
+                {{/each}}
+              </tr>
+            {{/each}}            
           </table>
         </p>
       {{/if}}
@@ -253,11 +258,11 @@
           {{#if invitestate.uninvited }}
             <p>Nicht eingeladen</p>
           {{/if}}
-          {{#if invitestate.selected }}
-            <p>Ausgewählt durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}} am {{formatDate invitestate.date}}</p>
+          {{#if invitestate.invite }}
+            <p>Vorgemerkt für Einladung durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}} am {{formatDate invitestate.date}}</p>
           {{/if}}
-          {{#if invitestate.invited }}
-            <p>Einladung per E-Mail verschickt am {{formatDate invitestate.date}} durch  {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}}</p>
+          {{#if invitestate.request }}
+            <p>Vorgemerkt für Interessensbekundung durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}} am {{formatDate invitestate.date}}. </p>
           {{/if}}
           {{#if invitestate.invited }}
             <p>Einladung per E-Mail verschickt am {{formatDate invitestate.date}} durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}}</p>
@@ -281,15 +286,18 @@
 
 <template name="dogitem">
   <p>
-    {{> dogtype }}
-    {{#if this.type }}
+    {{#if equal this.type 3 }}
       Schweißhund
-    {{else}}
-      Stöberhund
+    {{/if}}
+    {{#if equal this.type 0 }}
+      Stöberhund (Kurz)
+    {{/if}}
+    {{#if equal this.type 1 }}
+      Stöberhund (Mittel)
+    {{/if}}
+    {{#if equal this.type 2 }}
+      Stöberhund (Weit)
     {{/if}}
     <span>{{this.race}}</span>
-    {{#if this.radius}}
-      <span>( {{this.radius}}m )</span>
-    {{/if}}
   </p>
 </template>
