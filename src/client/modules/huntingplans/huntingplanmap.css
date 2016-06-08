@@ -53,7 +53,6 @@ input.tablecellinput {
   @page {
     margin: 4% !important;
   }
-
   #mapbody { position:relative; width:100%; top: 0px; }
   #mapcontainer { position:relative; width: 100%; top: 0px; }
   #paperback { position:relative; width: 100%; top: 0px; padding:0px; background-color:#fff; overflow: visible; }

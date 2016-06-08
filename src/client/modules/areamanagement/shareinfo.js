@@ -100,6 +100,10 @@ Template.shareinfo.events({
 	'click #send-invite-email': function (e) {
 		var addr = $(e.currentTarget).attr('data').toLowerCase()
 		var area = getCurrentArea();
+		var surname = $('#surname').val();
+		var name = $('#name').val();
+		//modals.push("adduser",{email: addr });
+		
 		if( name && name != '' && surname && surname != '' && area ) {
 			Meteor.call('sendInvitation',  area._id , addr, name, surname, function(e) {
 				Session.set('error',{ emailsend: true, email:addr, name:name, surname:surname } );

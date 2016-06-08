@@ -229,7 +229,8 @@ div.modal-body {
   border-radius: 3px;
   margin-top: 6px;
   padding: 6px;
-  padding-top: 6px
+  padding-top: 6px;
+  white-space: normal;
 }
 
 .infoblock:last-child {
@@ -252,11 +253,13 @@ div.modal-body {
 @media print {
 	#app { position: relative; width:100%; min-width:100%; max-width:100%;}
 	#main { position: relative; top: 0px;	width: 100%;}
+	#app { position: relative; width:100%; min-width:100%; max-width:100%;}
 	#toolbar {display:none;}
 	#leftframe {display:none;}
 	#topframe {display:none;}
 	#datenauswahl {display:none;}
-	#datenbearbeitung {left:0px;}
+	#datenbearbeitung {position: relative; top: 0px;	left:0px; width: 100%; }
+	.page-container { position: relative; top: 0px;	left:0px; width: 100%; }
 }
 
 .selection-item {

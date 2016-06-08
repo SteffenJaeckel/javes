@@ -214,7 +214,7 @@ Template.participants.helpers({
     var width = 60;
     var plans = [];
     var offset = 0;
-    Plans.find().forEach( function (plan) {
+    Plans.find({}, {sort: {date: 1}}).forEach( function (plan) {
       var userinvited = 0;
       var dogsinvited = 0;
       for( var uid in plan.invitestates ) {
@@ -247,7 +247,7 @@ Template.participants.helpers({
     var plans = [];
     var offset = 0;
 
-    Plans.find().forEach( function (plan) {
+    Plans.find({}, {sort: {date: 1}}).forEach( function (plan) {
       var cur = {
         _id:plan._id,
         offset:offset,

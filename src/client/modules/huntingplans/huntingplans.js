@@ -615,7 +615,7 @@ Template.huntingplans.helpers({
 
 Template.huntingplans.events({
 	'click #new-plan': function () {
-		modals.push('newplan',{date: new Date(), name:'',hunters:10, dogs:5 });
+		modals.push('newplan',{date: new Date(), name:'',leader:'', backup:'', hunters:10, dogs:5 });
 	},
 	'click .plan': function( e ) {
 		app.setSubPath(4, $(e.currentTarget).attr('data') )
