@@ -66,7 +66,7 @@ function getColor( feature , print ) {
 
       var stand = Stands.findOne( { _id : feature.getId() } );
       var now = new Date();
-      if( stand.allocations != null ) {
+      if( stand && stand.allocations != null ) {
         for( var aid in stand.allocations ) {
           if( stand.allocations[aid].from > now ) {
             if( stand.allocations[aid].user.id == Meteor.user()._id ) {
