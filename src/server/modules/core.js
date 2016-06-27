@@ -15,8 +15,17 @@ function findCreateUser( me, data ) {
           firstname : {type: 'string', min:1, max:128, name:'Vorname' },
           surname: {type:'string',min:1, max:128, name: 'Nachname' },
           role: {type:'set', items: role.inviteroles , name:"Typ" },
-          groups: {type:'string', min:0, max:128, name:'Gruppen',optional:true }
+          groups: {type:'string', min:0, max:128, name:'Gruppen',optional:true },
+          dogs: { type:'array', min:0, max:16, name:'Hunde', items: {
+            type:'object', name:'Hund',model:{
+              name: {type:"string",name:"Name des Hundes", min:0,max:256 },
+              race: {type:"string", name:"Rasse des Hundes", min:0, max:128},
+              type: {type:"set" , name:"Typ", items: [0,1,2,3]}
+            }
+          }}
         });
+        
+        console.log( data );
 
         var targetrole = customer.departments[ departmentid ].roles[ data.role ];
 
@@ -24,7 +33,7 @@ function findCreateUser( me, data ) {
         if( data.email != null ) {
           var user = Accounts.findUserByEmail( data.email );
           if( user == null ) {
-            Accounts.createUser( {'email':data.email,profile:{firstname: data.firstname, surname: data.surname, managed:true }} );
+            Accounts.createUser( {'email':data.email,profile:{firstname: data.firstname, surname: data.surname, dogs: data.dogs, managed:true}} );
             user = Accounts.findUserByEmail( data.email );
           }
         } else {
@@ -32,7 +41,7 @@ function findCreateUser( me, data ) {
           var user = Accounts.findUserByUsername(md5name);
           // wenn der user nicht gefunden wurde, user per username erzeugen ...
           if( user == null ) {
-            Accounts.createUser( { 'username': md5name, profile:{firstname: data.firstname, surname: data.surname, managed:true } } );
+            Accounts.createUser( { 'username': md5name, profile:{firstname: data.firstname, surname: data.surname, dogs: data.dogs, managed:true } } );
             user = Accounts.findUserByUsername(md5name);
           }
         }
@@ -148,7 +157,6 @@ Accounts.onCreateUser( function(options, user) {
 	if ( options.profile ) {
 		options.profile.avatar = Math.round( Math.random() * 1000 );
 		user.profile = options.profile;
-    user.profile.dogs = [];
     user.profile.title = "";
     user.profile.gender = 0;
     user.profile["currentpath"] = [];

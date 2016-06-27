@@ -133,11 +133,11 @@ ValidateType = function ( item , type, name, model, items, min, max, obj ) {
 
         if( item instanceof Date  ) {
           if( min ) {
-            if( item < min )
+            if( item.getTime() < min.getTime() )
               throw new Meteor.Error(420, { id:key ,text:'Die Zeitangabe für Parameter '+name+' liegt ausserhalb des gültigen Bereichs. Zeitangaben vor dem '+moment(min).format('DD. MM. YYYY HH:MM')+' sind unzulässig.'});
           }
           if( max ) {
-            if( item > max )
+            if( item.getTime() > max.getTime() )
               throw new Meteor.Error(420, { id:key ,text:'Die Zeitangabe für Parameter '+name+' liegt ausserhalb des gültigen Bereichs. Zeitangaben nach dem '+moment(max).format('DD. MM. YYYY HH:MM')+' sind unzulässig.'});
           }
           return item;

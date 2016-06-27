@@ -3,7 +3,7 @@ var maps = {};
 
 function createMap( stand, source_circles, source_stands ) {
 
-  var layer = getBaseLayer(2);
+  var layer = getBaseLayer(1);
 
   layer.push( new ol.layer.Vector({
     source: source_circles ,

@@ -63,12 +63,18 @@ function getColor( feature , print ) {
   if( feature.get("area") != null ) {
     if( feature.get('color') != null ) {
       var c = parseInt(feature.get('color'));
-      var alloc = Allocations.findOne( { stand : feature.getId() , from : { $gte: new Date() }} )
-      if( alloc )  {
-        if( alloc.user.id == Meteor.user()._id ) {
-          c = 5;
-        } else {
-          c = 1;
+
+      var stand = Stands.findOne( { _id : feature.getId() } );
+      var now = new Date();
+      if( stand && stand.allocations != null ) {
+        for( var aid in stand.allocations ) {
+          if( stand.allocations[aid].from > now ) {
+            if( stand.allocations[aid].user.id == Meteor.user()._id ) {
+              c = 5;
+            } else {
+              c = 1;
+            }
+          } 
         }
       }
       img = 'img/marker/'+(parseInt(feature.get('type'))+3)+'0'+c+'.png'
@@ -152,42 +158,48 @@ getDogStandStyle = function( feature, res ) {
     var item = getColor( feature )
     var u = Meteor.users.findOne({_id:hunter});
     var dc = item.color.concat([]);
-    dc[3] = 0.5;
+    dc[3] = 0.1;
 
-    if( u && u.profile.dogs && u.profile.dogs.length > 0 ) {
-      // hunter += " "+"Teckel"+" (kurz)";
-      hunter = ( u ) ? u.profile.surname+', '+u.profile.firstname : '';
-      for(var i=0;i < 1;i++) {
-        styles.push( new ol.style.Style({
-          image: new ol.style.Circle({
-            radius: (200 + i*100)/res,
-            fill: new ol.style.Fill({
-              color: dc
-            }),
-            stroke: new ol.style.Stroke({
-              color: [0, 0, 0, item.opacity * 0.5 ],
-              width: 1
-            }),
-            zIndex: parseInt( feature.get('z-index'))*2 -100
-          })
-        }))
+    if( u && u.profile.dogs ) {
+      for( var d = 0; d < u.profile.dogs.length;d++ ) {
+        if( u.profile.dogs[d].type < 3 ) {
+          // hunter += " "+"Teckel"+" (kurz)";
+          hunter = ( u ) ? u.profile.surname+', '+u.profile.firstname : '';
+          for(var i=0;i < 1+u.profile.dogs[d].type;i++) {
+            styles.push( new ol.style.Style({
+              image: new ol.style.Circle({
+                radius: (200 + i*100)/res,
+                fill: new ol.style.Fill({
+                  color: dc
+                }),
+                stroke: new ol.style.Stroke({
+                  color: [0, 0, 0, item.opacity * 0.5 ],
+                  width: 1
+                }),
+                zIndex: parseInt( feature.get('z-index'))*2 -100
+              })
+            }))
+          }
+
+          styles.push( new ol.style.Style( {
+              text: new ol.style.Text( {
+                scale: (res < minzoom ) ? 2:1 /* + Math.round(Math.random()*3)*0.5*/,
+                text: (res < minzoom ) ? u.profile.dogs[d].race:"",/*"(((Terrier)))"*/
+                offsetY: (res < minzoom ) ? 32:5,
+                fill: new ol.style.Fill({
+                  color: item.color
+                }),
+                stroke: new ol.style.Stroke({
+                  color: [0, 0, 0, 0.8 ],
+                  width: (res < minzoom ) ? 2:4
+                }),
+              }),
+              zIndex: parseInt( feature.get('z-index'))*2-50
+          }))
+
+          d = u.profile.dogs.length;
+        }
       }
-
-      styles.push( new ol.style.Style( {
-          text: new ol.style.Text( {
-            scale: (res < minzoom ) ? 2:1 /* + Math.round(Math.random()*3)*0.5*/,
-            text: "",/*"(((Terrier)))"*/
-            offsetY: (res < minzoom ) ? 30:5,
-            fill: new ol.style.Fill({
-              color: item.color
-            }),
-            stroke: new ol.style.Stroke({
-              color: [0, 0, 0, 0.8 ],
-              width: (res < minzoom ) ? 2:4
-            }),
-          }),
-          zIndex: parseInt( feature.get('z-index'))*2-50
-      }))
     }
   }
   return styles;

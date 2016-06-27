@@ -347,6 +347,7 @@ Meteor.methods({
 		var me = Meteor.users.findOne( { _id: this.userId });
 
 		var stand = Stands.findOne({_id:standId, area: areaId } );
+		
 		if( ! stand ) {
 			throw new Meteor.Error(501,"Fehlerhafte stand oder revier id");
 		}
@@ -359,7 +360,12 @@ Meteor.methods({
 			to = temp;
 		}
 
-		var error = Allocations.findOne(  { stand:standId, $or:[ {$and : [ {'from':{$gte:from}},{'from':{$lte:to}} ] }, {$and: [{'to':{$gte:from}},{'to':{$lte:to}}]}] } )
+		if( stand.allocations == null ) {
+			stand.allocations = [];
+		}
+
+
+		var error = Stands.findOne(  { stand:standId, $or:[ {$and : [ {'allocations.from':{$gte:from}},{'allocations.from':{$lte:to}} ] }, {$and: [{'allocations.to':{$gte:from}},{'allocations.to':{$lte:to}}]}] } )
 		if( error ) {
 			console.log( error )
 			console.log( from )
@@ -369,17 +375,27 @@ Meteor.methods({
 		}
 		var doc = {};
 
-		doc['user'] = { id: me._id, name:me.profile.name, surname: me.profile.surname };
-		doc['stand'] = standId;
+		doc['_id'] = Random.id();
+		doc['user'] = { id: me._id, name:me.profile.firstname, surname: me.profile.surname };
 		doc['from'] = from;
 		doc['to'] = to;
-		doc['area'] = areaId;
 
-		Allocations.insert( doc );
-
+		stand.allocations.push( doc );
+		Stands.update( {_id: stand._id }, stand );
 	},
-	removeAllocation: function( allocationId ) {
-		Allocations.remove({_id:allocationId,'user.id':this.userId});
+	removeAllocation: function( allocationId ) {		
+		var stand = Stands.findOne( {"allocations._id": allocationId  } )
+		if( stand ) {
+			console.log( stand );
+			for( var i=0;i < stand.allocations.length;i++ ) {
+				if(stand.allocations[i]._id ==  allocationId ) {
+					stand.allocations.splice( i , 1 );
+					i--;
+				}
+			}
+			Stands.update({_id:stand._id},stand );
+			console.log( stand );
+		}
 	},
 	addReport: function( report ) {
 
@@ -389,9 +405,9 @@ Meteor.methods({
 		}
 
 		if( report.type == 3 && report.hunttype == 3 ) {
-			report['reporter'] = { id:this.userId ,name:report.firstname ,surname:report.surname };
+			report['reporter'] = { id:this.userId ,name:report.firstname ,surname:report.surname, img: 1 };
 		} else {
-			report['reporter'] = { id:this.userId ,name:me.profile.firstname ,surname:me.profile.surname };
+			report['reporter'] = { id:this.userId ,name:me.profile.firstname ,surname:me.profile.surname, img: me.profile.avatar };
 		}
 		Reports.insert( report );
 		switch(report.type ) {
@@ -413,9 +429,9 @@ Meteor.methods({
 		}
 		console.log( report );
 		if( report.type == 3 && report.hunttype == 3 ) {
-			report['reporter'] = { id:this.userId ,name:report.name ,surname:report.surname };
+			report['reporter'] = { id:this.userId ,name:report.name ,surname:report.surname, img: 1 };
 		} else {
-			report['reporter'] = { id:this.userId ,name:me.profile.name ,surname:me.profile.surname };
+			report['reporter'] = { id:this.userId ,name:me.profile.name ,surname:me.profile.surname, img: me.profile.avatar };
 		}
 		Reports.update({_id:report._id},report);
 	},

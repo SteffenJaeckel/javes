@@ -25,7 +25,7 @@
 			{{#if editor }}
 				{{> Template.dynamic template=editortemplate }}
 			{{else}}
-				<button class="btn btn-success btn-xs new">
+				<button id="new-plan" class="btn btn-success btn-xs new">
 					<span><i class="fa fa-plus fa-fw"></i>&nbsp;Neue Jagdplanung erstellen ...</span>
 				</button>
 				{{#each plans}}
@@ -37,9 +37,8 @@
 										<div style="position:absolute;left:0px;right:18px;">{{name}}</div>
 										<div style="position:absolute;width:18px;right:0px;"><i class="fa fa-caret-down fa-fw"></i></div>
 									</div>
-									<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+									<ul class="dropdown-menu selected" style="width:100%;" aria-labelledby="dropdownMenu1">
 										<li><a id="edit-area" href="#">Umbenennen ...</a></li>
-										<li><a id="adjust-area" href="#">Fläche anpassen ...</a></li>
 										<li><a id="share-area" href="#">Dateifreigabe ...</a></li>
 										<li role="separator" class="divider"></li>
 										<li><a id="delete-plan" href="#">Löschen</a></li>
@@ -63,7 +62,9 @@
 														<div style="position:absolute;left:0px;right:18px;">{{ add @index 1}}. Treiben</div>
 														<div style="position:absolute;width:18px;right:0px;"><i class="fa fa-caret-down fa-fw"></i></div>
 													</div>
-													<ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+													<ul class="dropdown-menu selected" style="width:100%;" aria-labelledby="dropdownMenu2">
+														<li><a id="edit-drive" href="#">Fläche anpassen ...</a></li>
+														<li role="separator" class="divider"></li>
 														<li><a id="delete-drive" href="#">Löschen</a></li>
 													</ul>
 												</div>
@@ -86,7 +87,10 @@
 								          </div>
 								        {{else}}
 													<div class="form-group" >
-														<button id="enter-hunting-office" class="btn btn-xs btn-default">Drückansicht</button>
+														<button id="enter-hunting-office" class="btn btn-xs btn-default">Druckansicht</button>
+													</div>
+													<div class="form-group">
+														<button id="arrange-hunter" class="btn btn-xs btn-default" style="width:100%; text-align:left;"><i class="fa fa-user fa-fw"></i>&nbsp;Schützen verteilen</button>
 													</div>
 												{{/if}}
 											</div>
@@ -107,9 +111,10 @@
 																			<div style="position:absolute;left:0px;right:18px;">Gruppe {{routeInfo this}}</div>
 																			<div style="position:absolute;width:18px;right:0px;"><i class="fa fa-caret-down fa-fw"></i></div>
 																		</div>
-																		<ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
+																		<ul class="dropdown-menu selected" style="width:100%;" aria-labelledby="dropdownMenu3">
 																			<li><a id="edit-route" href="#">Bearbeiten ...</a></li>
-																			<li><a id="select-leader" href="#">Personal ...</a></li>
+																			<li><a id="select-stands" href="#">Stände ändern ...</a></li>
+																			<!--li><a id="select-leader" href="#">Personal ...</a></li-->
 																			<li role="separator" class="divider"></li>
 																			<li><a id="delete-route" href="#">Löschen</a></li>
 																		</ul>
@@ -119,16 +124,10 @@
 																<div class="group">
 																	<span class="label">Gruppeninformationen</span>
 																	<p class="infoblock">
-																		Ansteller dieser Gruppe ist <b>{{userById route.leader}}</b>.
-																		{{#if route.vehicle}}
-																			Als Fahrzeug ist {{route.vehicle}} eingeplant.
-																		{{/if}}
+																		Ansteller dieser Gruppe ist <b>{{userById route.leader}}</b>.{{#if route.vehicle}}Als Fahrzeug ist {{route.vehicle}} eingeplant.{{/if}}
 																	</p>
 																	<div class="form-group">
 																		<button id="select-stands" class="btn btn-xs btn-default" style="width:100%; text-align:left;"><i class="fa fa-check-square-o fa-fw"></i>&nbsp;Stände auswählen</button>
-																	</div>
-																	<div class="form-group">
-																		<button id="arrange-hunter" class="btn btn-xs btn-default" style="width:100%; text-align:left;"><i class="fa fa-user fa-fw"></i>&nbsp;Schützen verteilen</button>
 																	</div>
 																	<p class="infoblock" >
 																		<table width="100%">
@@ -267,15 +266,12 @@
 		                  {{#each this}}
 		                    <table class="participant-list">
 		                      <thead>
-		                        <tr><td colspan="{{colspan}}">{{name}}</td></tr>
+		                        <tr><td>{{name}}</td></tr>
 		                      </thead>
 		                      <tbody>
 		                        {{#each user }}
 		                          <tr>
 		                            <td>{{profile.title}} {{profile.surname}}, {{profile.firstname}}</td>
-		                            {{#each drives }}
-		                              <td class="group-cell">{{index}}. Treiben:<span><b>{{value}}</b></span></td>
-		                            {{/each}}
 		                          </tr>
 		                        {{/each}}
 		                      </tbody>
@@ -334,7 +330,7 @@
 		                <div style="position:absolute;left:32%;right:0%;top:0%;bottom:0%;">
 		                    {{ > printroutemap }}
 		                    <div style="position: absolute;bottom: -6pt;outline: 6pt #fff solid;right: 0pt;background-color: #fff !important;">
-		                      <span style="font-size:8pt; color:#333;">www.javes.org</span>&nbsp;&nbsp;<span class="printlogo" style="top:7.5pt"></span>
+		                      <span style="font-size:8pt; color:#333;"></span>&nbsp;&nbsp;<span class="printlogo" style="top:7.5pt"></span>
 		                    </div>
 		                </div>
 		              </div>
@@ -421,7 +417,8 @@
 		                </div>
 		              </div>
 		            </div>
-		            <div class="page-landscape">
+								{{#if commentout}}
+								<div class="page-landscape">
 		              <div class="page-content">
 		                <div class="page-border">
 		                  <div class="left-subpage" style="position:absolute;left:0%;right:53%;top:0%;bottom:0%;">
@@ -433,6 +430,7 @@
 		                </div>
 		              </div>
 		            </div>
+								{{/if}}
 		          {{/each}}
 		        {{/if}}
 		      </div>

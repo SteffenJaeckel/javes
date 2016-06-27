@@ -24,18 +24,20 @@ function loadUser() {
     filter.push( q );
   }
   if( Session.get('type-filter') > 0 ) {
-    filter.push({'profile.type':(Session.get('type-filter')-1)})
+    var tflt = {};
+    tflt["customers."+app.getCustomer()+".departments."+app.getDepartment()+".type"] = (Session.get('type-filter')-1);
+    filter.push(tflt);
   }
   if( Session.get('dog-filter') != 0 ) {
     switch( Session.get('dog-filter') ) {
       case 1:
-        filter.push( {'profile.dogs.type':0} );
+        filter.push( {'profile.dogs.type': { $lt:3}} );        
       break;
       case 2:
-        filter.push( {'profile.dogs.type':1} );
+        filter.push( {'profile.dogs.type':3} );
       break;
       case 3:
-        filter.push( {$or : [ {'profile.dogs.type':0},{'profile.dogs.type':1} ]} );
+        filter.push( {'profile.dogs.type': {$exists:true} } );
       break;
       case 4:
         filter.push( {'profile.dogs' : {$size:0}});
@@ -212,13 +214,15 @@ Template.participants.helpers({
     var width = 60;
     var plans = [];
     var offset = 0;
-    Plans.find().forEach( function (plan) {
+    Plans.find({}, {sort: {date: 1}}).forEach( function (plan) {
       var userinvited = 0;
       var dogsinvited = 0;
       for( var uid in plan.invitestates ) {
-        userinvited++;
-        if( Meteor.users.findOne({_id:uid,"profile.dogs.type":1 })) {
-          dogsinvited++;
+        if( plan.invitestates[uid].state != 'refused' ) {
+          userinvited++;
+          if( Meteor.users.findOne({_id:uid,"profile.dogs.type": {$lt:3} })) {
+            dogsinvited++;
+          }
         }
       }
       var cur = {
@@ -243,7 +247,7 @@ Template.participants.helpers({
     var plans = [];
     var offset = 0;
 
-    Plans.find().forEach( function (plan) {
+    Plans.find({}, {sort: {date: 1}}).forEach( function (plan) {
       var cur = {
         _id:plan._id,
         offset:offset,
@@ -307,7 +311,7 @@ Template.participants.events({
       } else {
         tt['top'] = e.clientY+20;
       }
-      //Session.set( 'tooltip', tt );
+      Session.set( 'tooltip', tt );
     }
   },
   'mouseenter .feedback': function( e ) {
@@ -387,7 +391,7 @@ Template.participants.events({
 
 function hasTrackingDog( user ) {
   for( var i=0;i < user.profile.dogs.length;i++ ) {
-    if( user.profile.dogs[i].type == 0 )
+    if( user.profile.dogs[i].type == 3 )
     return true;
   }
   return false;
@@ -395,7 +399,7 @@ function hasTrackingDog( user ) {
 
 function hasScentHound( user ) {
   for( var i=0;i < user.profile.dogs.length;i++ ) {
-    if( user.profile.dogs[i].type == 1 )
+    if( user.profile.dogs[i].type != 3 )
     return true;
   }
   return false;
@@ -432,15 +436,23 @@ Template.basetip.helpers({
       var plan = Plans.findOne( {_id:tip.plan });
       if( plan ) {
 
-        var userstates = { hunter:[], trackingdogs: [], scenthound: [] };
+        console.log("build plan tip ", plan )
+
+        var userstates = { hunter:[], dogs: [[],[],[],[]] };
+
         for( var t=0;t < Huntertypes.length;t++ ) {
-          userstates.hunter.push( { class:'huntertype-'+(t+1),invited:0,confirmed:0} );
-          userstates.trackingdogs.push( { class:'huntertype-'+(t+1),invited:0,confirmed:0} );
-          userstates.scenthound.push( { class:'huntertype-'+(t+1),invited:0,confirmed:0} );
+          userstates.hunter.push( { class:'huntertype-'+(t+1),invited:0,refused:0,confirmed:0} );
+          userstates.dogs[0].push( { class:'huntertype-'+(t+1),invited:0,refused:0,confirmed:0} );
+          userstates.dogs[1].push( { class:'huntertype-'+(t+1),invited:0,refused:0,confirmed:0} );
+          userstates.dogs[2].push( { class:'huntertype-'+(t+1),invited:0,refused:0,confirmed:0} );
+          userstates.dogs[3].push( { class:'huntertype-'+(t+1),invited:0,refused:0,confirmed:0} );
         }
-        userstates.hunter.push( { class:'sum',invited:0,confirmed:0} );
-        userstates.trackingdogs.push( { class:'sum', invited:0,confirmed:0} );
-        userstates.scenthound.push( { class:'sum', invited:0,confirmed:0} );
+        userstates.hunter.push( { class:'sum', invited:0,refused:0,confirmed:0} );
+        userstates.dogs[0].push( { class:'sum', invited:0,refused:0,confirmed:0} );
+        userstates.dogs[1].push( { class:'sum', invited:0,refused:0,confirmed:0} );
+        userstates.dogs[2].push( { class:'sum', invited:0,refused:0,confirmed:0} );
+        userstates.dogs[3].push( { class:'sum', invited:0,refused:0,confirmed:0} );
+
         var sum = userstates.hunter.length-1;
 
         Meteor.users.find( {_id:{ $in: _.keys(plan.invitestates ) }} ).forEach( function ( user ) {
@@ -449,28 +461,26 @@ Template.basetip.helpers({
             case 'confirmed':
               userstates.hunter[ type ].confirmed++;
               userstates.hunter[ sum ].confirmed++;
-              if( hasScentHound( user ) ) {
-                userstates.scenthound[ type ].confirmed++;
-                userstates.scenthound[ sum ].confirmed++;
-              }
-              if( hasTrackingDog( user) ) {
-                userstates.trackingdogs[ type ].confirmed++;
-                userstates.trackingdogs[ sum ].confirmed++;
+              for( var d = 0;d < user.profile.dogs.length;d++ ) {
+                userstates.dogs[ user.profile.dogs[d].type ][type].confirmed++;
+                userstates.dogs[ user.profile.dogs[d].type ][sum].confirmed++;
               }
             break;
             case 'refused':
+              userstates.hunter[ type ].refused++;
+              userstates.hunter[ sum ].refused++;
+              for( var d = 0;d < user.profile.dogs.length;d++ ) {
+                userstates.dogs[ user.profile.dogs[d].type ][type].refused++;
+                userstates.dogs[ user.profile.dogs[d].type ][sum].refused++;
+              }
             break;
             default:
               userstates.hunter[ type ].invited++;
               userstates.hunter[ sum ].invited++;
-              if( hasScentHound( user ) ) {
-                userstates.scenthound[ type ].invited++;
-                userstates.scenthound[ sum ].invited++;
-              }
-              if( hasTrackingDog( user) ) {
-                userstates.trackingdogs[ type ].invited++;
-                userstates.trackingdogs[ sum ].invited++;
-              }
+              for( var d = 0;d < user.profile.dogs.length;d++ ) {
+                userstates.dogs[ user.profile.dogs[d].type ][type].invited++;
+                userstates.dogs[ user.profile.dogs[d].type ][sum].invited++;
+              }              
             break;
           }
         })

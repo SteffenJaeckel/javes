@@ -24,7 +24,17 @@
 			{{#if error}}
 				{{#if error.usernotfound}}
 				<div class="alert alert-warning">
-					<b>Achtung !</b> Der Benutzer konnte nicht gefunden werden. Möchten Sie einen neuen Benutzer erstellen? Überprüfen Sie gegebenenfalls noch einmal die Adresse.<br/>
+					<b>Achtung !</b> Der Benutzer <b>({{error.email}})</b> konnte nicht gefunden werden. Möchten Sie einen neuen Benutzer erstellen? Überprüfen Sie gegebenenfalls noch einmal die Adresse.<br/>
+					<div class="container" style="width: 100%;margin-top: 12px;">
+						<div class="row">
+							<div class="col-sm-6">
+								<input type="text" id="name" placeholder="Vorname" class="form-control input-sm"/>
+							</div>
+							<div class="col-sm-6">
+								<input type="text" id="surname" placeholder="Nachname" class="form-control input-sm"/>
+							</div>
+						</div>
+					</div>
 					<hr/>
 					<div align="right">
 						<button id="abort-send-invite-email" class="btn btn-sm btn-default">Abbrechen</button>
@@ -39,7 +49,7 @@
 				{{/if}}
 			{{/if}}
 			<div class="form-group">
-				<label for="invite-email" class="control-label">Um daen Pirschbezirk für weitere Benutzer freizugeben, geben Sie bitte die E-Mail Addresse des Benutzers ein.</label>
+				<label for="invite-email" class="control-label">Um den Pirschbezirk für weitere Benutzer freizugeben, geben Sie bitte die E-Mail Addresse des Benutzers ein.</label>
 				<input id="invite-email" class="form-control" placeholder="E Mail" type="text" style="width:100%"/>
 			</div>
 		{{/if}}

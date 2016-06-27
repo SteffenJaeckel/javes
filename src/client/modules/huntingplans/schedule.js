@@ -117,6 +117,6 @@ Template.schedule.events( {
   'click .newplan': function(e) {
     var date = new Date( parseInt($(e.currentTarget).attr('data')));
     console.log( date )
-    modals.push('newplan',{date: date, name:'',hunters:10, dogs:5 });
+    modals.push('newplan',{date: date, name:'',leader:'', backup:'', hunters:50, dogs:25 });
   }
 })

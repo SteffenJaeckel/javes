@@ -1,0 +1,1048 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"allo",
+				"allocations"
+			],
+			[
+				"Stand",
+				"Stands"
+			],
+			[
+				"in",
+				"invitestates"
+			],
+			[
+				"con",
+				"console"
+			],
+			[
+				"Get",
+				"getDepartment"
+			],
+			[
+				"get",
+				"getCustomer"
+			],
+			[
+				"dog",
+				"dogtypes"
+			],
+			[
+				"opt",
+				"option	Tag"
+			],
+			[
+				"pro",
+				"project"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "client/modules/areamanagement/reportview.html",
+			"settings":
+			{
+				"buffer_size": 1402,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/participants.js",
+			"settings":
+			{
+				"buffer_size": 15741,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "server/modules/areamanagement.js",
+			"settings":
+			{
+				"buffer_size": 16418,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/_stylefunctions.js",
+			"settings":
+			{
+				"buffer_size": 12884,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/huntingplans.html",
+			"settings":
+			{
+				"buffer_size": 33562,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "<template name=\"participants\">\n  <div id=\"toolbox\">\n    <div>\n      {{#if checkPermission \"huntingplans.changeParticipantsState\"}}\n      <div class=\"btn-group btn-group-justified selection-group\" style=\"width:268px;float:left;\">\n        <div class=\"btn-group\" role=\"group\">\n          <button class=\"btn btn-sm btn-default select-tool {{istoolselected 0}}\" data=\"0\">&nbsp;<i class=\"fa fa-question fa-fw\"></i>&nbsp;</button>\n        </div>\n        <div class=\"btn-group\" role=\"group\">\n          <button class=\"btn btn-sm btn-default select-tool {{istoolselected 1}}\" data=\"1\">&nbsp;<i class=\"fa fa-envelope-o fa-fw\"></i>&nbsp;</button>\n        </div>\n        <div class=\"btn-group\" role=\"group\">\n          <button class=\"btn btn-sm btn-default select-tool {{istoolselected 2}}\" data=\"2\">&nbsp;<i class=\"fa fa-check fa-fw\"></i>&nbsp;</button>\n        </div>\n        <div class=\"btn-group\" role=\"group\">\n          <button class=\"btn btn-sm btn-default select-tool {{istoolselected 3}}\" data=\"3\">&nbsp;<i class=\"fa fa-remove fa-fw\"></i>&nbsp;</button>\n        </div>\n        <div class=\"btn-group\" role=\"group\">\n          <button class=\"btn btn-sm btn-default select-tool {{istoolselected 4}}\" data=\"4\">&nbsp;<i class=\"fa fa-trash fa-fw\"></i>&nbsp;</button>\n        </div>\n      </div>\n      {{/if}}\n      <div style=\"position: absolute;left: 310px;top: 15px;text-overflow: ellipsis; overflow: hidden;white-space: nowrap;\">\n        {{#if checkPermission \"administration.addUser\" }}\n          <button id=\"add-hunter\" class=\"btn btn-sm btn-success\"><i class=\"fa fa-user-plus fa-fw\"></i>&nbsp;Jäger hinzufügen</button>&nbsp;\n        {{/if}}\n        {{#if checkPermission \"huntingplans.inviteParticipants\"}}\n          <button id=\"send-requests\" class=\"btn btn-sm btn-warning\"><i class=\"fa fa-envelope fa-fw\"></i>&nbsp;Interessenbekundungen verschicken</button>&nbsp;\n          <button id=\"send-invitations\" class=\"btn btn-sm btn-warning\"><i class=\"fa fa-envelope fa-fw\"></i>&nbsp;Einladung verschicken</button>&nbsp;\n        {{/if}}\n      </div>\n    </div>\n  </div>\n  <div id=\"participants\" style=\"position:absolute;top:58px;left:0px;right:0px;bottom:0px;\">\n    <div id=\"c\" style=\"position:relative;left:0px;top:0px;width:100%;height:100%;\">\n      <div id=\"filter\" style=\"position:absolute;top:0px;left:0px;width:300px;height:166px;\">\n        <div class=\"input-group input-group-sm\">\n          <span class=\"input-group-addon\" id=\"addon-types\">\n              <i class=\"fa fa-check-square-o fa-fw\"></i>\n          </span>\n          <div class=\"input-group-btn\">\n            <button type=\"button\" class=\"btn btn-sm btn-default dropdown-toggle\" style=\"left:0px;width: 230px;text-align:left;overflow:hidden;text-overflow:ellipsis;\" data-toggle=\"dropdown\" aria-expanded=\"false\">\n              {{selectedtypefilter}}&nbsp;<span class=\"caret\" style=\"position: absolute;top: 50%;margin-top:-2px;right: 15px;\"></span>\n            </button>\n            <ul class=\"dropdown-menu\" role=\"menu\">\n              {{#each hunterfiltertypes}}\n               <li><a href=\"#\" class=\"typefilter-switch\">{{this}}</a></li>\n              {{/each}}\n            </ul>\n          </div>\n        </div>\n        <div class=\"input-group input-group-sm\">\n          <span class=\"input-group-addon\" id=\"addon-group\"><i class=\"fa fa-group fa-fw\"></i></span>\n          <input id=\"group-filter\" type=\"text\" class=\"form-control input-sm\" placeholder=\"Gruppenfilter\" aria-describedby=\"addon-group\" value=\"{{groupfilter}}\">\n          <div class=\"input-group-btn\">\n            <button data=\"group-filter\" class=\"btn btn-default btn-sm clear-filter\"><i class=\"fa fa-close fa-fw\"></i></button>\n          </div>\n        </div>\n        <div class=\"input-group input-group-sm\">\n          <span class=\"input-group-addon\" id=\"addon-user\"><i class=\"fa fa-user fa-fw\"></i></span>\n          <input id=\"user-filter\" type=\"text\" class=\"form-control input-sm\" placeholder=\"Jägerfilter\" aria-describedby=\"addon-user\" value=\"{{userfilter}}\">\n          <div class=\"input-group-btn\">\n            <button data=\"user-filter\" class=\"btn btn-default btn-sm clear-filter\"><i class=\"fa fa-close fa-fw\"></i></button>\n          </div>\n        </div>\n        <div class=\"input-group input-group-sm\">\n          <span class=\"input-group-addon\" id=\"addon-dogs\"><i class=\"fa fa-paw fa-fw\"></i></span>\n          <div class=\"input-group-btn\">\n            <button type=\"button\" class=\"btn btn-sm btn-default dropdown-toggle\" style=\"left:0px;width: 230px;text-align:left;overflow:hidden;text-overflow:ellipsis;\" data-toggle=\"dropdown\" aria-expanded=\"false\">\n              {{selecteddogfilter}}&nbsp;<span class=\"caret\" style=\"position: absolute;top: 50%;margin-top:-2px;right: 15px;\"></span>\n            </button>\n            <ul class=\"dropdown-menu\" role=\"menu\">\n              {{#each dogfiltertypes}}\n                <li><a href=\"#\" class=\"dogfilter-switch\">{{this}}</a></li>\n              {{/each}}\n            </ul>\n          </div>\n        </div>\n      </div>\n      <div id=\"plans\" style=\"position:absolute;top:0px;left:300px;right:0px;height:166px;overflow:hidden;\">\n          <div class=\"scroll-x\">\n            <div style=\"position:absolute; bottom:0px;left:0px;transform: rotate(-90deg);-webkit-transform: rotate(-90deg);\">\n              <div style=\"position: absolute;top: 0px;left:-126px;width:126px;\">\n                {{#each planstats}}\n                  <div class=\"plan feedback\" style=\"height:{{this.width}}px;\" data-plan=\"{{this._id}}\"><b>{{this.name}}</b><br/><b>{{this.leader}}</b><p>{{formatDateDay this.date}}</p></div>\n                {{/each}}\n              </div>\n            </div>\n            <div style=\"position: absolute;top: 126px;left:0px;height: 40px;\">\n              {{#each planstats}}\n                <div class=\"plan-details feedback\" style=\"position:absolute;left:{{this.offset}}px; width:{{this.width}}px; height:100%;\" data-plan=\"{{this._id}}\">\n                  <i class=\"fa fa-user\"></i>&nbsp;{{this.userstates.invited}}/{{this.userstates.confirmed}}<br/>\n                  <i class=\"fa fa-paw\"></i>&nbsp;{{this.dogstates.invited}}/{{this.dogstates.confirmed}}\n                </div>\n              {{/each}}\n            </div>\n          </div>\n      </div>\n      <div id=\"user\" style=\"position:absolute;top:166px;left:0px;width:300px;bottom:0px;overflow:hidden;\">\n        <div class=\"scroll-y\">\n          {{#each group}}\n            {{> userlist}}\n          {{/each}}\n        </div>\n      </div>\n      <div id=\"workplane\" style=\"position:absolute;top:166px;left:300px;right:0px;bottom:0px;overflow:scroll;\">\n        <div class=\"scroll-area\">\n          {{#each plansstates group}}\n          <div style=\"position:absolute;left:{{this.offset}}px;top:0px;width:{{this.width}}px;float:left;\">\n            {{#each this.invitestates}}\n              <div class=\"grid-{{this.class}} {{this.type}} feedback\" data-user=\"{{this.id}}\" data-plan=\"{{this.plan}}\">\n                {{#if this.uninvited}}\n                  <i class=\"fa fa-circle-o\"></i>\n                {{/if}}\n                {{#if this.requested}}\n                  <i class=\"fa fa-question-circle\"></i>\n                {{/if}}\n                {{#if this.request}}\n                  <i class=\"fa fa-question\"></i>\n                {{/if}}\n                {{#if this.invited}}\n                  <i class=\"fa fa-envelope\"></i>\n                {{/if}}\n                {{#if this.invite}}\n                  <i class=\"fa fa-envelope-o\"></i>\n                {{/if}}\n                {{#if this.confirmed}}\n                  <i class=\"fa fa-check\"></i>\n                {{/if}}\n                {{#if this.refused}}\n                  <i class=\"fa fa-close\"></i>\n                {{/if}}\n              </div>\n            {{/each}}\n          </div>\n          {{/each}}\n          <div style=\"clear:both;\"></div>\n        </div>\n      </div>\n    </div>\n  </div>\n  {{#if tooltip}}\n    {{>basetip}}\n  {{/if}}\n</template>\n\n<template name=\"basetip\">\n  <style>\n    #basetip h3 {\n      color:#333;\n      margin-top: 2px;\n      font-size:12pt;\n      font-weight:bold;\n    }\n    #basetip h4 {\n      color:#000;\n      margin-top: 2px;\n      font-size:9pt;\n      font-weight:bold;\n    }\n    #basetip p {\n      color:#333;\n      font-size:9pt;\n    }\n\n    table.inviteoverview {\n      background-color:#eee;\n      padding:4px;\n      border-radius:4px;\"\n    }\n\n    table.inviteoverview td {\n      padding:4px;\n    }\n  </style>\n  <div id=\"basetip\" style=\"position:fixed;max-width:40%;\n    {{#if data.left}} left:{{data.left}}px; {{/if}}\n    {{#if data.top}} top:{{data.top}}px; {{/if}}\n    {{#if data.right}} right:{{data.right}}px; {{/if}}\n    {{#if data.bottom}} bottom:{{data.bottom}}px; {{/if}}\n    -webkit-box-shadow: 10px 10px 24px -1px rgba(0,0,0,0.7);\n    -moz-box-shadow: 10px 10px 24px -1px rgba(0,0,0,0.7);\n    box-shadow: 10px 10px 24px -1px rgba(0,0,0,0.7);\n    display:inline-block;background-color:#fff;border-radius:6px;border:2px solid #000;padding:10px;\">\n      {{#if data.plan }}\n        <h3><i class=\"fa fa-folder fa-fw\"></i>&nbsp; Planung - {{ plan.name }}</h3>\n        <p>{{ plan.name }}</p>\n        <h4>Jagdleiter</h4>\n        <p>{{plan.leader}}</p>\n        <h4>Stellvertreter</h4>\n        <p>{{plan.backup}}</p>\n        <h4>Teilnehmer</h4>\n        <p>\n          <table width=\"100%\" class=\"inviteoverview\">\n            <tr>\n              <td>                \n              </td>\n              {{#each plan.invites.hunter }}\n                <td align=\"center\" class=\"{{this.class}}\"><i class=\"fa fa-question fa-fw\"></i>/<i class=\"fa fa-close fa-fw\"></i>/<i class=\"fa fa-check fa-fw\"></i></td>\n              {{/each}}\n            </tr>\n            <tr>\n              <td style=\"text-align:left;\">\n                Schützen\n              </td>\n              {{#each plan.invites.hunter }}\n                <td align=\"center\" class=\"{{this.class}}\">{{this.invited}}&nbsp;/&nbsp;{{this.refused}}&nbsp;/&nbsp;{{this.confirmed}}</td>\n              {{/each}}\n            </tr>\n            {{#each plan.invites.dogs }}\n              <tr>\n                <td style=\"text-align:left;\">\n                  {{#if equal @index 0}}\n                    SH Kurz\n                  {{/if}}\n                  {{#if equal @index 1}}\n                    SH Mittel\n                  {{/if}}\n                  {{#if equal @index 2}}\n                    SH Weit\n                  {{/if}}\n                  {{#if equal @index 3}}\n                    Schweißhunde\n                  {{/if}}\n                </td>\n                {{#each this }}\n                  <td align=\"center\" class=\"{{this.class}}\">{{this.invited}}&nbsp;/&nbsp;{{this.refused}}&nbsp;/&nbsp;{{this.confirmed}}</td>\n                {{/each}}\n              </tr>\n            {{/each}}            \n          </table>\n        </p>\n      {{/if}}\n      {{#if data.user }}\n        <h3>\n          {{#if user.profile.isdoctor }}\n            <i class=\"fa fa-user-md fa-fw\"></i>\n          {{else}}\n            {{#if user.profile.isveterinary }}\n              <i class=\"fa fa-user-md fa-fw\"></i>\n            {{else}}\n              <i class=\"fa fa-user fa-fw\"></i>\n            {{/if}}\n          {{/if}}\n          &nbsp; {{user.profile.title}} {{user.profile.firstname}} {{user.profile.surname}}\n        </h3>\n        {{#if user.profile.group}}\n          <h4>Gruppen</h4>\n          <div style=\"margin-bottom:10px;\">\n            {{#each user.profile.group}}\n              <span class=\"label label-primary\">{{this}}</span>\n            {{/each}}\n            <br/>\n          </div>\n        {{/if}}\n        {{#if invitestate}}\n        <h4>Status</h4>\n          {{#if invitestate.uninvited }}\n            <p>Nicht eingeladen</p>\n          {{/if}}\n          {{#if invitestate.invite }}\n            <p>Vorgemerkt für Einladung durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}} am {{formatDate invitestate.date}}</p>\n          {{/if}}\n          {{#if invitestate.request }}\n            <p>Vorgemerkt für Interessensbekundung durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}} am {{formatDate invitestate.date}}. </p>\n          {{/if}}\n          {{#if invitestate.invited }}\n            <p>Einladung per E-Mail verschickt am {{formatDate invitestate.date}} durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}}</p>\n          {{/if}}\n          {{#if invitestate.confirmed }}\n            <p>Einladung angenommen am {{formatDate invitestate.date}} durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}}</p>\n          {{/if}}\n          {{#if invitestate.refused }}\n            <p>Einladung abgelehnt am {{formatDate invitestate.date}} durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}}</p>\n          {{/if}}\n        {{/if}}\n        {{#if user.profile.dogs }}\n          <h4>Hunde</h4>\n            {{#each user.profile.dogs}}\n              {{ > dogitem}}\n            {{/each}}\n        {{/if}}\n      {{/if}}\n  </div>\n</template>\n\n<template name=\"dogitem\">\n  <p>\n    {{#if equal this.type 3 }}\n      Schweißhund\n    {{/if}}\n    {{#if equal this.type 0 }}\n      Stöberhund (Kurz)\n    {{/if}}\n    {{#if equal this.type 1 }}\n      Stöberhund (Mittel)\n    {{/if}}\n    {{#if equal this.type 2 }}\n      Stöberhund (Weit)\n    {{/if}}\n    <span>{{this.race}}</span>\n  </p>\n</template>\n",
+			"file": "client/modules/huntingplans/participants.html",
+			"file_size": 13646,
+			"file_write_time": 131097653145067993,
+			"settings":
+			{
+				"buffer_size": 13333,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/constants.js",
+			"settings":
+			{
+				"buffer_size": 1169,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/helper.js",
+			"settings":
+			{
+				"buffer_size": 11389,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/newplan.js",
+			"settings":
+			{
+				"buffer_size": 2047,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/standitem.html",
+			"settings":
+			{
+				"buffer_size": 678,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/huntingplanmap.css",
+			"settings":
+			{
+				"buffer_size": 4306,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/style.scss",
+			"settings":
+			{
+				"buffer_size": 7707,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/huntingplans.js",
+			"settings":
+			{
+				"buffer_size": 23380,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/areamanagement/shareinfo.html",
+			"settings":
+			{
+				"buffer_size": 4304,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/areamanagement/shareinfo.js",
+			"settings":
+			{
+				"buffer_size": 4139,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/schedule.js",
+			"settings":
+			{
+				"buffer_size": 3658,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/areamanagement/viewstand.js",
+			"settings":
+			{
+				"buffer_size": 7851,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/areamanagement/viewstand.html",
+			"settings":
+			{
+				"buffer_size": 7247,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "server/modules/huntingplan.js",
+			"settings":
+			{
+				"buffer_size": 10805,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "client/modules/huntingplans/newplan.html",
+			"settings":
+			{
+				"buffer_size": 4034,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 173.0,
+		"last_filter": "tabs",
+		"selected_items":
+		[
+			[
+				"tabs",
+				"Indentation: Convert to Tabs"
+			],
+			[
+				"tog",
+				"View: Toggle Tabs"
+			],
+			[
+				"ta",
+				"View: Toggle Tabs"
+			]
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/sjaeckel/Documents/javes/src/client",
+		"/C/Users/sjaeckel/Documents/javes/src/client/lib",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/areamanagement",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/core",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans/printing",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/statistics",
+		"/C/Users/sjaeckel/Documents/javes/src/server",
+		"/C/Users/sjaeckel/Documents/javes/src/server/modules"
+	],
+	"file_history":
+	[
+		"/C/Users/sjaeckel/AppData/Roaming/Sublime Text 3/Packages/User/html.sublime-build",
+		"/C/Users/sjaeckel/Desktop/nginxservice.xml",
+		"/C/nginx/conf/nginx.conf",
+		"/C/Users/sjaeckel/Desktop/temop.html",
+		"/C/Users/sjaeckel/Desktop/vertraege.json",
+		"/C/Daten/gl-interface/.gitignore",
+		"/C/Users/sjaeckel/Documents/gitignore_global.txt",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/core/createuser.js",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans/newdog.js",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans/participants.html",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans/userlistitem.html",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans/newdog.html",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans/huntingplans.html",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans/huntingareaeditor.html",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans/arrangehuntereditor.html",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans/arrangehuntereditor.js",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/areamanagement/shareinfo.js",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/areamanagement/reportview.html",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/areamanagement/reportview.js",
+		"/C/Users/sjaeckel/Documents/javes/src/server/modules/areamanagement.js",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans/userlistitem.js",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/huntingplans/participants.js",
+		"/C/Users/sjaeckel/Desktop/test.html",
+		"/C/Users/sjaeckel/Documents/javes/src/client/modules/core/createuser.html",
+		"/C/Users/sjaeckel/Documents/javes/src/server/modules/core.js",
+		"/C/Users/sjaeckel/Documents/javes/src/client/helper.js",
+		"/C/Users/sjaeckel/Desktop/export.sql",
+		"/C/Users/sjaeckel/Downloads/wms",
+		"/C/Program Files/Sublime Text 3/Packages/Makefile.sublime-package",
+		"/C/Users/sjaeckel/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/sjaeckel/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/sjaeckel/AppData/Roaming/Sublime Text 3/Packages/User/SQL.sublime-settings",
+		"/C/Users/sjaeckel/Desktop/desktop/02052016_desktop/Icon-Blatt.svg",
+		"/C/Users/sjaeckel/Documents/javes/src/.meteor/.id"
+	],
+	"find":
+	{
+		"height": 36.0
+	},
+	"find_in_files":
+	{
+		"height": 96.0,
+		"where_history":
+		[
+			"C:\\Users\\sjaeckel\\Documents\\javes\\src\\server",
+			"C:\\Users\\sjaeckel\\Documents\\javes\\src\\client\\modules",
+			"C:\\Users\\sjaeckel\\Documents\\javes\\src\\client\\modules\\huntingplans"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"info",
+			"Anst",
+			"sendInvitation",
+			"Allocations",
+			"all",
+			"role",
+			"color",
+			"img/avatars/",
+			"newre",
+			"dogitem",
+			"Schweiß",
+			"dogfilter",
+			"exsits",
+			"hasScentHound",
+			"CreateUser",
+			"createUser",
+			"CreateUser",
+			"createUser",
+			"modals.set",
+			"important",
+			"java",
+			"parseInt"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 11,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "client/modules/areamanagement/reportview.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1402,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								333,
+								333
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 282.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "client/modules/huntingplans/participants.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 15741,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6647,
+								6647
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4737.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "server/modules/areamanagement.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16418,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4304,
+								4304
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2906.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "client/modules/huntingplans/_stylefunctions.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12884,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4349,
+								4349
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3174.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "client/modules/huntingplans/huntingplans.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 33562,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6456,
+								6456
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 279.0,
+						"translation.y": 2100.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "client/modules/huntingplans/participants.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13333,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5381,
+								5381
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 74.0,
+						"translation.y": 622.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "client/constants.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1169,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "client/helper.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11389,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5669,
+								5669
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 4500.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "client/modules/huntingplans/newplan.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2047,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								887,
+								887
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 480.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "client/modules/huntingplans/standitem.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 678,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								678,
+								678
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "client/modules/huntingplans/huntingplanmap.css",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4306,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3314,
+								3314
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 600.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "client/style.scss",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7707,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4347,
+								4347
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 4080.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "client/modules/huntingplans/huntingplans.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 23380,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								19786,
+								19786
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 11900.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "client/modules/areamanagement/shareinfo.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4304,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1458,
+								1458
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 172.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "client/modules/areamanagement/shareinfo.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4139,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2531,
+								2531
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": -0.0,
+						"translation.y": 1560.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "client/modules/huntingplans/schedule.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3658,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3650,
+								3650
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1680.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "client/modules/areamanagement/viewstand.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7851,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4758,
+								4758
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3620.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "client/modules/areamanagement/viewstand.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7247,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "server/modules/huntingplan.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10805,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9980,
+								9992
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5420.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "client/modules/huntingplans/newplan.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4034,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2825,
+								2825
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 135.0,
+						"translation.y": 840.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 26.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 130.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/User/html.sublime-build",
+	"project": "sublime_project.sublime-project",
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				".meteor\\.id"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 392.0,
+		"last_filter": "setPa",
+		"selected_items":
+		[
+			[
+				"setPa",
+				"setPath"
+			]
+		],
+		"width": 456.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 305.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
