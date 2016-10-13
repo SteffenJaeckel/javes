@@ -20,6 +20,7 @@ window.mods['statistics'] = { index: 50, name: "Statistiken", icon:"fa-bar-chart
 	}
 };
 */
+/*
 console.log("Add cuttingplans to modules");
 window.mods['cuttingplans'] = { index: 5, name: "Einschlagsplanung", icon:"fa-tree", enabled:'disabled', divider:true,
 	defaultitem: function() {
@@ -55,3 +56,4 @@ window.mods['plantingplans'] = { index: 10, name: "Verjüngungsplanung", icon:"f
 		console.log( item )
 	}
 };
+*/

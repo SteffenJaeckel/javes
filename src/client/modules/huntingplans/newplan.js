@@ -45,17 +45,16 @@ Template.newplan.events({
     clearError();
     var btn = $(e.currentTarget);
     btn.button('loading');
-		app.setModulePath(["huntingplans"]);
     Meteor.call('newHuntingPlan', modals.get(), function ( e, id ) {
       if( e ) {
         applyError( e );
       } else {
-				app.setModulePath(["huntingplans",id,"drive-0"]);
+        app.setModulePath(["huntingplans",id,"drive-0"]);
         modals.pop();
       }
       setTimeout( function() {
         btn.button('reset');
-      }, 1000 )
+      }, 500 )
     })
   },
   'click #abort': function() {

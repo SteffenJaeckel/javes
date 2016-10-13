@@ -617,6 +617,10 @@ Template.huntingplans.events({
 	'click #new-plan': function () {
 		modals.push('newplan',{date: new Date(), name:'',leader:'', backup:'', hunters:10, dogs:5 });
 	},
+  'click #share-area' : function(e) {
+    var id = $(e.currentTarget).attr("data");
+    modals.push('planshareinfo',{ planid: id });
+  },
 	'click .plan': function( e ) {
 		app.setSubPath(4, $(e.currentTarget).attr('data') )
 		//updateMapData();

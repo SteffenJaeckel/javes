@@ -1,159 +1,176 @@
 <!-- Sucht nach einem exsitierenden user, wenn keiner gefunden wurde wird das template "creatuser" erzeugt. -->
 <template name="adduser">
-	<style>
-		label {
-			margin-top:4px;
-		}
+  <style>
+    label {
+      margin-top:4px;
+    }
 
-		tr.dogs td {
-			padding-left: 16px !important;
-			font-size: 12px;
-			vertical-align: middle !important;
-		}
+    tr.dogs td {
+      padding-left: 16px !important;
+      font-size: 12px;
+      vertical-align: middle !important;
+    }
 
-	</style>
+  </style>
   <div class="modal-header">
     <button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h4 class="modal-title">{{title}}</h4>
   </div>
   <div class="modal-body">
-		{{#if error}}
-			<div class="alert alert-danger" style="position:relative;"> <b>Fehler</b>	{{error}}	</div>
-		{{/if}}
-		<div class="groupbox">
-			<span class="groupbox-label">Account</span>
-			<div class="row">
-			  <div class="col-md-4">
-		      <label for="role" class="control-label">Nutzergruppe</label>
-		      <select id="role" class="form-control input-sm">
-		        {{#each roles}}
-		          <option value="{{this}}">{{this}}</option>
-		        {{/each}}
-		      </select>
-			</div>
-			<div class="col-md-8">
-		      <label for="email" class="control-label">E-Mail Adresse (ohne E-Mail keine Anmeldung möglich)</label>
-		      <input id="email" type="email" class="form-control input-sm" value="">
-			</div>
-	    </div>
-			<div class="row">
-			  <div class="col-md-6">
-					<div class="radio">
-					  <label>
-					    <input type="radio" name="profiletype" id="optionsRadios1" value="option1" checked>
-					    <b>Aktives Profil</b><br/>Der neue Benutzer wird per E Mail benachrichtigt und kann ein Passwort für seinen Zugang festlegen.
-					  </label>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<div class="radio">
-					  <label>
-					    <input type="radio" name="profiletype" id="optionsRadios2" value="option2">
-					    <b>Verwaltetes Profil</b><br/>Der neue Benutzer kann sich <b><u>nicht</u></b> anmelden und hat <b><u>keinen Zugang</u></b> zur Software.
-					  </label>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="groupbox">
-			<span class="groupbox-label">Telefon</span>
-			<div class="row">
-				<div class="col-md-6">
-		      <label for="phone" class="control-label">Festnetz</label>
-		      <input id="phone" type="email" class="form-control input-sm" value="">
-				</div>
-			  <div class="col-md-6">
-		      <label for="cellphone" class="control-label">Mobil</label>
-		      <input id="cellphone" type="email" class="form-control input-sm" value="">
-				</div>
-	    </div>
-		</div>
-		<div class="groupbox">
-			<span class="groupbox-label">Adresse</span>
-			<div class="row">
-				<div class="col-md-2">
-					<label for="gender" class="control-label">Anrede</label>
-					<select id="gender" class="form-control input-sm">
-		          <option value="0">Herr</option>
-							<option value="1">Frau</option>
-		      </select>
-				</div>
-			  <div class="col-md-4">
-					<label for="firstname" class="control-label">Vorname</label>
-					<input id="firstname" type="text" class="form-control input-sm" value=""/>
-				</div>
-			  <div class="col-md-6">
-					<label for="surname" class="control-label">Nachname</label>
-					<input id="surname" type="text" class="form-control input-sm" value=""/>
-				</div>
-			</div>
-			<div class="row">
-			  <div class="col-md-10">
-					<label for="street" class="control-label">Straße</label>
-					<input id="street" type="text" class="form-control input-sm" value=""/>
-				</div>
-			  <div class="col-md-2">
-					<label for="nummer" class="control-label">Hausnummer</label>
-					<input id="nummer" type="text" class="form-control input-sm" value=""/>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-3">
-					<label for="zip" class="control-label">Postleitzahl</label>
-					<input id="zip" type="text" class="form-control input-sm" value=""/>
-				</div>
-			  <div class="col-md-9">
-					<label for="city" class="control-label">Stadt</label>
-					<input id="city" type="text" class="form-control input-sm" value=""/>
-				</div>
-			</div>
-		</div>
-		<div class="groupbox">
-			<span class="groupbox-label">Hunde</span>
-	    <div class="form-group">
-	    	<div style="border-radius: 3px;background-color: #fff;margin: 3px;border: 1px solid #ccc;">	    		
-		    	<table class="table table-condensed" style="width:100%;margin-bottom:2px">
-		    		<thead style="background-color:#eee;font-weight:bold;">
-		    			<tr class="dogs"><td>Name</td><td>Rasse</td><td>Merkmal</td><td></td></tr>
-		    		</thead>
-		    		<tbody>
-		    			{{#each dogs}}
-		    				<tr class="dogs"><td>{{this.name}}</td><td>{{this.race}}</td><td>{{dogtype this.type }}</td><td style="text-align:right;"><button class="btn btn-sm btn-danger delete-dog" data="{{@index}}"><i class="fa fa-close"></i></button></td></tr>
-		    			{{else}}
-		    				<tr class="dogs"><td colspan="4" style="text-align:center;color:#888;">Keine Hunde vorhanden</td></tr>
-			    		{{/each}}
-			    		<tr>
-				    		<td><input class="form-control input-sm" id="dog-name" type="text" placeholder="Name"/></td>
-				    		<td><input class="form-control input-sm" id="dog-race" type="text" placeholder="Rasse"/></td>
-				    		<td>
-					    		<select class="form-control input-sm"  id="dog-type">
-					    			{{#each dogtypes }}
-					    				<option value="{{@index}}">{{this}}</option>
-					    			{{/each}}
-					    		</select>
-				    		</td>
-			    			<td style="text-align:right;">
-			    				<button class="btn btn-sm btn-success add-dog"><i class="fa fa-plus"></i></button>
-			    			</td>
-			    		</tr>
-		    		</tbody>
-		    	</table>
-		    </div>	    	
-	    </div>
-		</div>
-		<div class="groupbox">
-			<span class="groupbox-label">Gruppen</span>
-	    <div class="form-group">
-	      <label for="groups" class="control-label">Geben Sie hier optional Namen für Gruppen an, in den sich der Benutzer befinden soll. Wenn der Benutzer in mehreren Gruppen sein soll, trennen sie die Gruppen durch ein Komma.</label>
-	      <input id="groups" type="text" class="form-control input-sm" value=""/>
-	    </div>
-	</div>
+    {{#if error}}
+      <div class="alert alert-danger" style="position:relative;"> <b>Fehler</b> {{error}} </div>
+    {{/if}}
+    <div class="groupbox">
+      <span class="groupbox-label">Account</span>
+      <div class="row">
+        <div class="col-md-4">
+          <label for="role" class="control-label">Nutzergruppe</label>
+          <select id="role" class="form-control input-sm">
+            {{#each roles}}
+              {{#if isRole this }}
+                <option value="{{this}}" selected >{{this}}</option>
+              {{else}}
+                <option value="{{this}}" >{{this}}</option>
+              {{/if}}
+            {{/each}}
+          </select>
+      </div>
+      <div class="col-md-8">
+          <label for="email" class="control-label">E-Mail Adresse (ohne E-Mail keine Anmeldung möglich)</label>
+          <input id="email" type="email" class="form-control input-sm" value="{{email}}">
+      </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="radio">
+            <label>
+              {{#unless managed}}
+                <input type="radio" name="profiletype" id="optionsRadios1" value="option1" checked />
+              {{else}}
+                <input type="radio" name="profiletype" id="optionsRadios1" value="option1" />
+              {{/unless}}
+              <b>Aktives Profil</b><br/>Der neue Benutzer wird per E Mail benachrichtigt und kann ein Passwort für seinen Zugang festlegen.
+            </label>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="radio">
+            <label>
+              {{#if managed}}
+                <input type="radio" name="profiletype" id="optionsRadios2" value="option2" checked />
+              {{else}}
+                <input type="radio" name="profiletype" id="optionsRadios2" value="option2" />
+              {{/if}}
+              <b>Verwaltetes Profil</b><br/>Der neue Benutzer kann sich <b><u>nicht</u></b> anmelden und hat <b><u>keinen Zugang</u></b> zur Software.
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="groupbox">
+      <span class="groupbox-label">Telefon</span>
+      <div class="row">
+        <div class="col-md-6">
+          <label for="phone1" class="control-label">Festnetz</label>
+          <input id="phone1" type="text" class="form-control input-sm" value="{{phone1}}">
+        </div>
+        <div class="col-md-6">
+          <label for="phone2" class="control-label">Mobil</label>
+          <input id="phone2" type="text" class="form-control input-sm" value="{{phone2}}">
+        </div>
+      </div>
+    </div>
+    <div class="groupbox">
+      <span class="groupbox-label">Adresse</span>
+      <div class="row">
+        <div class="col-md-2">
+          <label for="gender" class="control-label">Anrede</label>
+          <select id="gender" class="form-control input-sm">
+              <option value="0">Herr</option>
+              <option value="1">Frau</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="firstname" class="control-label">Vorname</label>
+          <input id="firstname" type="text" class="form-control input-sm" value="{{firstname}}"/>
+        </div>
+        <div class="col-md-6">
+          <label for="surname" class="control-label">Nachname</label>
+          <input id="surname" type="text" class="form-control input-sm" value="{{surname}}"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-10">
+          <label for="street" class="control-label">Straße</label>
+          <input id="street" type="text" class="form-control input-sm" value="{{street}}"/>
+        </div>
+        <div class="col-md-2">
+          <label for="number" class="control-label">Hausnummer</label>
+          <input id="number" type="text" class="form-control input-sm" value="{{number}}"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <label for="zip" class="control-label">Postleitzahl</label>
+          <input id="zip" type="text" class="form-control input-sm" value="{{zip}}"/>
+        </div>
+        <div class="col-md-9">
+          <label for="city" class="control-label">Stadt</label>
+          <input id="city" type="text" class="form-control input-sm" value="{{city}}"/>
+        </div>
+      </div>
+    </div>
+    <div class="groupbox">
+      <span class="groupbox-label">Hunde</span>
+      <div class="form-group">
+        <div style="border-radius: 3px;background-color: #fff;margin: 3px;border: 1px solid #ccc;">
+          <table class="table table-condensed" style="width:100%;margin-bottom:2px">
+            <thead style="background-color:#eee;font-weight:bold;">
+              <tr class="dogs"><td>Name</td><td>Rasse</td><td>Merkmal</td><td></td></tr>
+            </thead>
+            <tbody>
+              {{#each dogs}}
+                <tr class="dogs"><td>{{this.name}}</td><td>{{this.race}}</td><td>{{dogtype this.type }}</td><td style="text-align:right;"><button class="btn btn-sm btn-danger delete-dog" data="{{@index}}"><i class="fa fa-close"></i></button></td></tr>
+              {{else}}
+                <tr class="dogs"><td colspan="4" style="text-align:center;color:#888;">Keine Hunde vorhanden</td></tr>
+              {{/each}}
+              <tr>
+                <td><input class="form-control input-sm" id="dog-name" type="text" placeholder="Name"/></td>
+                <td><input class="form-control input-sm" id="dog-race" type="text" placeholder="Rasse"/></td>
+                <td>
+                  <select class="form-control input-sm"  id="dog-type">
+                    {{#each dogtypes }}
+                      <option value="{{@index}}">{{this}}</option>
+                    {{/each}}
+                  </select>
+                </td>
+                <td style="text-align:right;">
+                  <button class="btn btn-sm btn-success add-dog"><i class="fa fa-plus"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>        
+      </div>
+    </div>
+    <div class="groupbox">
+      <span class="groupbox-label">Gruppen</span>
+      <div class="form-group">
+        <label for="groups" class="control-label">Geben Sie hier optional Namen für Gruppen an, in den sich der Benutzer befinden soll. Wenn der Benutzer in mehreren Gruppen sein soll, trennen sie die Gruppen durch ein Komma.</label>
+        <input id="groups" type="text" class="form-control input-sm" placeholder="Gruppe1, Gruppe2, ..." value="{{groups}}"/>
+      </div>
+    </div>
   </div>
   <div class="modal-footer">
+    {{#if userid }}
+      <button id="delete" class="btn btn-danger"><i class="fa fa-trash fa-fw"></i>&nbsp;Löschen</button>
+    {{/if}}
     <button id="abort" class="btn btn-default"><i class="fa fa-remove fa-fw"></i>&nbsp;Abbrechen</button>
-		<button id="save" class="btn btn-primary"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp;Speichern</button>
-    <button id="save-exit" class="btn btn-primary"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp;Speichern &amp; Schliessen</button>
-	</div>
+    <button id="save-exit" class="btn btn-primary"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp;Speichern</button>
+    {{#unless userid }}
+      <button id="save" class="btn btn-success"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp;Erstellen</button>
+    {{/unless}}
+  </div>
 </template>
 
 <template name="createuser">

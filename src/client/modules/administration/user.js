@@ -68,9 +68,12 @@ Template.user.events({
   'dblclick tr': function( e ) {
     var user = Meteor.users.findOne( {_id:$(e.currentTarget).attr("data") });
     var data = user.profile;
+    data['title'] = "Benutzer Bearbeiten";
     data['_id'] = user._id;
     data['email'] = (user.emails && user.emails[0]) ? user.emails[0].address:'';
-    modals.push('edithunter', data );
+    data['groups']  = user.customers[app.getCustomer()].departments[app.getDepartment()].groups;
+    data['role'] = user.customers[app.getCustomer()].departments[app.getDepartment()].roles[0];
+    modals.push('adduser', data );
   },
   'keyup #filter-user' : function() {
     Session.set("filter-username", $('#filter-user').val() )

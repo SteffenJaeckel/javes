@@ -14,8 +14,14 @@ function findCreateUser( me, data ) {
           email: {type:'email',name:"E-Mail Adresse",optional:true },
           firstname : {type: 'string', min:1, max:128, name:'Vorname' },
           surname: {type:'string',min:1, max:128, name: 'Nachname' },
+          phone1 : {type: 'string', min:1, max:128, name:'Festnetz',optional:true },
+          phone2: {type:'string',min:1, max:128, name: 'Mobil',optional:true },
+          street : {type: 'string', min:1, max:128, name:'Straße',optional:true },
+          number: {type:'string',min:1, max:128, name: 'Hausnummer',optional:true },
+          zip : {type: 'string', min:1, max:128, name:'PLZ',optional:true },
+          city: {type:'string',min:1, max:128, name: 'Stadt',optional:true },
           role: {type:'set', items: role.inviteroles , name:"Typ" },
-          groups: {type:'string', min:0, max:128, name:'Gruppen',optional:true },
+          groups: {type:'string', min:0, max:1024, name:'Gruppen',optional:true },
           dogs: { type:'array', min:0, max:16, name:'Hunde', items: {
             type:'object', name:'Hund',model:{
               name: {type:"string",name:"Name des Hundes", min:0,max:256 },
@@ -24,16 +30,27 @@ function findCreateUser( me, data ) {
             }
           }}
         });
-        
-        console.log( data );
 
         var targetrole = customer.departments[ departmentid ].roles[ data.role ];
+
+        var profile = {
+          firstname: data.firstname,
+          surname: data.surname,
+          phone1 : data['phone1'],
+          phone2 : data['phone2'],
+          city : data['city'],
+          street : data['street'],
+          number : data['number'],
+          zip : data['zip'],
+          dogs: data.dogs,
+          managed:true
+        };
 
         // user per Email Adresse suchen ...
         if( data.email != null ) {
           var user = Accounts.findUserByEmail( data.email );
           if( user == null ) {
-            Accounts.createUser( {'email':data.email,profile:{firstname: data.firstname, surname: data.surname, dogs: data.dogs, managed:true}} );
+            Accounts.createUser( {'email':data.email,profile:profile} );
             user = Accounts.findUserByEmail( data.email );
           }
         } else {
@@ -41,7 +58,7 @@ function findCreateUser( me, data ) {
           var user = Accounts.findUserByUsername(md5name);
           // wenn der user nicht gefunden wurde, user per username erzeugen ...
           if( user == null ) {
-            Accounts.createUser( { 'username': md5name, profile:{firstname: data.firstname, surname: data.surname, dogs: data.dogs, managed:true } } );
+            Accounts.createUser( { 'username': md5name, profile:profile } );
             user = Accounts.findUserByUsername(md5name);
           }
         }
@@ -62,6 +79,7 @@ function findCreateUser( me, data ) {
           user.customers[customerid].departments[departmentid].roles = _.uniq(user.customers[customerid].departments[departmentid].roles);
 
           if( data.groups ) {
+            user.customers[customerid].departments[departmentid].groups = [];
             var groups = data.groups.split(',');
             for( var i=0;i < groups.length;i++ ) {
               user.customers[customerid].departments[departmentid].groups.push( groups[i].trim() );
@@ -150,6 +168,96 @@ Meteor.methods({
     var me = Meteor.users.findOne({_id:this.userId});
     checkPermission(me,"administration.addUser");
     return findCreateUser( me, data );
+  },
+  updateUser : function( data ) {
+    var me = Meteor.users.findOne({_id:this.userId});
+
+    if( me && me.profile.currentpath.length >= 3 ) {
+      var customerid = me.profile.currentpath[0];
+      var departmentid = me.profile.currentpath[1];
+      var currentrolename = me.profile.currentpath[2];
+      var customer = Customers.findOne({ _id:customerid });
+      if( customer && customer.departments[ departmentid ] ) {
+        var role = customer.departments[ departmentid ].roles[ currentrolename ];
+
+        if( role ) {
+
+           data = Validate( data, {
+            _id: {type:'string',name:"ID" },
+            email: {type:'email',name:"E-Mail Adresse",optional:true },
+            firstname : {type: 'string', min:1, max:128, name:'Vorname' },
+            surname: {type:'string',min:1, max:128, name: 'Nachname' },
+            phone1 : {type: 'string', min:1, max:128, name:'Festnetz',optional:true },
+            phone2: {type:'string',min:1, max:128, name: 'Mobil',optional:true },
+            street : {type: 'string', min:1, max:128, name:'Straße',optional:true },
+            number: {type:'string',min:1, max:128, name: 'Hausnummer',optional:true },
+            zip : {type: 'string', min:1, max:128, name:'PLZ',optional:true },
+            city: {type:'string',min:1, max:128, name: 'Stadt',optional:true },
+            role: {type:'set', items: role.inviteroles , name:"Typ" },
+            groups: {type:'string', min:0, max:1024, name:'Gruppen',optional:true },
+            dogs: { type:'array', min:0, max:16, name:'Hunde', items: {
+              type:'object', name:'Hund',model:{
+                name: {type:"string",name:"Name des Hundes", min:0,max:256 },
+                race: {type:"string", name:"Rasse des Hundes", min:0, max:128},
+                type: {type:"set" , name:"Typ", items: [0,1,2,3]}
+              }
+            }}
+          });
+
+          var user = Meteor.users.findOne({_id:data._id});
+
+          var targetrole = customer.departments[ departmentid ].roles[ data.role ];
+
+          user.customers[customerid].departments[departmentid].roles = [];
+
+          user.customers[customerid].departments[departmentid].type = targetrole.type;
+          user.customers[customerid].departments[departmentid].roles.push( data.role );
+          user.customers[customerid].departments[departmentid].roles = _.uniq(user.customers[customerid].departments[departmentid].roles);
+
+          if( data.groups ) {
+            var groups = data.groups.split(',');
+            user.customers[customerid].departments[departmentid].groups = [];
+            for( var i=0;i < groups.length;i++ ) {
+              user.customers[customerid].departments[departmentid].groups.push( groups[i].trim() );
+            }
+          }
+          user.customers[customerid].departments[departmentid].groups = _.uniq(user.customers[customerid].departments[departmentid].groups);
+          
+          user.profile.firstname = data['firstname'];
+          user.profile.surname = data['surname'];
+
+          user.profile.phone1 = data['phone1'];
+          user.profile.phone2 = data['phone2'];
+
+          user.profile.city = data['city'];
+          user.profile.street = data['street'];
+          user.profile.number = data['number'];
+          user.profile.zip = data['zip'];
+
+          user.profile.dogs = data['dogs'];
+
+          if( data['email'] && data['email'] != "" ) {
+            Accounts.addEmail(user._id, data['email'], false)
+            /*if( user.emails && user.emails.length > 0 ) {
+              user.emails[0].address = data['email'];
+            } else {
+              user['emails'] = [{ address:data['email'], "verified" : false }];
+            }*/
+          }
+
+          Meteor.users.update( {_id:user._id}, user );
+        } else {
+          throw new Meteor.Error(413, "role_not_found_error");
+        }
+      } else {
+        throw new Meteor.Error(413, "customer_not_found");
+      }
+    } else {
+      throw new Meteor.Error(413, "path_error");
+    }
+  },
+  deleteUser : function( id ) {
+    Meteor.users.remove({_id:id , isServerAdmin: null });
   }
 });
 

@@ -36,8 +36,11 @@ Template.adduser.helpers({
       return "Neuen Benutzer anlegen";
     }
   },
+  userid: function( ) {
+    return modals.get()._id;
+  },
   dogs : function() {
-    return modals.get().dogs;//[ {name:"Waldi",race:"Teckel",desc:"Schweishund"}, {name:"Aron",race:"Deutsch Kurzhaar",desc:"Stöberhund - (Weit)"} ];
+    return modals.get().dogs;
   },
   dogtype : function( i ) {
     return dogtypes[ parseInt(i) ];
@@ -45,11 +48,80 @@ Template.adduser.helpers({
   dogtypes : function() {
     return dogtypes;
   },
+  isRole : function( type ) {
+    return modals.get().role == type;
+  },
+  email : function() {
+    return modals.get().email;
+  },
+  managed : function() {
+    return modals.get().managed;
+  },
+  firstname : function() {
+    return modals.get().firstname;
+  },
+  surname : function() {
+    return modals.get().surname;
+  },
+  phone1 : function() {
+    return modals.get().phone1;
+  },
+  phone2 : function() {
+    return modals.get().phone2;
+  },
+  gender : function() {
+    return modals.get().gender;
+  },
+  street : function() {
+    return modals.get().street;
+  },
+  zip : function() {
+    return modals.get().zip;
+  },
+  city : function() {
+    return modals.get().city;
+  },
+  number : function() {
+    return modals.get().number;
+  },
+  groups : function() {
+    var list = "";
+    var groups = modals.get().groups;
+    for( var g in groups ) {
+      if( list != "")
+        list += ", ";
+      list += groups[g];
+    }
+    return list;
+  },
   roles: function () {
-    console.log(app.getRole());
     return app.getRole().inviteroles;
   }
 });
+
+function getdata ( ) {
+  var data = {
+    _id : modals.get()._id,
+    email: $('#email').val(),
+    firstname: $('#firstname').val(),
+    surname: $('#surname').val(),
+    street: $('#street').val(),
+    number: $('#number').val(),
+    city: $('#city').val(),
+    phone1: $('#phone1').val(),
+    phone2: $('#phone2').val(),
+    zip: $('#zip').val(),
+    role:$('#role').val(),
+    groups:$('#groups').val(),
+    dogs: modals.get().dogs
+  };
+
+  clearError();
+
+  console.log( data );
+
+  return data;
+}
 
 Template.adduser.events({
   'click .add-dog' : function() {
@@ -70,44 +142,42 @@ Template.adduser.events({
     modals.pop();
   },
   'click #save-exit' : function() {
-
-    var data = {
-      email: $('#email').val(),
-      firstname: $('#firstname').val(),
-      surname: $('#surname').val(),
-      role:$('#role').val(),
-      groups:$('#groups').val(),
-      dogs: modals.get().dogs
-    };
-    clearError();
-    Meteor.call("findCreateUser", data, function (e,id) {
-        if( e != null ) {
-					applyError(e);
-        } else {
-          modals.pop();
-        }
-    })
+    if( modals.get()._id != null ) {
+      Meteor.call("updateUser", getdata(), function (e,id) {
+          if( e != null ) {
+            applyError(e);
+          } else {
+            modals.pop();
+          }
+      })
+    } else {
+        Meteor.call("findCreateUser", getdata(), function (e,id) {
+          if( e != null ) {
+            applyError(e);
+          } else {
+            modals.pop();
+          }
+      })
+    }
   },
   'click #save': function() {
-    var data = {
-      email: $('#email').val(),
-      firstname: $('#firstname').val(),
-      surname: $('#surname').val(),
-      role:$('#role').val(),
-      groups:$('#groups').val(),
-      dogs: modals.get().dogs
-    };
-    clearError();
-    Meteor.call("findCreateUser", data, function (e,id) {
-        if( e != null ) {
-          applyError(e);
-        } else {
-          // TODO: clear all fields
-					$('input').val('');
-          modals.set("dogs",[])
-          $('#role').focus();
-        }
+    Meteor.call("findCreateUser", getdata(), function (e,id) {
+      if( e != null ) {
+        applyError(e);
+      } else {
+        $('input').val("");
+      }
     })
-    //modals.pop();
+  },
+  'click #delete': function() {
+      if( confirm("Soll der Bentuzer wirklich gelöscht werden ?") ) {
+        Meteor.call("deleteUser", modals.get()._id, function (e,id) {
+          if( e != null ) {
+            applyError(e);
+          } else {
+            modals.pop();
+          }
+        })
+      }
   }
 })

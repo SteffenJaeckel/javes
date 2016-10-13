@@ -258,12 +258,15 @@
           {{#if invitestate.uninvited }}
             <p>Nicht eingeladen</p>
           {{/if}}
-          {{#if invitestate.invite }}
-            <p>Vorgemerkt für Einladung durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}} am {{formatDate invitestate.date}}</p>
-          {{/if}}
           {{#if invitestate.request }}
             <p>Vorgemerkt für Interessensbekundung durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}} am {{formatDate invitestate.date}}. </p>
           {{/if}}
+          {{#if invitestate.requested }}
+            <p>Abfrage per E-Mail verschickt durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}} am {{formatDate invitestate.date}}. </p>
+          {{/if}}
+          {{#if invitestate.invite }}
+            <p>Vorgemerkt für Einladung durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}} am {{formatDate invitestate.date}}</p>
+          {{/if}}          
           {{#if invitestate.invited }}
             <p>Einladung per E-Mail verschickt am {{formatDate invitestate.date}} durch {{invitestate.user.profile.firstname}} {{invitestate.user.profile.surname}}</p>
           {{/if}}

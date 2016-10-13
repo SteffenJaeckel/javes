@@ -20,6 +20,15 @@ Meteor.startup( function () {
   Dieser Codeabschnitt definiert die Channels, die von diesem Modul
   bereitgestellt werden.
  */
+
+Meteor.publish("planviewer_profiles", function ( planid ) {
+  var plan = Plans.findOne( {_id:planid } );
+  if( plan ) {
+    return Meteor.users.find({_id:{ $in:_.keys(plan.viewer) } }, { fields:{ profile:1 } } );
+  }
+  return Meteor.users.find({unknown:true}); 
+});
+
 Meteor.publish("plan_stands", function ( planid, drive ) {
   var user = Meteor.users.findOne({_id:this.userId});
   if( canAccess( user , "huntingplans", "viewPlans") ) {
@@ -56,6 +65,7 @@ Meteor.publish("participants", function ( ) {
 Meteor.publish("huntingplans", function () {
   var q = {};
   q['viewer.'+this.userId] = {$lt:3};
+  q ["date"] = {$gt : new Date() }
   return Plans.find(q);
 });
 
@@ -117,15 +127,72 @@ Meteor.methods({
 		}
 	},
   sendRequests: function ( options ) {
-    RequestMail = {
+    /*RequestMail = {
       subject: {type:'string', min:1 ,max:256 },
       copycounter: {type:'number', min:0 ,max:50 },
       body: {type:'string', min:1 ,max:2048 },
       signature: {type:'string', min:1 ,max:512 },
       validUntil: {type:'date', min: function() { return new Date(); } }
-    };
+    };*/
+
+    var q = {};
+    q ["viewer."+this.userId] = {$lte:1};
+    q ["date"] = {$gt : new Date() }
+
+    var sendcount = 0;
+    Plans.find(q).forEach( function( plan ) {
+      for( var userid in plan.invitestates ) {
+        if( plan.invitestates[userid].state == 'request' ) {
+          plan.invitestates[userid].state = 'requested';
+          sendcount++;
+        }
+      }
+      Plans.update( {_id:plan._id }, plan );
+    })
+
+    /// demo confirm 
+    Meteor.setTimeout( function () {
+      Plans.find(q).forEach( function( plan ) {
+        for( var userid in plan.invitestates ) {
+          if( plan.invitestates[userid].state == 'requested' ) {
+            plan.invitestates[userid].state = Random.choice(['invite','refused']);
+          }
+        }
+        Plans.update( {_id:plan._id }, plan );
+      })
+    }, 10000 );
+    return sendcount;
   },
 	sendInvites:function( options ) {
+
+    var q = {};
+    q ["viewer."+this.userId] = {$lte:1};
+    q ["date"] = {$gt : new Date() }
+
+    var sendcount = 0;
+    Plans.find(q).forEach( function( plan ) {
+      for( var userid in plan.invitestates ) {
+        if( plan.invitestates[userid].state == 'invite' ) {
+          plan.invitestates[userid].state = 'invited';
+          sendcount++;
+        }
+      }
+      Plans.update( {_id:plan._id }, plan );
+    })
+
+    /// demo confirm 
+    Meteor.setTimeout( function () {
+      Plans.find(q).forEach( function( plan ) {
+        for( var userid in plan.invitestates ) {
+          if( plan.invitestates[userid].state == 'invited' ) {
+            plan.invitestates[userid].state = Random.choice(['confirmed','refused']);
+          }
+        }
+        Plans.update( {_id:plan._id }, plan );
+      })
+    }, 10000 );
+
+    return sendcount;
 
     InviteMail = {
       subject: {type:'string', min:1 ,max:256 },
@@ -313,5 +380,70 @@ Meteor.methods({
     var item = {};
     item[ 'drives.'+drive+'.routes.'+id ] = route;
     Plans.update( {_id:planid}, {$set: item } );
-	}
+	},
+  sharePlanWith:function( planid, email ) {
+    email = email.toLowerCase();
+    var me = Meteor.users.findOne( { _id: this.userId });
+    var user = Meteor.users.findOne( { 'emails.address': email });
+    var plan = Plans.findOne( { _id: planid } );
+    if( ! plan ) {
+      throw new Meteor.Error(413, 'invalid_area');
+    }
+    if( _.keys(plan.viewer).length > 36 ) {
+      throw new Meteor.Error(413, 'to_many_viewers');
+    }
+    if( plan.viewer[this.userId] > 1 ) {
+      throw new Meteor.Error(403, 'access_denied');
+    }
+    if( user ) {
+      var obj = {};
+      var type = plan.viewer[this.userId]+1;
+      obj['viewer.'+user._id ] = type;
+      Plans.update({'_id':planid}, { '$set' : obj } );
+    } else {
+      throw new Meteor.Error(413, 'user_not_found');
+    }
+    return true;
+  },
+  updateSharePlanWith:function( planid, userId, newMode ) {
+    var me = Meteor.users.findOne( { _id: this.userId });
+    var user = Meteor.users.findOne( { _id: userId });
+    var plan = Plans.findOne( { _id: planid } );
+    if( ! plan ) {
+      throw new Meteor.Error(413, "Das Revier ist ungültig.");
+    }
+    if( ! user ) {
+      throw new Meteor.Error(413, "Der Benutzer konnte nicht gefunden werden.");
+    }
+    if( plan.viewer[this.userId] >= plan.viewer[userId] ) {
+      throw new Meteor.Error(403, "Sie verfügen nicht die nötigen Rechte um diese Aktion auszufürhen.");
+    }
+    if( newMode == 0 ) {
+      var obj = {};
+      obj['viewer.'+this.userId ] = 1;
+      obj['viewer.'+userId ] = 0;
+      Plans.update({'_id':planid}, { '$set' :obj });
+    } else {
+      var obj = {};
+      obj['viewer.'+userId ] = newMode;
+      Plans.update({'_id':planid}, { '$set' : obj } );
+    }
+  },
+  removeSharePlanWith: function( planid, userId ) {
+    var me = Meteor.users.findOne( { _id: this.userId });
+    var user = Meteor.users.findOne( { _id: userId });
+    var plan = Plans.findOne( { _id: planid } );
+    if( ! plan ) {
+      throw new Meteor.Error(413, "Der Plan ist ungültig.");
+    }
+    if( ! user ) {
+      throw new Meteor.Error(413, "Der Benutzer konnte nicht gefunden werden.");
+    }
+    if( plan.viewer[this.userId] >= plan.viewer[userId] ) {
+      throw new Meteor.Error(403, "Sie verfügen nicht die nötigen Rechte um diese Aktion auszufürhen.");
+    }
+    var obj = {};
+    obj['viewer.'+userId ] = "";
+    Plans.update({'_id':planid}, { '$unset' : obj } );
+  }
 })

@@ -34,7 +34,12 @@ Template.sendinvites.events({
 	'click #send':function( e ) {
 		$(e.currentTarget).addClass('disabled');
 		Meteor.call('sendInvites', Session.get('sendinvites'), function( e ) {
+			console.log( e );
 			modals.pop();
+
+			setTimeout( function() {
+				alert("In der DemoVersion werden keine E Mails versckickt. In der Lizensierten Version werden jetzt an alle Nutzer, die für eine Einladung vorgemerkt wurden, eine entsprechende E Mail verschickt. Die verschickte E Mail enthält einen Link mit dem der Jagdgast die Einladung annehmen oder ablehenen kann.")
+			},500);
 		})
 	},
 	'blur #sendinvites-subject':function( e ) {

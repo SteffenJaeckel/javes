@@ -1,0 +1,76 @@
+<template name="planshareinfo">
+	<div class="modal-header">
+		<button type="button" class="close modal-close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h4 class="modal-title">Jagdplanung Freigaben</h4>
+	</div>
+	<div class="modal-body">
+		<h4>Mein Status</h4>
+		<div class="well well-sm">
+			<div class="userimage" style="position:relative;width:64px;height:64px;background-color:#fff;float:left;margin-right:12px;background-image:url('/img/avatars/{{avatar}}')"></div>
+			<h5>{{profile.firstname}} {{profile.surname}}</h5>
+			<button class="btn btn-sm btn-default disabled" type="button">{{sharetype}}</button>
+			<div style="clear:both;"></div>
+		</div>
+		{{#if sharedusers.length}}
+			<hr/>
+			<h4>Weitere Benutzer die Zugriff auf die Planugn haben</h4>
+			{{#each sharedusers}}
+				{{> shareplanuser}}
+			{{/each}}
+		{{/if}}
+		{{#if canInvite }}
+		<hr/>
+		<h4>Für weitere Benutzer Freigeben</h4>
+			{{#if error}}
+				{{#if error.usernotfound}}
+				<div class="alert alert-warning">
+					<b>Achtung !</b> Der Benutzer <b>({{error.email}})</b> konnte nicht gefunden werden. Überprüfen Sie gegebenenfalls noch einmal die Adresse.<br/>
+				</div>
+				{{/if}}
+				{{#if error.emailsend}}
+				<div class="alert alert-success">
+					<b>Erfolg !</b> Der Benutzer wurde erstellt und es wurde eine E-Mail an '{{error.email}}' verschickt. Sobald {{error.email}} ein Passwort festgelegt hat kann er/sie auf den Pirschbezirk zugreifen.
+				</div>
+				{{/if}}
+			{{/if}}
+			<div class="form-group">
+				<label for="invite-email" class="control-label">Um die Planung für weitere Benutzer freizugeben, geben Sie bitte die E-Mail Addresse des Benutzers ein.</label>
+				<input id="invite-email" class="form-control" placeholder="E Mail" type="text" style="width:100%"/>
+			</div>
+		{{/if}}
+	</div>
+</template>
+
+<template name="shareplanuser">
+	<div class="well well-sm">
+		<div class="userimage" style="position:relative;width:64px;height:64px;background-color:#fff;float:left;margin-right:12px;background-image:url('/img/avatars/{{avatar}}.png')"></div>
+		<h5>{{firstname}} {{surname}}</h5>
+		{{#if isOwner }}
+		<div class="btn-group">
+			<button class="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown">{{type}}&nbsp;<span class="caret"></span></button>
+			<ul class="dropdown-menu" aria-labelledby="edit">
+				<li><a class="set-owner" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Verwalter</a></li>
+				<li><a class="set-coowner" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Vollzugriff</a></li>
+				<li><a class="set-guest" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Lesezugriff</a></li>
+				<li class="divider"></li>
+				<li><a class="remove-share" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Entfernen</a></li>
+			</ul>
+		</div>
+		{{else}}
+			{{#if isCoOwner}}
+				<div class="btn-group">
+					<button class="btn btn-sm btn-default dropdown-toggle {{menuEnabled}}" type="button" data-toggle="dropdown">{{type}}&nbsp;<span class="caret"></span></button>
+					<ul class="dropdown-menu" aria-labelledby="edit">
+						<li><a class="set-coowner" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Vollzugriff</a></li>
+						<li><a class="set-guest" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Lesezugriff</a></li>
+						<li class="divider"></li>
+						<li><a class="remove-share" data="{{userid}}" role="menuitem" tabindex="-1" href="#">Entfernen</a></li>
+					</ul>
+				</div>
+			{{else}}
+				<button class="btn btn-sm btn-default disabled" type="button">{{type}}</button>
+			{{/if}}
+		{{/if}}
+		<div style="clear:both;"></div>
+	</div>
+</template>

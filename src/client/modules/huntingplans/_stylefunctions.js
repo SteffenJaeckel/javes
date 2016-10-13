@@ -162,29 +162,36 @@ getDogStandStyle = function( feature, res ) {
 
     if( u && u.profile.dogs ) {
       for( var d = 0; d < u.profile.dogs.length;d++ ) {
-        if( u.profile.dogs[d].type < 3 ) {
+        if( u.profile.dogs[d].type <= 2 ) {
+
+          u.profile.dogs[d].type
           // hunter += " "+"Teckel"+" (kurz)";
           hunter = ( u ) ? u.profile.surname+', '+u.profile.firstname : '';
-          for(var i=0;i < 1+u.profile.dogs[d].type;i++) {
-            styles.push( new ol.style.Style({
-              image: new ol.style.Circle({
-                radius: (200 + i*100)/res,
-                fill: new ol.style.Fill({
-                  color: dc
-                }),
-                stroke: new ol.style.Stroke({
-                  color: [0, 0, 0, item.opacity * 0.5 ],
-                  width: 1
-                }),
-                zIndex: parseInt( feature.get('z-index'))*2 -100
-              })
-            }))
+          var pref = "(";
+          var suff = ")";
+          for(var i=0;i < u.profile.dogs[d].type;i++) {
+            pref += "(";
+            suff += ")";
           }
+
+          styles.push( new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: (300)/res,
+              fill: new ol.style.Fill({
+                color: dc
+              }),
+              stroke: new ol.style.Stroke({
+                color: [0, 0, 0, item.opacity * 0.5 ],
+                width: 1
+              }),
+              zIndex: parseInt( feature.get('z-index'))*2 -100
+            })
+          }))
 
           styles.push( new ol.style.Style( {
               text: new ol.style.Text( {
                 scale: (res < minzoom ) ? 2:1 /* + Math.round(Math.random()*3)*0.5*/,
-                text: (res < minzoom ) ? u.profile.dogs[d].race:"",/*"(((Terrier)))"*/
+                text: (res < minzoom ) ? pref + u.profile.dogs[d].race + suff :"",/*"(((Terrier)))"*/
                 offsetY: (res < minzoom ) ? 32:5,
                 fill: new ol.style.Fill({
                   color: item.color
@@ -304,7 +311,7 @@ getStandStyle = function( feature , res, selected, print  ) {
             text: new ol.style.Text( {
               font:'tahoma',
               scale:1.0,
-              text: '-:-',
+              text: '☻',
               offsetX: 0,
               offsetY: 0,
               fill: new ol.style.Fill({
