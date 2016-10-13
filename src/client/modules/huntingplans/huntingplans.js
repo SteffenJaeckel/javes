@@ -67,8 +67,10 @@ gotoStand = function ( standid ) {
   var s = Stands.findOne( {_id: standid } )
   var view = app.getMap().getView();
   var pan = ol.animation.pan({duration: 500,source: view.getCenter()})
-  app.getMap().beforeRender(pan)
+  var zoom = ol.animation.zoom({duration: 500, resolution: view.getResolution()})
+  app.getMap().beforeRender(pan,zoom)
   view.setCenter( proj4('WGS84',mapconfig.projection.name,s.location.coordinates) )
+  view.setZoom(18);
 }
 
 function getSelectionTool() {
