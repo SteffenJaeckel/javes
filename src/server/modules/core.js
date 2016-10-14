@@ -12,6 +12,7 @@ function findCreateUser( me, data ) {
         // validate input ...
         data = Validate( data, {
           email: {type:'email',name:"E-Mail Adresse",optional:true },
+          managed : {type: 'set', items: [0,1], name:'Verwaltetes Profil' },
           firstname : {type: 'string', min:1, max:128, name:'Vorname' },
           surname: {type:'string',min:1, max:128, name: 'Nachname' },
           phone1 : {type: 'string', min:1, max:128, name:'Festnetz',optional:true },
@@ -43,7 +44,7 @@ function findCreateUser( me, data ) {
           number : data['number'],
           zip : data['zip'],
           dogs: data.dogs,
-          managed:true
+          managed: (data.managed == 1)
         };
 
         // user per Email Adresse suchen ...
@@ -181,9 +182,9 @@ Meteor.methods({
         var role = customer.departments[ departmentid ].roles[ currentrolename ];
 
         if( role ) {
-
            data = Validate( data, {
             _id: {type:'string',name:"ID" },
+            managed : {type: 'set', items: [0,1], name:'Verwaltetes Profil' },
             email: {type:'email',name:"E-Mail Adresse",optional:true },
             firstname : {type: 'string', min:1, max:128, name:'Vorname' },
             surname: {type:'string',min:1, max:128, name: 'Nachname' },
@@ -203,7 +204,6 @@ Meteor.methods({
               }
             }}
           });
-
           var user = Meteor.users.findOne({_id:data._id});
 
           var targetrole = customer.departments[ departmentid ].roles[ data.role ];
@@ -236,13 +236,10 @@ Meteor.methods({
 
           user.profile.dogs = data['dogs'];
 
+          user.profile.managed = (data['managed'] == 1);
+
           if( data['email'] && data['email'] != "" ) {
             Accounts.addEmail(user._id, data['email'], false)
-            /*if( user.emails && user.emails.length > 0 ) {
-              user.emails[0].address = data['email'];
-            } else {
-              user['emails'] = [{ address:data['email'], "verified" : false }];
-            }*/
           }
 
           Meteor.users.update( {_id:user._id}, user );

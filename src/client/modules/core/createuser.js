@@ -102,6 +102,7 @@ Template.adduser.helpers({
 function getdata ( ) {
   var data = {
     _id : modals.get()._id,
+    managed: $('input[name="profiletype"]:checked').val(),
     email: $('#email').val(),
     firstname: $('#firstname').val(),
     surname: $('#surname').val(),

@@ -45,9 +45,9 @@
           <div class="radio">
             <label>
               {{#unless managed}}
-                <input type="radio" name="profiletype" id="optionsRadios1" value="option1" checked />
+                <input type="radio" name="profiletype" id="optionsRadios1" value="0" checked />
               {{else}}
-                <input type="radio" name="profiletype" id="optionsRadios1" value="option1" />
+                <input type="radio" name="profiletype" id="optionsRadios1" value="0" />
               {{/unless}}
               <b>Aktives Profil</b><br/>Der neue Benutzer wird per E Mail benachrichtigt und kann ein Passwort für seinen Zugang festlegen.
             </label>
@@ -57,9 +57,9 @@
           <div class="radio">
             <label>
               {{#if managed}}
-                <input type="radio" name="profiletype" id="optionsRadios2" value="option2" checked />
+                <input type="radio" name="profiletype" id="optionsRadios2" value="1" checked />
               {{else}}
-                <input type="radio" name="profiletype" id="optionsRadios2" value="option2" />
+                <input type="radio" name="profiletype" id="optionsRadios2" value="1" />
               {{/if}}
               <b>Verwaltetes Profil</b><br/>Der neue Benutzer kann sich <b><u>nicht</u></b> anmelden und hat <b><u>keinen Zugang</u></b> zur Software.
             </label>
@@ -165,11 +165,12 @@
     {{#if userid }}
       <button id="delete" class="btn btn-danger"><i class="fa fa-trash fa-fw"></i>&nbsp;Löschen</button>
     {{/if}}
-    <button id="abort" class="btn btn-default"><i class="fa fa-remove fa-fw"></i>&nbsp;Abbrechen</button>
-    <button id="save-exit" class="btn btn-primary"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp;Speichern</button>
-    {{#unless userid }}
+    <button id="abort" class="btn btn-default"><i class="fa fa-remove fa-fw"></i>&nbsp;Schliessen</button>
+    {{#if userid }}
+      <button id="save-exit" class="btn btn-primary"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp;Speichern</button>
+    {{else}}
       <button id="save" class="btn btn-success"><i class="fa fa-cloud-upload fa-fw"></i>&nbsp;Erstellen</button>
-    {{/unless}}
+    {{/if}}
   </div>
 </template>
 
